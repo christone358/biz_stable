@@ -1,0 +1,315 @@
+.organization-tree-container {
+  height: 100%;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  background: var(--background-base);
+}
+
+.tree-header {
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tree-header h3 {
+  margin: 0 0 var(--space-sm) 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.breadcrumb {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.current-path {
+  background: #e6f7ff;
+  color: var(--primary-color);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.tree-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* 树节点容器 */
+.tree-node-wrapper {
+  margin-bottom: 2px;
+}
+
+/* 树节点 */
+.tree-node {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--background-base);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 36px;
+  font-size: 14px;
+  position: relative;
+}
+
+/* 节点层级样式 */
+.tree-node.level-0 {
+  background: #fafafa;
+  border: 1px solid #e8e8e8;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.tree-node.level-1 {
+  background: #f9f9f9;
+  border: 1px solid #f0f0f0;
+  font-weight: 500;
+}
+
+.tree-node.level-2 {
+  background: #fcfcfc;
+  font-weight: normal;
+}
+
+.tree-node.level-3 {
+  background: #fdfdfd;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* 悬停效果 */
+.tree-node:hover {
+  background: #f6ffed;
+  border-color: #b7eb8f;
+  transform: translateX(2px);
+}
+
+.tree-node.level-0:hover {
+  background: #e6f7ff;
+  border-color: #91d5ff;
+}
+
+/* 选中状态 */
+.tree-node.selected {
+  background: #e6f7ff;
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 4px rgba(22, 119, 255, 0.1);
+  font-weight: 600;
+}
+
+.tree-node.department-selected {
+  background: #fff7e6;
+  border-color: #ffd666;
+}
+
+/* 展开图标 */
+.expand-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.expand-icon:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--primary-color);
+}
+
+.no-expand-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+/* 节点图标 */
+.node-icon {
+  margin-right: 8px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.tree-node.level-0 .node-icon {
+  color: var(--primary-color);
+  font-size: 16px;
+}
+
+.tree-node.level-1 .node-icon {
+  color: #722ed1;
+}
+
+.tree-node.level-2 .node-icon {
+  color: #13c2c2;
+}
+
+.tree-node.level-3 .node-icon {
+  color: #fa8c16;
+}
+
+/* 健康状态指示器 */
+.health-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.health-indicator.healthy {
+  background-color: #52c41a;
+  box-shadow: 0 0 4px rgba(82, 196, 26, 0.3);
+}
+
+.health-indicator.warning {
+  background-color: #faad14;
+  box-shadow: 0 0 4px rgba(250, 173, 20, 0.3);
+}
+
+.health-indicator.critical {
+  background-color: #ff4d4f;
+  box-shadow: 0 0 4px rgba(255, 77, 79, 0.3);
+  animation: criticalPulse 2s infinite;
+}
+
+.health-indicator.unknown {
+  background-color: #bfbfbf;
+}
+
+@keyframes criticalPulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* 节点名称 */
+.node-name {
+  flex: 1;
+  color: var(--text-primary);
+  font-weight: inherit;
+  margin-right: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 节点统计信息 */
+.node-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.02);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 11px;
+}
+
+.stat-label {
+  color: var(--text-secondary);
+}
+
+.stat-value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.asset-type {
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
+}
+
+.asset-type-label {
+  color: #389e0d;
+  font-weight: 500;
+}
+
+/* 子节点容器 */
+.children-container {
+  margin-top: 2px;
+  position: relative;
+}
+
+/* 连接线效果 */
+.children-container::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #e8e8e8;
+  z-index: 1;
+}
+
+.tree-node::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 50%;
+  width: 12px;
+  height: 1px;
+  background: #e8e8e8;
+  z-index: 2;
+}
+
+.tree-node.level-0::before {
+  display: none;
+}
+
+/* 图例 */
+.tree-legend {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.legend-item .health-indicator {
+  margin-right: 4px;
+}
+
+/* 响应式 */
+@media (max-width: 900px) {
+  .tree-node {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  .node-stats {
+    display: none;
+  }
+
+  .tree-legend {
+    display: none;
+  }
+}

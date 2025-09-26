@@ -1,0 +1,233 @@
+.alert-panel-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.alert-panel-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.alert-panel-card .ant-card-body {
+  flex: 1;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.connection-status {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+}
+
+.panel-stats {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: var(--space-sm) 0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.stat-item span {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.alerts-list-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 0 -var(--space-md);
+  padding: 0 var(--space-md);
+}
+
+.alert-item {
+  cursor: pointer;
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-xs);
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.alert-item:hover {
+  background: var(--background-layout);
+  border-color: var(--border-color);
+}
+
+.alert-content {
+  width: 100%;
+}
+
+.alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xs);
+}
+
+.alert-time {
+  font-family: 'SF Mono', Monaco, Inconsolata, 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-size: 11px;
+  color: var(--text-disabled);
+  background: var(--background-layout);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.alert-body {
+  line-height: 1.4;
+}
+
+.alert-title {
+  font-size: 13px;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.system-name {
+  font-weight: 600;
+  color: var(--primary-color);
+  cursor: pointer;
+}
+
+.system-name:hover {
+  text-decoration: underline;
+}
+
+.separator {
+  margin: 0 2px;
+  color: var(--text-secondary);
+}
+
+.alert-description {
+  color: var(--text-primary);
+}
+
+.alert-department {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.panel-footer {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.data-info {
+  font-size: 11px;
+  color: var(--text-disabled);
+}
+
+/* 闪烁动画 */
+.blink-tag {
+  animation: tagBlink 2s infinite;
+}
+
+@keyframes tagBlink {
+  0%, 50% { opacity: 1; }
+  25%, 75% { opacity: 0.6; }
+}
+
+/* 自定义滚动条 */
+.alerts-list-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.alerts-list-container::-webkit-scrollbar-track {
+  background: var(--background-layout);
+  border-radius: 2px;
+}
+
+.alerts-list-container::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}
+
+.alerts-list-container::-webkit-scrollbar-thumb:hover {
+  background: var(--text-disabled);
+}
+
+/* 列表项样式 */
+.alerts-list-container .ant-list-item {
+  border: none;
+  padding: 0;
+}
+
+.alerts-list-container .ant-list-item:last-child {
+  border-bottom: none;
+}
+
+/* Badge样式 */
+.panel-stats .ant-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.panel-stats .ant-badge .ant-badge-count {
+  position: static;
+  transform: none;
+  box-shadow: none;
+  margin-top: var(--space-xs);
+}
+
+/* 响应式设计 */
+@media (max-width: 900px) {
+  .alert-panel-container {
+    height: auto;
+    max-height: 300px;
+  }
+
+  .alerts-list-container {
+    max-height: 200px;
+  }
+
+  .alert-item {
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .alert-title {
+    font-size: 12px;
+  }
+
+  .alert-department {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+
+  .connection-status {
+    align-self: flex-end;
+  }
+}

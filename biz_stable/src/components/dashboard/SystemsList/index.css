@@ -1,0 +1,132 @@
+.systems-list-card {
+  min-height: 600px;
+}
+
+.systems-list-card .ant-card-body {
+  padding: var(--space-lg);
+}
+
+.filters-container {
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.systems-count {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.system-name-link {
+  padding: 0;
+  height: auto;
+  color: var(--primary-color);
+  text-align: left;
+}
+
+.system-name-link:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+.metrics-cell {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.metrics-cell div {
+  margin: 2px 0;
+}
+
+/* 特殊行样式 */
+.ant-table-tbody > tr.critical-row {
+  background: #fff2f0;
+}
+
+.ant-table-tbody > tr.critical-row:hover > td {
+  background: #ffebe6 !important;
+}
+
+.ant-table-tbody > tr.alert-row {
+  background: #fff7e6;
+}
+
+.ant-table-tbody > tr.alert-row:hover > td {
+  background: #fff1dc !important;
+}
+
+/* 表格样式 */
+.ant-table-thead > tr > th {
+  background: #fafafa;
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: #f6ffed;
+}
+
+/* 分页样式 */
+.ant-pagination {
+  margin-top: var(--space-lg);
+  text-align: right;
+}
+
+.ant-pagination-total-text {
+  color: var(--text-secondary);
+}
+
+/* 闪烁动画 */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  25%, 75% { opacity: 0.6; }
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .filters-container .ant-space {
+    width: 100%;
+  }
+
+  .filters-container .ant-space-item {
+    margin-bottom: var(--space-sm);
+  }
+
+  .ant-table-wrapper {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .systems-list-card .ant-card-body {
+    padding: var(--space-md);
+  }
+
+  .filters-container {
+    margin-bottom: var(--space-md);
+  }
+}
+
+/* 表格滚动条样式 */
+.ant-table-wrapper .ant-table-body::-webkit-scrollbar {
+  height: 6px;
+}
+
+.ant-table-wrapper .ant-table-body::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 3px;
+}
+
+.ant-table-wrapper .ant-table-body::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+
+.ant-table-wrapper .ant-table-body::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}

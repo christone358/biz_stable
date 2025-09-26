@@ -1,0 +1,167 @@
+.kpi-cards-container {
+  padding: var(--space-lg);
+}
+
+.kpi-card {
+  position: relative;
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.kpi-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.kpi-card .ant-card-body {
+  padding: var(--space-lg);
+}
+
+.card-icon {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.15);
+}
+
+.card-icon.urgent {
+  color: var(--error-color);
+  animation: pulse 2s infinite;
+}
+
+.card-icon.critical {
+  color: var(--error-color);
+}
+
+.kpi-card .ant-statistic-title {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: var(--space-sm);
+}
+
+.card-footer {
+  margin-top: var(--space-md);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.trend-text {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.trend-text.positive {
+  background: #f6ffed;
+  color: var(--success-color);
+}
+
+/* 异常系统卡片样式 */
+.kpi-card.abnormal-systems.normal {
+  border-left-color: var(--success-color);
+}
+
+.kpi-card.abnormal-systems.warning {
+  border-left-color: var(--warning-color);
+}
+
+.kpi-card.abnormal-systems.critical {
+  border-left-color: var(--error-color);
+  background: linear-gradient(135deg, #fff2f0 0%, #ffffff 100%);
+}
+
+.abnormal-details {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xs);
+}
+
+.abnormal-rate {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* 紧急告警卡片样式 */
+.kpi-card.urgent-alerts {
+  border-left-color: var(--error-color);
+}
+
+.alert-details {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xs);
+}
+
+.latest-time {
+  font-weight: 500;
+  color: var(--error-color);
+}
+
+/* 高危漏洞卡片样式 */
+.kpi-card.critical-vulnerabilities {
+  border-left-color: #A8071A;
+  background: linear-gradient(135deg, #fff2f0 0%, #ffffff 100%);
+}
+
+.vuln-details {
+  margin-bottom: var(--space-xs);
+}
+
+.longest-unfixed {
+  font-weight: 500;
+  color: #A8071A;
+}
+
+.warning-indicator {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 8px;
+  height: 8px;
+  background: var(--error-color);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+/* 动画效果 */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  25%, 75% { opacity: 0.6; }
+}
+
+@keyframes pulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 响应式设计 */
+@media (max-width: 1400px) {
+  .kpi-cards-container .ant-col {
+    margin-bottom: var(--space-md);
+  }
+}
+
+@media (max-width: 1200px) {
+  .kpi-cards-container .ant-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+
+  .kpi-cards-container .ant-col {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .kpi-cards-container .ant-row {
+    grid-template-columns: 1fr;
+  }
+}

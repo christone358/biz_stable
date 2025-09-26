@@ -1,0 +1,189 @@
+.mock-config-layout {
+  height: 100vh;
+  background: var(--background-layout);
+}
+
+.mock-config-header {
+  background: var(--primary-color);
+  padding: 0;
+  height: 64px;
+  display: flex;
+  align-items: center;
+}
+
+.header-content {
+  width: 100%;
+  padding: 0 var(--space-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-left .ant-btn {
+  color: rgba(255, 255, 255, 0.85);
+  border-color: transparent;
+}
+
+.header-left .ant-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.mock-config-content {
+  padding: var(--space-lg);
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
+.preview-code {
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: var(--space-md);
+  overflow-x: auto;
+  max-height: 400px;
+  overflow-y: auto;
+  font-family: 'SF Mono', Monaco, Inconsolata, 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+/* 表格样式 */
+.mock-config-content .ant-table-thead > tr > th {
+  background: #fafafa;
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mock-config-content .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.mock-config-content .ant-table-tbody > tr:hover > td {
+  background: #f6ffed;
+}
+
+/* 表单样式 */
+.mock-config-content .ant-form-item-label > label {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.mock-config-content .ant-input,
+.mock-config-content .ant-select-selector {
+  border-color: var(--border-color);
+}
+
+.mock-config-content .ant-input:focus,
+.mock-config-content .ant-select-focused .ant-select-selector {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+}
+
+/* 卡片样式 */
+.mock-config-content .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.mock-config-content .ant-card-head {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mock-config-content .ant-card-head-title {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* 开关样式 */
+.mock-config-content .ant-switch {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.mock-config-content .ant-switch-checked {
+  background-color: var(--primary-color);
+}
+
+/* 标签样式 */
+.mock-config-content .ant-tag {
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 2px 6px;
+}
+
+/* 模态框样式 */
+.mock-config-content .ant-modal-header {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mock-config-content .ant-modal-title {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* 响应式设计 */
+@media (max-width: 1600px) {
+  .mock-config-content {
+    padding: var(--space-md);
+  }
+
+  .header-content {
+    padding: 0 var(--space-md);
+  }
+}
+
+@media (max-width: 1366px) {
+  .mock-config-layout .ant-col-12 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
+  }
+
+  .mock-config-content .ant-row {
+    display: block;
+  }
+
+  .mock-config-content .ant-col:not(:first-child) {
+    margin-top: var(--space-lg);
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: flex-start;
+  }
+
+  .header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+
+  .header-left .ant-divider-vertical {
+    display: none;
+  }
+
+  .mock-config-header {
+    height: auto;
+    padding: var(--space-sm) 0;
+  }
+
+  .mock-config-content {
+    height: calc(100vh - 80px);
+  }
+}

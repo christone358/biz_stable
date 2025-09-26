@@ -1,0 +1,119 @@
+.dashboard-layout {
+  height: 100vh;
+  background: var(--background-layout);
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-header {
+  background: var(--background-base);
+  border-bottom: 1px solid var(--border-color);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+.header-content {
+  width: 100%;
+  padding: 0 var(--space-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-content h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-disabled);
+}
+
+.status-indicator.active {
+  background: var(--success-color);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.dashboard-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.dashboard-sider {
+  width: 300px;
+  background: #fafafa;
+  border-right: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.main-content {
+  flex: 1;
+  padding: var(--space-lg);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.content-section {
+  background: var(--background-base);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.alert-panel {
+  width: 320px;
+  border-left: 1px solid var(--border-color);
+  background: var(--background-base);
+  flex-shrink: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .alert-panel {
+    width: 280px;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-body {
+    flex-direction: column;
+  }
+
+  .dashboard-sider {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .alert-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+    height: 300px;
+  }
+}
