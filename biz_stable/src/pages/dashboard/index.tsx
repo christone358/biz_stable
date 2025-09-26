@@ -32,7 +32,7 @@ const Dashboard: React.FC = () => {
       {/* 顶部标题栏 */}
       <div className="dashboard-header">
         <div className="header-content">
-          <h1>上海市大数据中心业务健康总览页</h1>
+          <h1>XX市大数据中心业务健康总览页</h1>
           <div className="header-actions">
             <Button
               type="primary"
