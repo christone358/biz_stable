@@ -8,12 +8,12 @@
 
 .tree-header {
   margin-bottom: var(--space-md);
-  padding-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
   border-bottom: 1px solid var(--border-color);
 }
 
 .tree-header h3 {
-  margin: 0 0 var(--space-sm) 0;
+  margin: 0 0 4px 0;
   font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
@@ -46,7 +46,7 @@
 /* 树节点 */
 .tree-node {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   padding: 8px 12px;
   background: var(--background-base);
   border: 1px solid transparent;
@@ -56,6 +56,13 @@
   min-height: 36px;
   font-size: 14px;
   position: relative;
+}
+
+/* 系统和资产节点使用行布局 */
+.tree-node.level-2,
+.tree-node.level-3 {
+  flex-direction: row;
+  align-items: center;
 }
 
 /* 节点层级样式 */
@@ -195,33 +202,68 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
+/* 节点主行 */
+.node-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* 节点左侧区域 */
+.node-left-section {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0; /* 允许收缩 */
+}
+
 /* 节点名称 */
 .node-name {
   flex: 1;
   color: var(--text-primary);
   font-weight: inherit;
-  margin-right: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
+}
+
+/* 在行布局中的节点名称 */
+.tree-node.level-2 .node-name,
+.tree-node.level-3 .node-name {
+  flex: 1;
+  margin-right: 8px;
 }
 
 /* 节点统计信息 */
 .node-stats {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
+  margin-left: 8px;
+  flex-wrap: nowrap; /* 防止换行 */
+}
+
+/* 在行布局中的统计信息 */
+.tree-node.level-2 .node-stats,
+.tree-node.level-3 .node-stats {
+  margin-left: 0;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   background: rgba(0, 0, 0, 0.02);
   padding: 2px 6px;
   border-radius: 10px;
-  font-size: 11px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.node-multiline-stats .stat-item,.node-stats .stat-item{
+  flex-direction: row;
 }
 
 .stat-label {
@@ -241,6 +283,27 @@
 .asset-type-label {
   color: #389e0d;
   font-weight: 500;
+}
+
+/* 资产类型显示（在统计区域内） */
+.node-stats .asset-type-label {
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
+  color: #389e0d;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+}
+
+/* 多行统计信息 */
+.node-multiline-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  margin-left: 32px; /* 对齐图标位置 */
+  flex-wrap: nowrap; /* 防止换行 */
 }
 
 /* 子节点容器 */

@@ -95,6 +95,7 @@
 
 .alert-body {
   line-height: 1.4;
+  display: flex;
 }
 
 .alert-title {
@@ -129,6 +130,9 @@
   font-size: 11px;
   color: var(--text-secondary);
   margin-top: 2px;
+  position: absolute;
+  right: 10px;
+
 }
 
 .panel-footer {

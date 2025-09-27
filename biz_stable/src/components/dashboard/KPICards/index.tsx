@@ -11,9 +11,16 @@ const KPICards: React.FC = () => {
 
   // 根据当前选择计算动态指标
   const metrics = useMemo(() => {
-    const currentSystems = selectedDepartmentId
-      ? systems.filter(sys => sys.departmentId === selectedDepartmentId)
-      : systems
+    let currentSystems = systems
+
+    // 根据选择的组织进行筛选
+    if (selectedOrganization?.type === 'department') {
+      currentSystems = systems.filter(sys => sys.departmentId === selectedOrganization.id)
+    } else if (selectedOrganization?.type === 'system') {
+      currentSystems = systems.filter(sys => sys.id === selectedOrganization.id)
+    } else if (selectedDepartmentId) {
+      currentSystems = systems.filter(sys => sys.departmentId === selectedDepartmentId)
+    }
 
     const currentAssets = filteredAssets.length > 0 ? filteredAssets :
       (selectedOrganization?.type === 'root' ?
@@ -109,7 +116,7 @@ const KPICards: React.FC = () => {
               title={`${getSelectionLabel()}业务系统`}
               value={metrics.totalSystems}
               suffix="个系统"
-              valueStyle={{ color: '#1677FF', fontSize: '28px', fontWeight: 'bold' }}
+              valueStyle={{ color: '#1677FF', fontSize: '24px', fontWeight: 'bold' }}
             />
             <div className="card-footer">
               <span className="trend-text">
@@ -131,7 +138,7 @@ const KPICards: React.FC = () => {
               suffix="异常系统"
               valueStyle={{
                 color: abnormalRate >= 15 ? '#FF4D4F' : abnormalRate >= 5 ? '#FAAD14' : '#52C41A',
-                fontSize: '28px',
+                fontSize: '24px',
                 fontWeight: 'bold'
               }}
             />
@@ -159,7 +166,7 @@ const KPICards: React.FC = () => {
               suffix="紧急告警"
               valueStyle={{
                 color: '#FF4D4F',
-                fontSize: '28px',
+                fontSize: '24px',
                 fontWeight: 'bold',
                 animation: metrics.urgentAlerts.total > 0 ? 'blink 2s infinite' : 'none'
               }}
@@ -190,7 +197,7 @@ const KPICards: React.FC = () => {
               suffix="异常资产"
               valueStyle={{
                 color: assetAbnormalRate >= 20 ? '#FF4D4F' : assetAbnormalRate >= 10 ? '#FAAD14' : '#52C41A',
-                fontSize: '28px',
+                fontSize: '24px',
                 fontWeight: 'bold'
               }}
             />

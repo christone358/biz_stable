@@ -11,15 +11,26 @@ const { Search } = Input
 const { Option } = Select
 
 const SystemsList: React.FC = () => {
-  const { systems, loading } = useSelector((state: RootState) => state.dashboard)
+  const { systems, loading, selectedOrganization, filteredAssets } = useSelector((state: RootState) => state.dashboard)
   const [searchText, setSearchText] = useState('')
   const [statusFilter, setStatusFilter] = useState<HealthStatus[]>([])
   const [departmentFilter, setDepartmentFilter] = useState<string[]>([])
   const [importanceFilter, setImportanceFilter] = useState<ImportanceLevel[]>([])
 
+  // 获取当前应该显示的系统数据
+  const currentSystems = useMemo(() => {
+    if (selectedOrganization?.type === 'asset' && filteredAssets.length > 0) {
+      // 当选择单个资产时，只显示包含该资产的系统
+      const asset = filteredAssets[0]
+      const parentSystem = systems.find(sys => sys.id === asset.systemId)
+      return parentSystem ? [parentSystem] : []
+    }
+    return systems
+  }, [systems, selectedOrganization, filteredAssets])
+
   // 过滤后的数据
   const filteredSystems = useMemo(() => {
-    return systems.filter(system => {
+    return currentSystems.filter(system => {
       const matchSearch = !searchText ||
         system.name.toLowerCase().includes(searchText.toLowerCase()) ||
         system.department.toLowerCase().includes(searchText.toLowerCase())
@@ -30,12 +41,12 @@ const SystemsList: React.FC = () => {
 
       return matchSearch && matchStatus && matchDepartment && matchImportance
     })
-  }, [systems, searchText, statusFilter, departmentFilter, importanceFilter])
+  }, [currentSystems, searchText, statusFilter, departmentFilter, importanceFilter])
 
   // 获取唯一的部门列表
   const departments = useMemo(() => {
-    return Array.from(new Set(systems.map(s => s.department))).sort()
-  }, [systems])
+    return Array.from(new Set(currentSystems.map(s => s.department))).sort()
+  }, [currentSystems])
 
   const getStatusTag = (status: HealthStatus) => {
     const statusConfig = {

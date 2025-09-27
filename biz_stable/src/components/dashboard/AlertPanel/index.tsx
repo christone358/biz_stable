@@ -22,7 +22,7 @@ interface AlertPanelItem {
 }
 
 const AlertPanel: React.FC = () => {
-  const { selectedOrganization, selectedDepartmentId, systems } = useSelector((state: RootState) => state.dashboard)
+  const { selectedOrganization, selectedDepartmentId, systems, filteredAssets } = useSelector((state: RootState) => state.dashboard)
   const [items, setItems] = useState<AlertPanelItem[]>([])
   const [loading, setLoading] = useState(false)
   const [connected, _setConnected] = useState(true)
@@ -69,6 +69,13 @@ const AlertPanel: React.FC = () => {
         } else if (selectedOrganization.type === 'system') {
           // 选择了系统，筛选该系统的告警
           allItems = allItems.filter(item => item.systemName === selectedOrganization.name)
+        } else if (selectedOrganization.type === 'asset' && filteredAssets.length > 0) {
+          // 选择了资产，筛选该资产所属系统的告警
+          const asset = filteredAssets[0]
+          const parentSystem = systems.find(sys => sys.id === asset.systemId)
+          if (parentSystem) {
+            allItems = allItems.filter(item => item.systemName === parentSystem.name)
+          }
         }
       } else if (selectedDepartmentId) {
         // 通过departmentId筛选
@@ -86,7 +93,7 @@ const AlertPanel: React.FC = () => {
 
   useEffect(() => {
     loadData()
-  }, [selectedOrganization, selectedDepartmentId]) // 当选择变化时重新加载数据
+  }, [selectedOrganization, selectedDepartmentId, filteredAssets]) // 当选择变化时重新加载数据
 
   useEffect(() => {
     // 模拟实时数据更新

@@ -16,7 +16,7 @@ import './index.css'
 
 const OrganizationTree: React.FC = () => {
   const dispatch = useDispatch()
-  const { organizations, selectedOrganization, selectedDepartmentId } = useSelector((state: RootState) => state.dashboard)
+  const { organizations, selectedOrganization, selectedDepartmentId, systems } = useSelector((state: RootState) => state.dashboard)
 
   const handleNodeClick = (node: OrganizationNode, event: React.MouseEvent) => {
     event.stopPropagation()
@@ -31,13 +31,35 @@ const OrganizationTree: React.FC = () => {
       dispatch(setSelectedDepartmentId(null))
     } else if (node.type === 'department') {
       // 点击部门节点，筛选该部门的数据
-      const departmentSystems = generateMockSystems().filter(sys => sys.departmentId === node.id)
+      const allSystems = generateMockSystems()
+      const departmentSystems = allSystems.filter(sys => sys.departmentId === node.id)
       dispatch(setSystems(departmentSystems))
       dispatch(setFilteredAssets(getAssetsForDepartment(node.id)))
       dispatch(setSelectedDepartmentId(node.id))
     } else if (node.type === 'system') {
       // 点击系统节点，筛选该系统的资产
-      const systemAssets = getAllAssets().filter(asset => asset.systemId === node.id)
+      console.log('🔍 点击系统节点:', node.id, node.name)
+
+      // 首先从当前systems状态中查找
+      let currentSystem = systems.find(sys => sys.id === node.id)
+      console.log('📊 从当前systems状态查找:', currentSystem ? '找到' : '未找到')
+
+      // 如果在当前systems中找不到，从全量数据中查找
+      if (!currentSystem) {
+        console.log('🔄 从全量数据中查找...')
+        const allSystems = generateMockSystems()
+        currentSystem = allSystems.find(sys => sys.id === node.id)
+        console.log('📊 从全量数据查找:', currentSystem ? '找到' : '未找到')
+      }
+
+      const systemAssets = currentSystem?.assets || []
+      console.log('🎯 系统资产数据:', {
+        systemId: currentSystem?.id,
+        systemName: currentSystem?.name,
+        assetCount: systemAssets.length,
+        assets: systemAssets.map(asset => ({ id: asset.id, name: asset.name, type: asset.type }))
+      })
+
       dispatch(setFilteredAssets(systemAssets))
     } else if (node.type === 'asset') {
       // 点击资产节点，显示单个资产信息
@@ -112,50 +134,88 @@ const OrganizationTree: React.FC = () => {
           style={{ paddingLeft: `${level * 20 + 12}px` }}
           onClick={(e) => handleNodeClick(node, e)}
         >
-          <span
-            className="expand-icon"
-            onClick={(e) => handleExpandClick(node, e)}
-          >
-            {getExpandIcon(node)}
-          </span>
+          {/* 根节点和部门节点：竖直布局，统计信息换行 */}
+          {(node.type === 'root' || node.type === 'department') && (
+            <>
+              <div className="node-main-row">
+                <div className="node-left-section">
+                  <span
+                    className="expand-icon"
+                    onClick={(e) => handleExpandClick(node, e)}
+                  >
+                    {getExpandIcon(node)}
+                  </span>
 
-          <span className="node-icon">
-            {getNodeIcon(node)}
-          </span>
+                  <span className="node-icon">
+                    {getNodeIcon(node)}
+                  </span>
 
-          <div className={getHealthStatusClass(node.healthStatus)}></div>
+                  <div className={getHealthStatusClass(node.healthStatus)}></div>
 
-          <span className="node-name">{node.name}</span>
+                  <span className="node-name">{node.name}</span>
+                </div>
+              </div>
 
-          <div className="node-stats">
-            {node.type === 'root' && (
-              <span className="stat-item">
-                <span className="stat-label">系统:</span>
-                <span className="stat-value">{node.systemCount}</span>
-                <span className="stat-label">资产:</span>
-                <span className="stat-value">{node.assetCount}</span>
+              <div className="node-multiline-stats">
+                {node.type === 'root' && (
+                  <>
+                    <span className="stat-item">
+                      <span className="stat-label">部门:</span>
+                      <span className="stat-value">{node.children?.length || 0}</span>
+                    </span>
+                    <span className="stat-item">
+                      <span className="stat-label">系统:</span>
+                      <span className="stat-value">{node.systemCount}</span>
+                    </span>
+                  </>
+                )}
+                {node.type === 'department' && (
+                  <>
+                    <span className="stat-item">
+                      <span className="stat-label">系统:</span>
+                      <span className="stat-value">{node.systemCount}</span>
+                    </span>
+                    <span className="stat-item">
+                      <span className="stat-label">资产:</span>
+                      <span className="stat-value">{node.assetCount}</span>
+                    </span>
+                  </>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* 系统和资产节点：水平布局，统计信息在右侧 */}
+          {(node.type === 'system' || node.type === 'asset') && (
+            <>
+              <span
+                className="expand-icon"
+                onClick={(e) => handleExpandClick(node, e)}
+              >
+                {getExpandIcon(node)}
               </span>
-            )}
-            {node.type === 'department' && (
-              <span className="stat-item">
-                <span className="stat-label">系统:</span>
-                <span className="stat-value">{node.systemCount}</span>
-                <span className="stat-label">资产:</span>
-                <span className="stat-value">{node.assetCount}</span>
+
+              <span className="node-icon">
+                {getNodeIcon(node)}
               </span>
-            )}
-            {node.type === 'system' && (
-              <span className="stat-item">
-                <span className="stat-label">资产:</span>
-                <span className="stat-value">{node.assetCount}</span>
-              </span>
-            )}
-            {node.type === 'asset' && (
-              <span className="stat-item asset-type">
-                <span className="asset-type-label">{node.name.split('-')[0]}</span>
-              </span>
-            )}
-          </div>
+
+              <div className={getHealthStatusClass(node.healthStatus)}></div>
+
+              <span className="node-name">{node.name}</span>
+
+              <div className="node-stats">
+                {node.type === 'system' && (
+                  <span className="stat-item">
+                    <span className="stat-label">资产:</span>
+                    <span className="stat-value">{node.assetCount}</span>
+                  </span>
+                )}
+                {node.type === 'asset' && (
+                  <span className="asset-type-label">{node.name.split('-')[0]}</span>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {node.isExpanded && node.children && (
@@ -171,16 +231,15 @@ const OrganizationTree: React.FC = () => {
     <div className="organization-tree-container">
       <div className="tree-header">
         <h3>组织架构</h3>
-        <div className="breadcrumb">
-          {selectedOrganization && (
+        {/* <div className="breadcrumb">
+          {selectedOrganization && selectedOrganization.type !== 'root' && (
             <span className="current-path">
-              {selectedOrganization.type === 'root' && '全部资产'}
               {selectedOrganization.type === 'department' && selectedOrganization.name}
               {selectedOrganization.type === 'system' && `${selectedOrganization.name}`}
               {selectedOrganization.type === 'asset' && `${selectedOrganization.name}`}
             </span>
           )}
-        </div>
+        </div> */}
       </div>
 
       <div className="tree-content">

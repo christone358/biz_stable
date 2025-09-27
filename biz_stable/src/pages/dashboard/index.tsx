@@ -57,22 +57,27 @@ const Dashboard: React.FC = () => {
 
         {/* 中间主内容区 */}
         <div className="main-content">
-          <div className="content-section">
+          {/* 顶部KPI卡片 - 横向撑满 */}
+          <div className="content-section-full">
             <KPICards />
           </div>
 
-          <div className="content-section">
-            <HealthMatrix />
-          </div>
+          {/* 下半部分 - 矩阵图和告警面板并排 */}
+          <div className="bottom-section">
+            <div className="matrix-section">
+              <div className="content-section">
+                <HealthMatrix />
+              </div>
+              <div className="content-section">
+                <SystemsList />
+              </div>
+            </div>
 
-          <div className="content-section">
-            <SystemsList />
+            {/* 右侧告警面板 */}
+            <div className="alert-panel">
+              <AlertPanel />
+            </div>
           </div>
-        </div>
-
-        {/* 右侧告警面板 */}
-        <div className="alert-panel">
-          <AlertPanel />
         </div>
       </div>
     </div>

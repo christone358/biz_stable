@@ -32,20 +32,40 @@ const HealthMatrix: React.FC = () => {
 
   // 渲染蜂窝图（当选择了具体系统时）
   const renderHoneycombChart = () => {
-    if (!filteredAssets.length || !svgRef.current) return
+    console.log('🍯 蜂窝图渲染检查:', {
+      filteredAssetsLength: filteredAssets.length,
+      selectedOrganization: selectedOrganization?.name,
+      selectedOrgType: selectedOrganization?.type,
+      filteredAssets: filteredAssets.map(asset => ({ id: asset.id, name: asset.name, type: asset.type }))
+    })
+
+    if (!filteredAssets.length || !svgRef.current) {
+      console.log('❌ 蜂窝图渲染终止: 资产数据为空或SVG未准备好')
+      return
+    }
 
     const svg = d3.select(svgRef.current)
     svg.selectAll('*').remove()
 
     const containerWidth = svgRef.current.parentElement?.clientWidth || 800
-    const containerHeight = 500
-    const margin = { top: 60, right: 80, bottom: 80, left: 100 }
+    const containerHeight = 600 // 增加高度以适应更大的六边形
+    const margin = { top: 80, right: 80, bottom: 80, left: 100 } // 增加顶部边距
     const width = containerWidth - margin.left - margin.right
     const height = containerHeight - margin.bottom - margin.top
 
+    // 设置SVG和主容器
+    svg.attr('width', containerWidth).attr('height', containerHeight)
+
+    // 添加缩放功能
+    const zoom = d3.zoom()
+      .scaleExtent([0.5, 3]) // 缩放范围
+      .on('zoom', (event) => {
+        g.attr('transform', `translate(${margin.left},${margin.top}) ${event.transform}`)
+      })
+
+    svg.call(zoom as any)
+
     const g = svg
-      .attr('width', containerWidth)
-      .attr('height', containerHeight)
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`)
 
@@ -63,22 +83,51 @@ const HealthMatrix: React.FC = () => {
     }
 
     const sectionWidth = width / 3
-    const hexRadius = 25
-    const hexSpacing = hexRadius * 2.2
+    const hexRadius = 35 // 增加六边形大小
+    const hexSpacing = hexRadius * 2.1
 
-    // 渲染三个区域的标题
+    // 渲染三个区域的标题 - 放在顶部中央位置
     const titles = [
       { text: '基础设施', x: sectionWidth * 0.5, group: 'infrastructure' },
       { text: '中间件', x: sectionWidth * 1.5, group: 'middleware' },
       { text: '应用服务', x: sectionWidth * 2.5, group: 'application' }
     ]
 
+    // 添加背景区域分隔线
+    g.append('line')
+      .attr('x1', sectionWidth)
+      .attr('x2', sectionWidth)
+      .attr('y1', 0)
+      .attr('y2', height)
+      .style('stroke', '#e8e8e8')
+      .style('stroke-width', 1)
+      .style('stroke-dasharray', '5,5')
+
+    g.append('line')
+      .attr('x1', sectionWidth * 2)
+      .attr('x2', sectionWidth * 2)
+      .attr('y1', 0)
+      .attr('y2', height)
+      .style('stroke', '#e8e8e8')
+      .style('stroke-width', 1)
+      .style('stroke-dasharray', '5,5')
+
     titles.forEach(title => {
+      // 添加背景色
+      g.append('rect')
+        .attr('x', title.x - 50)
+        .attr('y', -15)
+        .attr('width', 100)
+        .attr('height', 30)
+        .attr('rx', 15)
+        .style('fill', '#f0f2f5')
+        .style('opacity', 0.8)
+
       g.append('text')
         .attr('x', title.x)
-        .attr('y', 20)
+        .attr('y', 5) // 调整到顶部位置
         .attr('text-anchor', 'middle')
-        .style('font-size', '16px')
+        .style('font-size', '14px')
         .style('font-weight', 'bold')
         .style('fill', '#262626')
         .text(title.text)
@@ -109,7 +158,7 @@ const HealthMatrix: React.FC = () => {
         const row = Math.floor(index / cols)
 
         const x = baseX + (col - (cols - 1) / 2) * hexSpacing * 0.75
-        const y = 60 + (row - (rows - 1) / 2) * hexSpacing + (col % 2) * hexSpacing * 0.5
+        const y = 80 + (row - (rows - 1) / 2) * hexSpacing + (col % 2) * hexSpacing * 0.5 // 增加起始Y位置避免与标题重叠
 
         g.append('path')
           .attr('d', generateHexagon(x, y, hexRadius))
@@ -163,12 +212,13 @@ const HealthMatrix: React.FC = () => {
         // 添加资产名称（简化显示）
         g.append('text')
           .attr('x', x)
-          .attr('y', y + 4)
+          .attr('y', y + 5)
           .attr('text-anchor', 'middle')
-          .style('font-size', '8px')
+          .style('font-size', '10px') // 增加字体大小以适应更大的六边形
           .style('fill', '#fff')
+          .style('font-weight', 'bold')
           .style('pointer-events', 'none')
-          .text(asset.name.length > 6 ? asset.name.substring(0, 6) + '...' : asset.name)
+          .text(asset.name.length > 8 ? asset.name.substring(0, 8) + '...' : asset.name)
       })
     })
 
@@ -318,22 +368,53 @@ const HealthMatrix: React.FC = () => {
       .style('fill', '#262626')
       .text('委办单位')
 
-    // 创建气泡数据
-    const bubbleData = systems.map(system => {
+    // 创建气泡数据 - 改进的重叠处理逻辑
+    const bubbleData: any[] = []
+
+    // 按部门和重要性分组统计系统数量
+    const departmentImportanceGroups = new Map<string, any[]>()
+    systems.forEach(system => {
+      const key = `${system.department}-${system.importance}`
+      if (!departmentImportanceGroups.has(key)) {
+        departmentImportanceGroups.set(key, [])
+      }
+      departmentImportanceGroups.get(key)!.push(system)
+    })
+
+    systems.forEach(system => {
       const xPos = (xScale(system.department) || 0) + xScale.bandwidth() / 2
       const yPos = (yScale(system.importance) || 0) + yScale.bandwidth() / 2
 
-      // 添加随机偏移避免重叠
-      const jitterX = (Math.random() - 0.5) * 30
-      const jitterY = (Math.random() - 0.5) * 20
+      // 获取同一位置的系统数组
+      const key = `${system.department}-${system.importance}`
+      const samePositionSystems = departmentImportanceGroups.get(key) || []
+      const systemIndex = samePositionSystems.indexOf(system)
+      const totalSystems = samePositionSystems.length
 
-      return {
+      let jitterX = 0
+      let jitterY = 0
+
+      if (totalSystems > 1) {
+        // 如果有多个系统在同一位置，水平展开
+        const spreadWidth = Math.min(xScale.bandwidth() * 0.8, totalSystems * 40) // 限制展开宽度
+        const systemSpacing = spreadWidth / (totalSystems - 1)
+        jitterX = (systemIndex - (totalSystems - 1) / 2) * systemSpacing
+
+        // 添加轻微的垂直偏移以增加视觉层次
+        jitterY = (Math.random() - 0.5) * 10
+      } else {
+        // 单个系统仍保留小幅随机偏移
+        jitterX = (Math.random() - 0.5) * 15
+        jitterY = (Math.random() - 0.5) * 15
+      }
+
+      bubbleData.push({
         ...system,
         x: xPos + jitterX,
         y: yPos + jitterY,
         radius: radiusScale(system.assetCount),
         color: colorScale[system.healthStatus as keyof typeof colorScale]
-      }
+      })
     })
 
     // 创建工具提示
@@ -445,13 +526,22 @@ const HealthMatrix: React.FC = () => {
   }
 
   useEffect(() => {
+    console.log('🔄 HealthMatrix useEffect 触发:', {
+      selectedOrgType: selectedOrganization?.type,
+      selectedOrgName: selectedOrganization?.name,
+      filteredAssetsCount: filteredAssets.length,
+      systemsCount: systems.length
+    })
+
     let cleanup: (() => void) | undefined
 
     // 根据选择的组织类型决定渲染哪种图表
     if (selectedOrganization?.type === 'system' && filteredAssets.length > 0) {
+      console.log('✅ 渲染蜂窝图')
       // 选择了具体系统，渲染蜂窝图
       cleanup = renderHoneycombChart()
     } else {
+      console.log('📊 渲染传统矩阵图')
       // 其他情况渲染传统矩阵图
       cleanup = renderChart()
     }

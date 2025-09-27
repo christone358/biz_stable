@@ -8,10 +8,21 @@ const generateAssetsForSystem = (systemId: string, systemName: string, departmen
 
   const assets: Asset[] = []
 
+  // 使用systemId的哈希值作为种子，确保同一个系统总是生成相同的资产
+  const systemHash = systemId.split('').reduce((hash, char) => {
+    return ((hash << 5) - hash + char.charCodeAt(0)) & 0xffffffff
+  }, 0)
+
   for (let i = 0; i < count; i++) {
-    const assetType = assetTypes[Math.floor(Math.random() * assetTypes.length)]
-    const healthStatus = healthStatuses[Math.floor(Math.random() * healthStatuses.length)]
-    const importance = importanceLevels[Math.floor(Math.random() * importanceLevels.length)]
+    // 基于系统哈希和索引生成确定性的随机值
+    const seed = Math.abs(systemHash + i * 1234567) % 1000000
+    const assetTypeIndex = seed % assetTypes.length
+    const healthStatusIndex = (seed + 1) % healthStatuses.length
+    const importanceIndex = (seed + 2) % importanceLevels.length
+
+    const assetType = assetTypes[assetTypeIndex]
+    const healthStatus = healthStatuses[healthStatusIndex]
+    const importance = importanceLevels[importanceIndex]
 
     assets.push({
       id: `ASSET_${systemId}_${String(i + 1).padStart(3, '0')}`,
@@ -23,16 +34,16 @@ const generateAssetsForSystem = (systemId: string, systemName: string, departmen
       systemName,
       departmentId,
       department,
-      ipAddress: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+      ipAddress: `192.168.${(seed + 10) % 255}.${(seed + 20) % 255}`,
       description: `${systemName}的${assetType}资产`,
-      errorRate: Math.random() * 5,
-      responseTime: Math.floor(Math.random() * 1000) + 10,
-      availability: 95 + Math.random() * 5,
-      alertCount: Math.floor(Math.random() * 3),
-      vulnerabilityCount: Math.floor(Math.random() * 2),
-      lastCheck: new Date(Date.now() - Math.random() * 3600000).toISOString(),
-      createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 3600000).toISOString(),
-      updatedAt: new Date(Date.now() - Math.random() * 24 * 3600000).toISOString(),
+      errorRate: ((seed + 30) % 500) / 100, // 0-5%
+      responseTime: ((seed + 40) % 1000) + 10, // 10-1009ms
+      availability: 95 + ((seed + 50) % 500) / 100, // 95-100%
+      alertCount: (seed + 60) % 3, // 0-2个告警
+      vulnerabilityCount: (seed + 70) % 2, // 0-1个漏洞
+      lastCheck: new Date(Date.now() - ((seed + 80) % 3600000)).toISOString(),
+      createdAt: new Date(Date.now() - ((seed + 90) % (365 * 24 * 3600000))).toISOString(),
+      updatedAt: new Date(Date.now() - ((seed + 100) % (24 * 3600000))).toISOString(),
     })
   }
 
@@ -165,8 +176,16 @@ export const mockOrganizations: OrganizationNode[] = [
   }
 ]
 
+// 缓存生成的系统数据，确保一致性
+let _cachedSystems: BusinessSystem[] | null = null
+
 // 生成Mock业务系统数据
 export const generateMockSystems = (_orgId: string = 'ROOT'): BusinessSystem[] => {
+  // 如果已有缓存数据，直接返回
+  if (_cachedSystems) {
+    return _cachedSystems
+  }
+
   const departments = [
     { id: 'POLICE', name: '市公安局' },
     { id: 'CIVIL', name: '市民政局' },
@@ -196,15 +215,19 @@ export const generateMockSystems = (_orgId: string = 'ROOT'): BusinessSystem[] =
 
   const systems: BusinessSystem[] = []
 
-  departments.forEach(dept => {
-    const systemCount = Math.floor(Math.random() * 8) + 3 // 3-10个系统
+  // 使用固定的种子确保数据一致性
+  const systemCounts = [6, 5, 7, 4, 8, 5, 6, 4, 7, 5] // 为每个部门预定义系统数量
+
+  departments.forEach((dept, deptIndex) => {
+    const systemCount = systemCounts[deptIndex] || 5
 
     for (let i = 0; i < systemCount; i++) {
-      const template = systemTemplates[Math.floor(Math.random() * systemTemplates.length)]
-      const healthStatus = healthStatuses[Math.floor(Math.random() * healthStatuses.length)]
-      const importance = importanceLevels[Math.floor(Math.random() * importanceLevels.length)]
+      const templateIndex = (deptIndex * systemCount + i) % systemTemplates.length
+      const template = systemTemplates[templateIndex]
+      const healthStatus = healthStatuses[(deptIndex + i) % healthStatuses.length]
+      const importance = importanceLevels[(deptIndex + i * 2) % importanceLevels.length]
 
-      const assetCount = Math.floor(Math.random() * 15) + 5 // 5-19个资产
+      const assetCount = 8 + (deptIndex + i) % 12 // 8-19个资产，基于索引确定
       const systemId = `SYS_${dept.id}_${template.prefix}_${String(i + 1).padStart(3, '0')}`
       const systemName = `${dept.name}${template.name}`
 
@@ -233,7 +256,14 @@ export const generateMockSystems = (_orgId: string = 'ROOT'): BusinessSystem[] =
     }
   })
 
+  // 缓存生成的数据
+  _cachedSystems = systems
   return systems
+}
+
+// 清除缓存的函数（开发时可能需要）
+export const clearMockSystemsCache = () => {
+  _cachedSystems = null
 }
 
 // Mock KPI指标数据
