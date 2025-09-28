@@ -7,6 +7,7 @@ interface DashboardState {
   systems: BusinessSystem[]
   filteredAssets: Asset[]
   selectedDepartmentId: string | null
+  selectedAssetId: string | null
   metrics: DashboardMetrics | null
   alerts: Alert[]
   vulnerabilities: Vulnerability[]
@@ -21,6 +22,7 @@ const initialState: DashboardState = {
   systems: [],
   filteredAssets: [],
   selectedDepartmentId: null,
+  selectedAssetId: null,
   metrics: null,
   alerts: [],
   vulnerabilities: [],
@@ -109,6 +111,9 @@ const dashboardSlice = createSlice({
     setSelectedDepartmentId: (state, action: PayloadAction<string | null>) => {
       state.selectedDepartmentId = action.payload
     },
+    setSelectedAssetId: (state, action: PayloadAction<string | null>) => {
+      state.selectedAssetId = action.payload
+    },
   },
 })
 
@@ -128,6 +133,7 @@ export const {
   expandOrganizationNode,
   setFilteredAssets,
   setSelectedDepartmentId,
+  setSelectedAssetId,
 } = dashboardSlice.actions
 
 export default dashboardSlice.reducer

@@ -1,14 +1,17 @@
 import React, { useEffect, useRef } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { Card, Spin, Empty } from 'antd'
 import { RootState } from '../../../store'
+import { setSelectedAssetId, setSelectedOrganization, setFilteredAssets } from '../../../store/slices/dashboardSlice'
 import { ImportanceLevel } from '../../../types'
+import { getAllAssets } from '../../../mock/data'
 import * as d3 from 'd3'
 import './index.css'
 
 const HealthMatrix: React.FC = () => {
   const svgRef = useRef<SVGSVGElement>(null)
-  const { systems, loading, selectedOrganization, filteredAssets } = useSelector((state: RootState) => state.dashboard)
+  const dispatch = useDispatch()
+  const { systems, loading, selectedOrganization, filteredAssets, selectedAssetId } = useSelector((state: RootState) => state.dashboard)
 
   const importanceOrder: ImportanceLevel[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']
   const colorScale = {
@@ -160,21 +163,29 @@ const HealthMatrix: React.FC = () => {
         const x = baseX + (col - (cols - 1) / 2) * hexSpacing * 0.75
         const y = 80 + (row - (rows - 1) / 2) * hexSpacing + (col % 2) * hexSpacing * 0.5 // 增加起始Y位置避免与标题重叠
 
-        g.append('path')
+        const hexagonPath = g.append('path')
           .attr('d', generateHexagon(x, y, hexRadius))
           .style('fill', colorScale[asset.healthStatus as keyof typeof colorScale])
-          .style('stroke', '#fff')
-          .style('stroke-width', 2)
+          .style('stroke', selectedAssetId === asset.id ? '#1677FF' : '#fff')
+          .style('stroke-width', selectedAssetId === asset.id ? 4 : 2)
           .style('cursor', 'pointer')
-          .style('filter', 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))')
+          .style('filter', selectedAssetId === asset.id
+            ? 'drop-shadow(0 4px 12px rgba(22, 119, 255, 0.4))'
+            : 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))')
+          .attr('data-asset-id', asset.id)
+          .classed('selected-hexagon', selectedAssetId === asset.id)
           .on('mouseover', function(event) {
+            const isSelected = selectedAssetId === asset.id
             d3.select(this)
               .transition()
               .duration(200)
               .style('stroke', '#1677FF')
-              .style('stroke-width', 3)
-              .attr('transform', `scale(1.1)`)
+              .style('stroke-width', isSelected ? 5 : 3)
+              .attr('transform', `scale(${isSelected ? 1.05 : 1.1})`)
               .style('transform-origin', `${x}px ${y}px`)
+              .style('filter', isSelected
+                ? 'drop-shadow(0 6px 16px rgba(22, 119, 255, 0.5))'
+                : 'drop-shadow(0 4px 12px rgba(22, 119, 255, 0.3))')
 
             tooltip.transition()
               .duration(200)
@@ -194,12 +205,16 @@ const HealthMatrix: React.FC = () => {
               .style('top', (event.pageY - 28) + 'px')
           })
           .on('mouseout', function() {
+            const isSelected = selectedAssetId === asset.id
             d3.select(this)
               .transition()
               .duration(200)
-              .style('stroke', '#fff')
-              .style('stroke-width', 2)
+              .style('stroke', isSelected ? '#1677FF' : '#fff')
+              .style('stroke-width', isSelected ? 4 : 2)
               .attr('transform', 'scale(1)')
+              .style('filter', isSelected
+                ? 'drop-shadow(0 4px 12px rgba(22, 119, 255, 0.4))'
+                : 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))')
 
             tooltip.transition()
               .duration(500)
@@ -207,6 +222,7 @@ const HealthMatrix: React.FC = () => {
           })
           .on('click', function() {
             console.log('点击资产:', asset.name)
+            dispatch(setSelectedAssetId(asset.id))
           })
 
         // 添加资产名称（简化显示）
@@ -485,7 +501,26 @@ const HealthMatrix: React.FC = () => {
       })
       .on('click', function(_, d) {
         console.log('点击系统:', d.name)
-        // 这里可以添加跳转到系统详情页的逻辑
+
+        // 创建系统节点
+        const systemNode = {
+          id: d.id,
+          name: d.name,
+          type: 'system' as const,
+          parentId: selectedOrganization?.id,
+          children: []
+        }
+
+        // 设置选中的系统
+        dispatch(setSelectedOrganization(systemNode))
+
+        // 获取该系统的资产数据并设置
+        const allAssets = getAllAssets()
+        const systemAssets = allAssets.filter(asset => asset.systemId === d.id)
+        dispatch(setFilteredAssets(systemAssets))
+
+        // 清除之前的资产选择
+        dispatch(setSelectedAssetId(null))
       })
 
     // 添加图例

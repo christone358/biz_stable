@@ -9,7 +9,7 @@ import { mockOrganizations, generateMockSystems, mockMetrics } from '../../mock/
 import OrganizationTree from '../../components/dashboard/OrganizationTree'
 import KPICards from '../../components/dashboard/KPICards'
 import HealthMatrix from '../../components/dashboard/HealthMatrix'
-import SystemsList from '../../components/dashboard/SystemsList'
+import SystemDetail from '../../components/dashboard/SystemDetail'
 import AlertPanel from '../../components/dashboard/AlertPanel'
 
 import './index.css'
@@ -62,21 +62,21 @@ const Dashboard: React.FC = () => {
             <KPICards />
           </div>
 
-          {/* 下半部分 - 矩阵图和告警面板并排 */}
-          <div className="bottom-section">
+          {/* 中间部分 - 矩阵图和详情面板并排 */}
+          <div className="middle-section">
             <div className="matrix-section">
-              <div className="content-section">
-                <HealthMatrix />
-              </div>
-              <div className="content-section">
-                <SystemsList />
-              </div>
+              <HealthMatrix />
             </div>
 
-            {/* 右侧告警面板 */}
-            <div className="alert-panel">
-              <AlertPanel />
+            {/* 右侧系统详情面板 */}
+            <div className="detail-panel">
+              <SystemDetail />
             </div>
+          </div>
+
+          {/* 底部告警面板 - 横向撑满 */}
+          <div className="content-section-full">
+            <AlertPanel />
           </div>
         </div>
       </div>

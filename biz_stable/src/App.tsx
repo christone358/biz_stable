@@ -4,6 +4,7 @@ import { Provider } from 'react-redux'
 import { store } from './store'
 import Dashboard from './pages/dashboard'
 import MockConfig from './pages/mock-config'
+import Test from './pages/test'
 import './App.css'
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/mock-config" element={<MockConfig />} />
+            <Route path="/test" element={<Test />} />
           </Routes>
         </div>
       </Router>

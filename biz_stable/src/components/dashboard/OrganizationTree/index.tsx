@@ -8,7 +8,8 @@ import {
   toggleOrganizationExpand,
   expandOrganizationNode,
   setFilteredAssets,
-  setSelectedDepartmentId
+  setSelectedDepartmentId,
+  setSelectedAssetId
 } from '../../../store/slices/dashboardSlice'
 import { OrganizationNode } from '../../../types'
 import { generateMockSystems, generateSystemsForDepartment, getAssetsForDepartment, getAllAssets } from '../../../mock/data'
@@ -29,6 +30,8 @@ const OrganizationTree: React.FC = () => {
       dispatch(setSystems(allSystems))
       dispatch(setFilteredAssets(getAllAssets()))
       dispatch(setSelectedDepartmentId(null))
+      // 清除资产选择
+      dispatch(setSelectedAssetId(null))
     } else if (node.type === 'department') {
       // 点击部门节点，筛选该部门的数据
       const allSystems = generateMockSystems()
@@ -36,6 +39,8 @@ const OrganizationTree: React.FC = () => {
       dispatch(setSystems(departmentSystems))
       dispatch(setFilteredAssets(getAssetsForDepartment(node.id)))
       dispatch(setSelectedDepartmentId(node.id))
+      // 清除资产选择
+      dispatch(setSelectedAssetId(null))
     } else if (node.type === 'system') {
       // 点击系统节点，筛选该系统的资产
       console.log('🔍 点击系统节点:', node.id, node.name)

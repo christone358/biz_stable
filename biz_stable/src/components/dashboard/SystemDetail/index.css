@@ -1,0 +1,269 @@
+.system-detail-container {
+  height: 100%;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.panel-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-header h4 .breadcrumb-separator {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.panel-header h4 .breadcrumb-link {
+  color: var(--primary-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin: -2px -6px;
+}
+
+.panel-header h4 .breadcrumb-link:hover {
+  background-color: rgba(22, 119, 255, 0.1);
+  text-decoration: underline;
+}
+
+.panel-header h5 {
+  margin: var(--space-md) 0 var(--space-sm) 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* 系统列表样式 */
+.systems-overview {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.system-item {
+  padding: var(--space-sm) 0 !important;
+  border-bottom: 1px solid #f5f5f5 !important;
+}
+
+.system-basic-info {
+  flex: 1;
+}
+
+.system-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.system-department {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.system-status {
+  display: flex;
+  align-items: center;
+}
+
+/* 部门系统样式 */
+.department-systems {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.department-system-item {
+  padding: var(--space-sm) 0 !important;
+  border-bottom: 1px solid #f5f5f5 !important;
+  transition: all 0.3s ease;
+}
+
+.department-system-item:hover {
+  background-color: #f8f9ff;
+  border-left: 3px solid var(--primary-color);
+  padding-left: var(--space-md) !important;
+}
+
+.system-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.system-stats {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* 系统卡片样式 */
+.systems-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+.system-card {
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.system-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.card-header .system-name {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+.card-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.stat-row .anticon {
+  font-size: 12px;
+}
+
+/* 系统详情样式 */
+.system-detail {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.system-descriptions {
+  margin-bottom: var(--space-lg);
+}
+
+.system-descriptions .ant-descriptions-item-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  width: 80px;
+}
+
+.system-descriptions .ant-descriptions-item-content {
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.system-alerts-summary {
+  flex: 1;
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-md);
+}
+
+.alert-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+/* 资产详情样式 */
+.asset-detail {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.asset-descriptions {
+  margin-bottom: var(--space-lg);
+}
+
+.asset-descriptions .ant-descriptions-item-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  width: 80px;
+}
+
+.asset-descriptions .ant-descriptions-item-content {
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.asset-alerts-summary {
+  flex: 1;
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-md);
+}
+
+/* 滚动样式 */
+.system-detail-container .ant-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.system-detail-container .ant-list-item {
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.system-detail-container .ant-list-item:last-child {
+  border-bottom: none;
+}
+
+/* 空状态样式 */
+.system-detail-container .ant-empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: var(--text-secondary);
+}
+
+/* 响应式设计 */
+@media (max-width: 900px) {
+  .systems-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+}
