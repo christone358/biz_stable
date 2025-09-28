@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Card, List, Tag, Empty, Descriptions, Avatar, Progress, Badge, Space, Switch } from 'antd'
 import { UserOutlined, SafetyOutlined, ExclamationCircleOutlined, BugOutlined, SecurityScanOutlined } from '@ant-design/icons'
 import { RootState } from '../../../store'
-import { setSelectedOrganization, setFilteredAssets } from '../../../store/slices/dashboardSlice'
+import { setSelectedOrganization, setFilteredAssets, setSelectedAssetId } from '../../../store/slices/dashboardSlice'
 import { generateMockSystems, getAllAssets } from '../../../mock/data'
 import './index.css'
 
@@ -202,55 +202,170 @@ const SystemDetail: React.FC = () => {
         </Tag>
       </div>
 
-      <Descriptions size="small" column={1} className="system-descriptions">
-        <Descriptions.Item label="系统名称">{system.name}</Descriptions.Item>
-        <Descriptions.Item label="归属部门">{system.department}</Descriptions.Item>
-        <Descriptions.Item label="责任人">
-          <Space>
-            <Avatar size="small" icon={<UserOutlined />} />
-            张三
-          </Space>
-        </Descriptions.Item>
-        <Descriptions.Item label="重要程度">
-          <Tag color={system.importance === 'CRITICAL' ? 'red' :
-                      system.importance === 'HIGH' ? 'orange' :
-                      system.importance === 'MEDIUM' ? 'blue' : 'default'}>
-            {system.importance === 'CRITICAL' ? '关键' :
-             system.importance === 'HIGH' ? '重要' :
-             system.importance === 'MEDIUM' ? '一般' : '较低'}
-          </Tag>
-        </Descriptions.Item>
-        <Descriptions.Item label="健康度">
-          <Progress
-            percent={system.healthStatus === 'HEALTHY' ? 95 :
-                     system.healthStatus === 'WARNING' ? 70 : 40}
-            size="small"
-            status={system.healthStatus === 'HEALTHY' ? 'success' :
-                    system.healthStatus === 'WARNING' ? 'active' : 'exception'}
-          />
-        </Descriptions.Item>
-        <Descriptions.Item label="资产数量">{system.assetCount} 个</Descriptions.Item>
-        <Descriptions.Item label="错误率">{system.errorRate?.toFixed(2)}%</Descriptions.Item>
-        <Descriptions.Item label="响应时间">{system.responseTime}ms</Descriptions.Item>
-        <Descriptions.Item label="可用性">{system.availability?.toFixed(1)}%</Descriptions.Item>
-      </Descriptions>
+      <div className="system-detail-content">
+        {/* 基本信息区域 */}
+        <div className="system-basic-info-section">
+          <div className="section-header">
+            <h5 className="section-title">基本信息</h5>
+            <div className="health-indicator-horizontal">
+              <div className="health-label">健康度</div>
+              <div className="health-bar-container">
+                <div className="health-bar-background">
+                  <div
+                    className={`health-bar-fill ${system.healthStatus.toLowerCase()}`}
+                    style={{
+                      width: `${system.healthStatus === 'HEALTHY' ? 95 :
+                               system.healthStatus === 'WARNING' ? 70 : 40}%`
+                    }}
+                  ></div>
+                </div>
+                <div className="health-value">
+                  {system.healthStatus === 'HEALTHY' ? '95' :
+                   system.healthStatus === 'WARNING' ? '70' : '40'}%
+                </div>
+              </div>
+            </div>
+          </div>
+          <Card size="small" className="info-card">
+            <Descriptions size="small" column={2} className="system-descriptions">
+              <Descriptions.Item label="系统名称">{system.name}</Descriptions.Item>
+              <Descriptions.Item label="归属部门">{system.department}</Descriptions.Item>
+              <Descriptions.Item label="责任人">
+                <Space>
+                  <Avatar size="small" icon={<UserOutlined />} />
+                  张三
+                </Space>
+              </Descriptions.Item>
+              <Descriptions.Item label="重要程度">
+                <Tag color={system.importance === 'CRITICAL' ? 'red' :
+                            system.importance === 'HIGH' ? 'orange' :
+                            system.importance === 'MEDIUM' ? 'blue' : 'default'}>
+                  {system.importance === 'CRITICAL' ? '关键' :
+                   system.importance === 'HIGH' ? '重要' :
+                   system.importance === 'MEDIUM' ? '一般' : '较低'}
+                </Tag>
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
+        </div>
 
-      <div className="system-alerts-summary">
-        <h5>告警概览</h5>
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <div className="alert-stat">
-            <ExclamationCircleOutlined style={{ color: '#FF4D4F' }} />
-            <span>运行告警: {system.alertCount || 0} 条</span>
+        {/* 资产统计区域 */}
+        <div className="system-assets-section">
+          <h5 className="section-title">资产统计</h5>
+          <div className="asset-stats-grid">
+            <Card size="small" className="asset-stat-card">
+              <div className="asset-stat-content">
+                <div className="asset-stat-icon infrastructure">
+                  <SafetyOutlined style={{ fontSize: '20px' }} />
+                </div>
+                <div className="asset-stat-info">
+                  <div className="asset-stat-count">{Math.floor(system.assetCount * 0.6)}</div>
+                  <div className="asset-stat-label">基础设施</div>
+                </div>
+              </div>
+            </Card>
+
+            <Card size="small" className="asset-stat-card">
+              <div className="asset-stat-content">
+                <div className="asset-stat-icon middleware">
+                  <BugOutlined style={{ fontSize: '20px' }} />
+                </div>
+                <div className="asset-stat-info">
+                  <div className="asset-stat-count">{Math.floor(system.assetCount * 0.2)}</div>
+                  <div className="asset-stat-label">中间件</div>
+                </div>
+              </div>
+            </Card>
+
+            <Card size="small" className="asset-stat-card">
+              <div className="asset-stat-content">
+                <div className="asset-stat-icon application">
+                  <UserOutlined style={{ fontSize: '20px' }} />
+                </div>
+                <div className="asset-stat-info">
+                  <div className="asset-stat-count">{Math.floor(system.assetCount * 0.2)}</div>
+                  <div className="asset-stat-label">应用服务</div>
+                </div>
+              </div>
+            </Card>
           </div>
-          <div className="alert-stat">
-            <BugOutlined style={{ color: '#FAAD14' }} />
-            <span>脆弱性: {system.vulnerabilityCount || 0} 个</span>
+        </div>
+
+        {/* 告警概览区域 */}
+        <div className="system-alerts-section">
+          <h5 className="section-title">告警概览</h5>
+          <div className="alert-cards-grid">
+            <Card size="small" className="alert-card runtime-alert">
+              <div className="alert-card-content">
+                <div className="alert-icon">
+                  <ExclamationCircleOutlined style={{ color: '#FF4D4F', fontSize: '20px' }} />
+                </div>
+                <div className="alert-info">
+                  <div className="alert-count">{system.alertCount || 0}</div>
+                  <div className="alert-label">运行告警</div>
+                </div>
+              </div>
+            </Card>
+
+            <Card size="small" className="alert-card vulnerability-alert">
+              <div className="alert-card-content">
+                <div className="alert-icon">
+                  <BugOutlined style={{ color: '#FAAD14', fontSize: '20px' }} />
+                </div>
+                <div className="alert-info">
+                  <div className="alert-count">{system.vulnerabilityCount || 0}</div>
+                  <div className="alert-label">脆弱性</div>
+                </div>
+              </div>
+            </Card>
+
+            <Card size="small" className="alert-card security-alert">
+              <div className="alert-card-content">
+                <div className="alert-icon">
+                  <SecurityScanOutlined style={{ color: '#722ED1', fontSize: '20px' }} />
+                </div>
+                <div className="alert-info">
+                  <div className="alert-count">{Math.floor(Math.random() * 3)}</div>
+                  <div className="alert-label">安全事件</div>
+                </div>
+              </div>
+            </Card>
           </div>
-          <div className="alert-stat">
-            <SecurityScanOutlined style={{ color: '#722ED1' }} />
-            <span>安全事件: {Math.floor(Math.random() * 3)} 个</span>
+        </div>
+
+        {/* 关键指标区域 */}
+        <div className="system-metrics-section">
+          <h5 className="section-title">关键指标</h5>
+          <div className="metrics-cards-grid">
+            <Card size="small" className="metric-card">
+              <div className="metric-content">
+                <div className="metric-value">{system.errorRate?.toFixed(2)}%</div>
+                <div className="metric-label">错误率</div>
+              </div>
+            </Card>
+
+            <Card size="small" className="metric-card">
+              <div className="metric-content">
+                <div className="metric-value">{system.responseTime}ms</div>
+                <div className="metric-label">响应时间</div>
+              </div>
+            </Card>
+
+            <Card size="small" className="metric-card">
+              <div className="metric-content">
+                <div className="metric-value">{system.availability?.toFixed(1)}%</div>
+                <div className="metric-label">可用性</div>
+              </div>
+            </Card>
+
+            <Card size="small" className="metric-card">
+              <div className="metric-content">
+                <div className="metric-value">{(Math.random() * 100).toFixed(0)}%</div>
+                <div className="metric-label">CPU使用率</div>
+              </div>
+            </Card>
           </div>
-        </Space>
+        </div>
       </div>
     </div>
   )
@@ -284,43 +399,101 @@ const SystemDetail: React.FC = () => {
         </Tag>
       </div>
 
-      <Descriptions size="small" column={1} className="asset-descriptions">
-        <Descriptions.Item label="资产名称">{asset.name}</Descriptions.Item>
-        <Descriptions.Item label="资产类型">{asset.type}</Descriptions.Item>
-        <Descriptions.Item label="所属系统">{asset.systemName}</Descriptions.Item>
-        <Descriptions.Item label="归属部门">{asset.department}</Descriptions.Item>
-        <Descriptions.Item label="IP地址">{asset.ipAddress}</Descriptions.Item>
-        <Descriptions.Item label="重要程度">
-          <Tag color={asset.importance === 'CRITICAL' ? 'red' :
-                      asset.importance === 'HIGH' ? 'orange' :
-                      asset.importance === 'MEDIUM' ? 'blue' : 'default'}>
-            {asset.importance === 'CRITICAL' ? '关键' :
-             asset.importance === 'HIGH' ? '重要' :
-             asset.importance === 'MEDIUM' ? '一般' : '较低'}
-          </Tag>
-        </Descriptions.Item>
-        <Descriptions.Item label="错误率">{asset.errorRate?.toFixed(2)}%</Descriptions.Item>
-        <Descriptions.Item label="响应时间">{asset.responseTime}ms</Descriptions.Item>
-        <Descriptions.Item label="可用性">{asset.availability?.toFixed(1)}%</Descriptions.Item>
-        <Descriptions.Item label="最近检查">{asset.lastCheck ? new Date(asset.lastCheck).toLocaleString() : '未知'}</Descriptions.Item>
-      </Descriptions>
+      <div className="asset-detail-content">
+        {/* 基础信息区域 */}
+        <div className="asset-basic-info-section">
+          <h5 className="section-title">基础信息</h5>
+          <Card size="small" className="info-card">
+            <Descriptions size="small" column={2} className="asset-descriptions">
+              <Descriptions.Item label="资产名称">{asset.name}</Descriptions.Item>
+              <Descriptions.Item label="资产类型">{asset.type}</Descriptions.Item>
+              <Descriptions.Item label="所属系统">{asset.systemName}</Descriptions.Item>
+              <Descriptions.Item label="归属部门">{asset.department}</Descriptions.Item>
+              <Descriptions.Item label="IP地址">{asset.ipAddress}</Descriptions.Item>
+              <Descriptions.Item label="重要程度">
+                <Tag color={asset.importance === 'CRITICAL' ? 'red' :
+                            asset.importance === 'HIGH' ? 'orange' :
+                            asset.importance === 'MEDIUM' ? 'blue' : 'default'}>
+                  {asset.importance === 'CRITICAL' ? '关键' :
+                   asset.importance === 'HIGH' ? '重要' :
+                   asset.importance === 'MEDIUM' ? '一般' : '较低'}
+                </Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="最近检查">
+                {asset.lastCheck ? new Date(asset.lastCheck).toLocaleString() : '未知'}
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
+        </div>
 
-      <div className="asset-alerts-summary">
-        <h5>告警信息</h5>
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <div className="alert-stat">
-            <ExclamationCircleOutlined style={{ color: '#FF4D4F' }} />
-            <span>运行告警: {asset.alertCount || 0} 条</span>
+        {/* 告警信息区域 */}
+        <div className="asset-alerts-section">
+          <h5 className="section-title">告警信息</h5>
+          <div className="alert-cards-grid">
+            <Card size="small" className="alert-card runtime-alert">
+              <div className="alert-card-content">
+                <div className="alert-icon">
+                  <ExclamationCircleOutlined style={{ color: '#FF4D4F', fontSize: '20px' }} />
+                </div>
+                <div className="alert-info">
+                  <div className="alert-count">{asset.alertCount || 0}</div>
+                  <div className="alert-label">运行告警</div>
+                </div>
+              </div>
+            </Card>
+
+            <Card size="small" className="alert-card vulnerability-alert">
+              <div className="alert-card-content">
+                <div className="alert-icon">
+                  <BugOutlined style={{ color: '#FAAD14', fontSize: '20px' }} />
+                </div>
+                <div className="alert-info">
+                  <div className="alert-count">{asset.vulnerabilityCount || 0}</div>
+                  <div className="alert-label">脆弱性</div>
+                </div>
+              </div>
+            </Card>
+
+            <Card size="small" className="alert-card security-alert">
+              <div className="alert-card-content">
+                <div className="alert-icon">
+                  <SecurityScanOutlined style={{ color: '#722ED1', fontSize: '20px' }} />
+                </div>
+                <div className="alert-info">
+                  <div className="alert-count">0</div>
+                  <div className="alert-label">安全事件</div>
+                </div>
+              </div>
+            </Card>
           </div>
-          <div className="alert-stat">
-            <BugOutlined style={{ color: '#FAAD14' }} />
-            <span>脆弱性: {asset.vulnerabilityCount || 0} 个</span>
+        </div>
+
+        {/* 关键指标区域 */}
+        <div className="asset-metrics-section">
+          <h5 className="section-title">关键指标</h5>
+          <div className="metrics-cards-grid">
+            <Card size="small" className="metric-card">
+              <div className="metric-content">
+                <div className="metric-value">{asset.errorRate?.toFixed(2)}%</div>
+                <div className="metric-label">错误率</div>
+              </div>
+            </Card>
+
+            <Card size="small" className="metric-card">
+              <div className="metric-content">
+                <div className="metric-value">{asset.responseTime}ms</div>
+                <div className="metric-label">响应时间</div>
+              </div>
+            </Card>
+
+            <Card size="small" className="metric-card">
+              <div className="metric-content">
+                <div className="metric-value">{asset.availability?.toFixed(1)}%</div>
+                <div className="metric-label">可用性</div>
+              </div>
+            </Card>
           </div>
-          <div className="alert-stat">
-            <SecurityScanOutlined style={{ color: '#722ED1' }} />
-            <span>安全事件: 0 个</span>
-          </div>
-        </Space>
+        </div>
       </div>
     </div>
   )

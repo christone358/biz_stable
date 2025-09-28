@@ -169,66 +169,398 @@
 /* 系统详情样式 */
 .system-detail {
   height: 100%;
+  max-height: 650px; /* 限制最大高度，与矩阵图匹配 */
   display: flex;
   flex-direction: column;
 }
 
-.system-descriptions {
-  margin-bottom: var(--space-lg);
-}
-
-.system-descriptions .ant-descriptions-item-label {
-  font-size: 12px;
-  color: var(--text-secondary);
-  width: 80px;
-}
-
-.system-descriptions .ant-descriptions-item-content {
-  font-size: 12px;
-  color: var(--text-primary);
-}
-
-.system-alerts-summary {
+.system-detail-content {
   flex: 1;
-  border-top: 1px solid var(--border-color);
-  padding-top: var(--space-md);
+  overflow-y: auto;
+  padding: var(--space-xs) 0; /* 减少内边距 */
 }
 
-.alert-stat {
+/* 区域标题样式 */
+.section-title {
+  margin: var(--space-sm) 0 var(--space-xs) 0; /* 减少边距 */
+  font-size: 13px; /* 稍微减小字体 */
+  font-weight: 600;
+  color: var(--text-primary);
+  border-left: 3px solid var(--primary-color);
+  padding-left: var(--space-sm);
+}
+
+/* 基本信息区域 */
+.system-basic-info-section {
+  margin-bottom: var(--space-md); /* 减少底部边距 */
+}
+
+/* 区域头部样式 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xs);
+}
+
+/* 横向健康度指示器 */
+.health-indicator-horizontal {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 0;
-  font-size: 13px;
+  gap: var(--space-xs);
+}
+
+.health-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.health-bar-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.health-bar-background {
+  width: 80px;
+  height: 12px;
+  background-color: #f0f0f0;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.health-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.health-bar-fill.healthy {
+  background: linear-gradient(90deg, #52c41a 0%, #73d13d 100%);
+}
+
+.health-bar-fill.warning {
+  background: linear-gradient(90deg, #faad14 0%, #ffc53d 100%);
+}
+
+.health-bar-fill.critical {
+  background: linear-gradient(90deg, #ff4d4f 0%, #ff7875 100%);
+}
+
+.health-value {
+  font-size: 11px;
+  font-weight: 600;
   color: var(--text-primary);
+  min-width: 28px;
+}
+
+.info-card {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+
+.info-card .ant-card-body {
+  padding: var(--space-sm); /* 减少卡片内边距 */
+}
+
+/* 告警概览区域 */
+.system-alerts-section {
+  margin-bottom: var(--space-md); /* 减少底部边距 */
+}
+
+.alert-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xs); /* 减少网格间距 */
+}
+
+.alert-card {
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.alert-card:hover {
+  transform: translateY(-1px); /* 减少悬停效果 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 减少阴影 */
+}
+
+.alert-card.runtime-alert {
+  border-left: 4px solid #FF4D4F;
+}
+
+.alert-card.vulnerability-alert {
+  border-left: 4px solid #FAAD14;
+}
+
+.alert-card.security-alert {
+  border-left: 4px solid #722ED1;
+}
+
+.alert-card .ant-card-body {
+  padding: var(--space-sm); /* 减少卡片内边距 */
+}
+
+.alert-card-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs); /* 减少间距 */
+}
+
+.alert-icon {
+  flex-shrink: 0;
+}
+
+.alert-info {
+  flex: 1;
+}
+
+.alert-count {
+  font-size: 18px; /* 减小字体 */
+  font-weight: bold;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.alert-label {
+  font-size: 11px; /* 减小字体 */
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* 关键指标区域 */
+.system-metrics-section {
+  margin-bottom: var(--space-md); /* 减少底部边距 */
+}
+
+.metrics-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xs); /* 减少网格间距 */
+}
+
+.metric-card {
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.metric-card:hover {
+  transform: translateY(-1px); /* 减少悬停效果 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 减少阴影 */
+}
+
+.metric-card .ant-card-body {
+  padding: var(--space-sm); /* 减少卡片内边距 */
+}
+
+.metric-content {
+  text-align: center;
+}
+
+.metric-value {
+  font-size: 20px; /* 减小字体 */
+  font-weight: bold;
+  color: var(--primary-color);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.metric-label {
+  font-size: 11px; /* 减小字体 */
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.metric-trend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 9px; /* 减小字体 */
+  color: var(--text-disabled);
+}
+
+.trend-icon {
+  font-size: 10px; /* 减小字体 */
+}
+
+/* 响应式适配 */
+@media (max-width: 1200px) {
+  .alert-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .system-detail-content {
+    padding: var(--space-xs) 0;
+  }
+
+  .section-title {
+    margin: var(--space-sm) 0 var(--space-xs) 0;
+    font-size: 13px;
+  }
+
+  .alert-card .ant-card-body,
+  .metric-card .ant-card-body,
+  .info-card .ant-card-body {
+    padding: var(--space-sm);
+  }
+
+  .alert-count {
+    font-size: 18px;
+  }
+
+  .metric-value {
+    font-size: 20px;
+  }
 }
 
 /* 资产详情样式 */
 .asset-detail {
   height: 100%;
+  max-height: 650px; /* 限制最大高度，与矩阵图匹配 */
   display: flex;
   flex-direction: column;
 }
 
+.asset-detail-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-xs) 0; /* 减少内边距 */
+}
+
+/* 资产基础信息区域 */
+.asset-basic-info-section {
+  margin-bottom: var(--space-md); /* 减少底部边距 */
+}
+
+/* 资产告警信息区域 */
+.asset-alerts-section {
+  margin-bottom: var(--space-md); /* 减少底部边距 */
+}
+
+/* 资产关键指标区域 */
+.asset-metrics-section {
+  margin-bottom: var(--space-md); /* 减少底部边距 */
+}
+
 .asset-descriptions {
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-sm); /* 减少边距 */
+}
+
+/* 优化 Descriptions 组件在资产详情中的显示 */
+.asset-descriptions .ant-descriptions-item {
+  padding-bottom: var(--space-xs); /* 减少行间距 */
 }
 
 .asset-descriptions .ant-descriptions-item-label {
-  font-size: 12px;
+  font-size: 11px; /* 减小标签字体 */
   color: var(--text-secondary);
   width: 80px;
 }
 
 .asset-descriptions .ant-descriptions-item-content {
-  font-size: 12px;
+  font-size: 11px; /* 减小内容字体 */
   color: var(--text-primary);
 }
 
-.asset-alerts-summary {
+/* 优化系统描述组件的显示 */
+.system-descriptions .ant-descriptions-item {
+  padding-bottom: var(--space-xs); /* 减少行间距 */
+}
+
+.system-descriptions .ant-descriptions-item-label {
+  font-size: 11px; /* 减小标签字体 */
+  color: var(--text-secondary);
+  width: 90px;
+}
+
+.system-descriptions .ant-descriptions-item-content {
+  font-size: 11px; /* 减小内容字体 */
+  color: var(--text-primary);
+}
+
+/* 资产统计区域 */
+.system-assets-section {
+  margin-bottom: var(--space-md);
+}
+
+.asset-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xs);
+}
+
+.asset-stat-card {
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.asset-stat-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.asset-stat-card .ant-card-body {
+  padding: var(--space-sm);
+}
+
+.asset-stat-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.asset-stat-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.asset-stat-icon.infrastructure {
+  background-color: rgba(82, 196, 26, 0.1);
+  color: #52c41a;
+}
+
+.asset-stat-icon.middleware {
+  background-color: rgba(250, 173, 20, 0.1);
+  color: #faad14;
+}
+
+.asset-stat-icon.application {
+  background-color: rgba(22, 119, 255, 0.1);
+  color: #1677ff;
+}
+
+.asset-stat-info {
   flex: 1;
-  border-top: 1px solid var(--border-color);
-  padding-top: var(--space-md);
+}
+
+.asset-stat-count {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.asset-stat-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
 }
 
 /* 滚动样式 */

@@ -51,26 +51,34 @@ const HealthMatrix: React.FC = () => {
     svg.selectAll('*').remove()
 
     const containerWidth = svgRef.current.parentElement?.clientWidth || 800
-    const containerHeight = 600 // 增加高度以适应更大的六边形
-    const margin = { top: 80, right: 80, bottom: 80, left: 100 } // 增加顶部边距
+    const containerHeight = 650
+    const titleAreaHeight = 80 // 固定标题区域高度
+    const margin = { top: titleAreaHeight + 20, right: 80, bottom: 80, left: 100 }
     const width = containerWidth - margin.left - margin.right
     const height = containerHeight - margin.bottom - margin.top
 
-    // 设置SVG和主容器
+    // 设置SVG
     svg.attr('width', containerWidth).attr('height', containerHeight)
 
-    // 添加缩放功能
+    // 创建固定标题容器（不受缩放影响）
+    const fixedContainer = svg
+      .append('g')
+      .attr('class', 'fixed-title-container')
+
+    // 创建可缩放的蜂窝图容器
+    const zoomableContainer = svg
+      .append('g')
+      .attr('class', 'zoomable-honeycomb-container')
+      .attr('transform', `translate(${margin.left},${margin.top})`)
+
+    // 添加缩放功能，只作用于蜂窝图容器
     const zoom = d3.zoom()
-      .scaleExtent([0.5, 3]) // 缩放范围
+      .scaleExtent([0.5, 3])
       .on('zoom', (event) => {
-        g.attr('transform', `translate(${margin.left},${margin.top}) ${event.transform}`)
+        zoomableContainer.attr('transform', `translate(${margin.left},${margin.top}) ${event.transform}`)
       })
 
     svg.call(zoom as any)
-
-    const g = svg
-      .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`)
 
     // 按资产类型分组：基础设施、中间件、应用服务
     const assetGroups = {
@@ -86,49 +94,50 @@ const HealthMatrix: React.FC = () => {
     }
 
     const sectionWidth = width / 3
-    const hexRadius = 35 // 增加六边形大小
+    const hexRadius = 35
     const hexSpacing = hexRadius * 2.1
 
-    // 渲染三个区域的标题 - 放在顶部中央位置
+    // 渲染三个区域的标题 - 在可缩放容器中，跟随拖动
     const titles = [
       { text: '基础设施', x: sectionWidth * 0.5, group: 'infrastructure' },
       { text: '中间件', x: sectionWidth * 1.5, group: 'middleware' },
       { text: '应用服务', x: sectionWidth * 2.5, group: 'application' }
     ]
 
-    // 添加背景区域分隔线
-    g.append('line')
+    // 在可缩放容器中添加背景区域分隔线
+    zoomableContainer.append('line')
       .attr('x1', sectionWidth)
       .attr('x2', sectionWidth)
-      .attr('y1', 0)
+      .attr('y1', -60)
       .attr('y2', height)
       .style('stroke', '#e8e8e8')
       .style('stroke-width', 1)
       .style('stroke-dasharray', '5,5')
 
-    g.append('line')
+    zoomableContainer.append('line')
       .attr('x1', sectionWidth * 2)
       .attr('x2', sectionWidth * 2)
-      .attr('y1', 0)
+      .attr('y1', -60)
       .attr('y2', height)
       .style('stroke', '#e8e8e8')
       .style('stroke-width', 1)
       .style('stroke-dasharray', '5,5')
 
+    // 在可缩放容器中添加标题
     titles.forEach(title => {
       // 添加背景色
-      g.append('rect')
+      zoomableContainer.append('rect')
         .attr('x', title.x - 50)
-        .attr('y', -15)
+        .attr('y', -50)
         .attr('width', 100)
         .attr('height', 30)
         .attr('rx', 15)
         .style('fill', '#f0f2f5')
         .style('opacity', 0.8)
 
-      g.append('text')
+      zoomableContainer.append('text')
         .attr('x', title.x)
-        .attr('y', 5) // 调整到顶部位置
+        .attr('y', -30)
         .attr('text-anchor', 'middle')
         .style('font-size', '14px')
         .style('font-weight', 'bold')
@@ -150,7 +159,7 @@ const HealthMatrix: React.FC = () => {
       .style('pointer-events', 'none')
       .style('z-index', 1000)
 
-    // 渲染每个组的六边形
+    // 渲染每个组的六边形 - 在可缩放容���中
     Object.entries(assetGroups).forEach(([_, assets], groupIndex) => {
       const baseX = sectionWidth * (groupIndex + 0.5)
       const cols = Math.ceil(Math.sqrt(assets.length))
@@ -161,9 +170,9 @@ const HealthMatrix: React.FC = () => {
         const row = Math.floor(index / cols)
 
         const x = baseX + (col - (cols - 1) / 2) * hexSpacing * 0.75
-        const y = 80 + (row - (rows - 1) / 2) * hexSpacing + (col % 2) * hexSpacing * 0.5 // 增加起始Y位置避免与标题重叠
+        const y = 40 + (row - (rows - 1) / 2) * hexSpacing + (col % 2) * hexSpacing * 0.5 // 调整起始Y位置，确保与标题有合适间隔
 
-        const hexagonPath = g.append('path')
+        const hexagonPath = zoomableContainer.append('path')
           .attr('d', generateHexagon(x, y, hexRadius))
           .style('fill', colorScale[asset.healthStatus as keyof typeof colorScale])
           .style('stroke', selectedAssetId === asset.id ? '#1677FF' : '#fff')
@@ -225,12 +234,12 @@ const HealthMatrix: React.FC = () => {
             dispatch(setSelectedAssetId(asset.id))
           })
 
-        // 添加资产名称（简化显示）
-        g.append('text')
+        // 添加资产名称（简化显示）- 在可缩放容器中
+        zoomableContainer.append('text')
           .attr('x', x)
           .attr('y', y + 5)
           .attr('text-anchor', 'middle')
-          .style('font-size', '10px') // 增加字体大小以适应更大的六边形
+          .style('font-size', '10px')
           .style('fill', '#fff')
           .style('font-weight', 'bold')
           .style('pointer-events', 'none')
@@ -238,10 +247,10 @@ const HealthMatrix: React.FC = () => {
       })
     })
 
-    // 添加图例
-    const legend = g.append('g')
+    // 添加图例 - 放在SVG的固定位置，不受缩放影响
+    const legend = svg.append('g')
       .attr('class', 'legend')
-      .attr('transform', `translate(${width - 100}, ${height - 120})`)
+      .attr('transform', `translate(${containerWidth - 150}, ${containerHeight - 140})`)
 
     const legendData = [
       { status: 'HEALTHY', color: colorScale.HEALTHY, label: '健康' },
@@ -523,10 +532,10 @@ const HealthMatrix: React.FC = () => {
         dispatch(setSelectedAssetId(null))
       })
 
-    // 添加图例
-    const legend = g.append('g')
+    // 添加图例 - 放在SVG的固定位置，不受缩放影响
+    const legend = svg.append('g')
       .attr('class', 'legend')
-      .attr('transform', `translate(${width + 20}, 20)`)
+      .attr('transform', `translate(${containerWidth - 150}, 20)`) // 将图例放在右上角��适合矩阵图
 
     const legendData = [
       { status: 'HEALTHY', color: colorScale.HEALTHY, label: '健康' },
