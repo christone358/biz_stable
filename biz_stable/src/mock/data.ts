@@ -422,3 +422,259 @@ export const getAllAssets = (): Asset[] => {
 
   return assets
 }
+
+// Mock业务领域树数据（基于业务视角 - 直接展示一级板块）
+export const mockBusinessDomains: OrganizationNode[] = [
+  {
+    id: 'BIZ_PORTAL_CATEGORY',
+    name: '一梁：统一受理平台',
+    type: 'department',
+    systemCount: 25,
+    assetCount: 200,
+    healthStatus: 'HEALTHY',
+    level: 0,
+    parentId: undefined,
+    isExpanded: true,  // 默认展开
+  },
+  {
+    id: 'BIZ_DATABASE_CATEGORY',
+    name: '一库：政务大数据核心数据库',
+    type: 'department',
+    systemCount: 18,
+    assetCount: 144,
+    healthStatus: 'WARNING',
+    level: 0,
+    parentId: undefined,
+    isExpanded: true,  // 默认展开
+  },
+  {
+    id: 'BIZ_FOUR_PILLARS_CATEGORY',
+    name: '四柱：统一服务能力',
+    type: 'department',
+    systemCount: 45,
+    assetCount: 360,
+    healthStatus: 'HEALTHY',
+    level: 0,
+    parentId: undefined,
+    isExpanded: true,  // 默认展开
+  },
+  {
+    id: 'BIZ_APPS_CATEGORY',
+    name: '多应用：委办单位业务应用',
+    type: 'department',
+    systemCount: 68,
+    assetCount: 536,
+    healthStatus: 'WARNING',
+    level: 0,
+    parentId: undefined,
+    isExpanded: true,  // 默认展开
+  },
+]
+
+// 生成业务领域的系统数据（支持三级结构）
+export const generateBusinessDomainSystems = (domainId: string = 'BIZ_ROOT'): BusinessSystem[] => {
+  // 一梁：统一受理平台下的二级业务
+  const portalDomains = [
+    { id: 'BIZ_PORTAL_WEB', name: '一网通办门户', prefix: 'PORTAL_WEB', parentId: 'BIZ_PORTAL_CATEGORY' },
+    { id: 'BIZ_PORTAL_APP', name: '随申办APP', prefix: 'PORTAL_APP', parentId: 'BIZ_PORTAL_CATEGORY' },
+    { id: 'BIZ_PORTAL_MINI', name: '小程序入口', prefix: 'PORTAL_MINI', parentId: 'BIZ_PORTAL_CATEGORY' },
+  ]
+
+  // 一库：政务大数据核心数据库下的二级业务
+  const databaseDomains = [
+    { id: 'BIZ_DB_PUBLIC', name: '公共信息库', prefix: 'DB_PUBLIC', parentId: 'BIZ_DATABASE_CATEGORY' },
+    { id: 'BIZ_DB_POPULATION', name: '人口信息库', prefix: 'DB_POP', parentId: 'BIZ_DATABASE_CATEGORY' },
+    { id: 'BIZ_DB_GEO', name: '空间地理信息库', prefix: 'DB_GEO', parentId: 'BIZ_DATABASE_CATEGORY' },
+  ]
+
+  // 四柱：统一服务能力下的二级业务
+  const pillarDomains = [
+    { id: 'BIZ_PAYMENT', name: '统一公共支付', prefix: 'PAY', parentId: 'BIZ_FOUR_PILLARS_CATEGORY' },
+    { id: 'BIZ_AUTH', name: '统一身份认证', prefix: 'AUTH', parentId: 'BIZ_FOUR_PILLARS_CATEGORY' },
+    { id: 'BIZ_CUSTOMER', name: '统一客服', prefix: 'CS', parentId: 'BIZ_FOUR_PILLARS_CATEGORY' },
+    { id: 'BIZ_LOGISTICS', name: '统一物流快递', prefix: 'LOG', parentId: 'BIZ_FOUR_PILLARS_CATEGORY' },
+  ]
+
+  // 多应用：委办单位业务应用下的二级业务
+  const appDomains = [
+    { id: 'BIZ_APP_INNOVATION', name: '创新创业一件事', prefix: 'INNO', parentId: 'BIZ_APPS_CATEGORY' },
+    { id: 'BIZ_APP_ENTERPRISE', name: '企业开办一件事', prefix: 'ENT', parentId: 'BIZ_APPS_CATEGORY' },
+    { id: 'BIZ_APP_BIRTH', name: '出生一件事', prefix: 'BIRTH', parentId: 'BIZ_APPS_CATEGORY' },
+    { id: 'BIZ_APP_MARRIAGE', name: '结婚落户一件事', prefix: 'MAR', parentId: 'BIZ_APPS_CATEGORY' },
+    { id: 'BIZ_APP_EDUCATION', name: '教育服务一件事', prefix: 'EDU', parentId: 'BIZ_APPS_CATEGORY' },
+    { id: 'BIZ_APP_SOCIAL', name: '社会保障一件事', prefix: 'SOC', parentId: 'BIZ_APPS_CATEGORY' },
+  ]
+
+  // 合并所有二级业务域
+  const allBusinessDomains = [
+    ...portalDomains,
+    ...databaseDomains,
+    ...pillarDomains,
+    ...appDomains
+  ]
+
+  const systemTemplates = [
+    { name: '前端服务系统', type: 'frontend' },
+    { name: '业务处理平台', type: 'backend' },
+    { name: '数据管理系统', type: 'data' },
+    { name: '监控运维平台', type: 'monitor' },
+    { name: '移动应用服务', type: 'mobile' },
+  ]
+
+  const healthStatuses: HealthStatus[] = ['HEALTHY', 'WARNING', 'CRITICAL', 'UNKNOWN']
+  const importanceLevels: ImportanceLevel[] = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']
+
+  const systems: BusinessSystem[] = []
+
+  // 为每个二级业务域生成系统
+  const systemCountPerDomain = [3, 3, 3, 2, 2, 2, 3, 3, 3, 3, 2, 3, 3, 3, 3, 3, 3] // 每个二级业务的系统数量
+
+  allBusinessDomains.forEach((domain, deptIndex) => {
+    const systemCount = systemCountPerDomain[deptIndex] || 3
+
+    for (let i = 0; i < systemCount; i++) {
+      const templateIndex = (deptIndex * systemCount + i) % systemTemplates.length
+      const template = systemTemplates[templateIndex]
+      const healthStatus = healthStatuses[(deptIndex + i) % healthStatuses.length]
+      const importance = importanceLevels[(deptIndex + i * 2) % importanceLevels.length]
+
+      const assetCount = 8 + (deptIndex + i) % 12
+      const systemId = `SYS_${domain.prefix}_${String(i + 1).padStart(3, '0')}`
+      const systemName = `${domain.name}${template.name}`
+
+      const assets = generateAssetsForSystem(systemId, systemName, domain.id, domain.name, assetCount)
+
+      systems.push({
+        id: systemId,
+        name: systemName,
+        displayName: systemName,
+        description: `${domain.name}的${template.name}，负责相关业务功能`,
+        department: domain.name,
+        departmentId: domain.id,
+        importance,
+        healthStatus,
+        assetCount,
+        vulnerabilityCount: (deptIndex + i) % 5,
+        alertCount: (deptIndex + i * 2) % 10,
+        errorRate: ((deptIndex + i) % 50) / 10,
+        responseTime: 50 + ((deptIndex + i) % 500),
+        availability: 95 + ((deptIndex + i) % 5),
+        assets,
+        lastCheck: new Date(Date.now() - ((deptIndex + i) % 3600000)).toISOString(),
+        createdAt: new Date(Date.now() - ((deptIndex + i) % (365 * 24 * 3600000))).toISOString(),
+        updatedAt: new Date(Date.now() - ((deptIndex + i) % (24 * 3600000))).toISOString(),
+      })
+    }
+  })
+
+  return systems
+}
+
+// 为业务领域生成树节点（支持三级结构）
+export const generateSystemsForBusinessDomain = (domainId: string): OrganizationNode[] => {
+  // 定义二级业务分类数据
+  const secondLevelDomains: Record<string, Array<{ id: string; name: string; systemCount: number; assetCount: number }>> = {
+    'BIZ_PORTAL_CATEGORY': [
+      { id: 'BIZ_PORTAL_WEB', name: '一网通办门户', systemCount: 3, assetCount: 24 },
+      { id: 'BIZ_PORTAL_APP', name: '随申办APP', systemCount: 3, assetCount: 24 },
+      { id: 'BIZ_PORTAL_MINI', name: '小程序入口', systemCount: 3, assetCount: 24 },
+    ],
+    'BIZ_DATABASE_CATEGORY': [
+      { id: 'BIZ_DB_PUBLIC', name: '公共信息库', systemCount: 2, assetCount: 16 },
+      { id: 'BIZ_DB_POPULATION', name: '人口信息库', systemCount: 2, assetCount: 16 },
+      { id: 'BIZ_DB_GEO', name: '空间地理信息库', systemCount: 2, assetCount: 16 },
+    ],
+    'BIZ_FOUR_PILLARS_CATEGORY': [
+      { id: 'BIZ_PAYMENT', name: '统一公共支付', systemCount: 3, assetCount: 24 },
+      { id: 'BIZ_AUTH', name: '统一身份认证', systemCount: 3, assetCount: 24 },
+      { id: 'BIZ_CUSTOMER', name: '统一客服', systemCount: 3, assetCount: 24 },
+      { id: 'BIZ_LOGISTICS', name: '统一物流快递', systemCount: 3, assetCount: 24 },
+    ],
+    'BIZ_APPS_CATEGORY': [
+      { id: 'BIZ_APP_INNOVATION', name: '创新创业一件事', systemCount: 2, assetCount: 16 },
+      { id: 'BIZ_APP_ENTERPRISE', name: '企业开办一件事', systemCount: 3, assetCount: 24 },
+      { id: 'BIZ_APP_BIRTH', name: '出生一件事', systemCount: 3, assetCount: 24 },
+      { id: 'BIZ_APP_MARRIAGE', name: '结婚落户一件事', systemCount: 3, assetCount: 24 },
+      { id: 'BIZ_APP_EDUCATION', name: '教育服务一件事', systemCount: 3, assetCount: 24 },
+      { id: 'BIZ_APP_SOCIAL', name: '社会保障一件事', systemCount: 3, assetCount: 24 },
+    ],
+  }
+
+  // 如果是一级板块，返回二级业务分类节点
+  if (secondLevelDomains[domainId]) {
+    const healthStatuses: HealthStatus[] = ['HEALTHY', 'WARNING', 'CRITICAL', 'UNKNOWN']
+
+    return secondLevelDomains[domainId].map((domain, index) => ({
+      id: domain.id,
+      name: domain.name,
+      type: 'department' as const,
+      systemCount: domain.systemCount,
+      assetCount: domain.assetCount,
+      healthStatus: healthStatuses[index % healthStatuses.length],
+      level: 2,
+      parentId: domainId,
+      isExpanded: false,
+    }))
+  }
+
+  // 如果是二级业务分类，返回三级具体系统节点
+  const systems = generateBusinessDomainSystems().filter(sys => sys.departmentId === domainId)
+
+  return systems.map(system => ({
+    id: system.id,
+    name: system.name,
+    type: 'system' as const,
+    systemCount: 1,
+    assetCount: system.assetCount,
+    healthStatus: system.healthStatus,
+    level: 3,
+    parentId: domainId,
+    isExpanded: false,
+    children: system.assets?.map(asset => ({
+      id: asset.id,
+      name: asset.name,
+      type: 'asset' as const,
+      systemCount: 0,
+      assetCount: 1,
+      healthStatus: asset.healthStatus,
+      level: 4,
+      parentId: system.id,
+      isExpanded: false,
+    })) || []
+  }))
+}
+
+// 获取业务领域的所有资产
+export const getAssetsForBusinessDomain = (domainId: string): Asset[] => {
+  // 定义一级板块包含的所有二级业务ID
+  const categoryToSecondLevel: Record<string, string[]> = {
+    'BIZ_PORTAL_CATEGORY': ['BIZ_PORTAL_WEB', 'BIZ_PORTAL_APP', 'BIZ_PORTAL_MINI'],
+    'BIZ_DATABASE_CATEGORY': ['BIZ_DB_PUBLIC', 'BIZ_DB_POPULATION', 'BIZ_DB_GEO'],
+    'BIZ_FOUR_PILLARS_CATEGORY': ['BIZ_PAYMENT', 'BIZ_AUTH', 'BIZ_CUSTOMER', 'BIZ_LOGISTICS'],
+    'BIZ_APPS_CATEGORY': ['BIZ_APP_INNOVATION', 'BIZ_APP_ENTERPRISE', 'BIZ_APP_BIRTH', 'BIZ_APP_MARRIAGE', 'BIZ_APP_EDUCATION', 'BIZ_APP_SOCIAL'],
+  }
+
+  let targetDomainIds: string[] = []
+
+  // 如果是一级板块，获取其下所有二级业务的ID
+  if (categoryToSecondLevel[domainId]) {
+    targetDomainIds = categoryToSecondLevel[domainId]
+  } else {
+    // 如果是二级业务，直接使用该ID
+    targetDomainIds = [domainId]
+  }
+
+  // 根据目标业务ID筛选系统并收集资产
+  const systems = generateBusinessDomainSystems().filter(sys =>
+    targetDomainIds.includes(sys.departmentId)
+  )
+
+  const assets: Asset[] = []
+  systems.forEach(system => {
+    if (system.assets) {
+      assets.push(...system.assets)
+    }
+  })
+
+  return assets
+}

@@ -1,0 +1,59 @@
+.app-layout {
+  min-height: 100vh;
+  background: var(--background-layout);
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 0 24px;
+  height: 64px;
+  line-height: 64px;
+  z-index: 10;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-right: 48px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.app-menu {
+  flex: 1;
+  border-bottom: none;
+  background: transparent;
+  line-height: 64px;
+}
+
+.app-menu .ant-menu-item,
+.app-menu .ant-menu-submenu {
+  font-size: 16px;
+  height: 64px;
+  line-height: 64px;
+  border-bottom: none;
+}
+
+.app-menu .ant-menu-item-selected {
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.app-menu .ant-menu-submenu-selected .ant-menu-submenu-title {
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.app-content {
+  height: calc(100vh - 64px);
+  overflow: hidden;
+}

@@ -15,7 +15,25 @@ import { OrganizationNode } from '../../../types'
 import { generateMockSystems, generateSystemsForDepartment, getAssetsForDepartment, getAllAssets } from '../../../mock/data'
 import './index.css'
 
-const OrganizationTree: React.FC = () => {
+interface OrganizationTreeProps {
+  title?: string
+  showHeader?: boolean  // 是否显示标题栏
+  generateSystemsFunction?: (orgId?: string) => any[]
+  generateSystemsForNodeFunction?: (nodeId: string) => OrganizationNode[]
+  getAssetsForNodeFunction?: (nodeId: string) => any[]
+  labelConfig?: {
+    rootChildren?: string  // 根节点的子节点标签，如"部门"或"板块"
+  }
+}
+
+const OrganizationTree: React.FC<OrganizationTreeProps> = ({
+  title = '组织架构',
+  showHeader = true,  // 默认显示标题
+  generateSystemsFunction = generateMockSystems,
+  generateSystemsForNodeFunction = generateSystemsForDepartment,
+  getAssetsForNodeFunction = getAssetsForDepartment,
+  labelConfig = { rootChildren: '部门' }
+}) => {
   const dispatch = useDispatch()
   const { organizations, selectedOrganization, selectedDepartmentId, systems } = useSelector((state: RootState) => state.dashboard)
 
@@ -26,7 +44,7 @@ const OrganizationTree: React.FC = () => {
 
     if (node.type === 'root') {
       // 点击根节点，显示全部资产
-      const allSystems = generateMockSystems('ROOT')
+      const allSystems = generateSystemsFunction('ROOT')
       dispatch(setSystems(allSystems))
       dispatch(setFilteredAssets(getAllAssets()))
       dispatch(setSelectedDepartmentId(null))
@@ -34,10 +52,10 @@ const OrganizationTree: React.FC = () => {
       dispatch(setSelectedAssetId(null))
     } else if (node.type === 'department') {
       // 点击部门节点，筛选该部门的数据
-      const allSystems = generateMockSystems()
+      const allSystems = generateSystemsFunction()
       const departmentSystems = allSystems.filter(sys => sys.departmentId === node.id)
       dispatch(setSystems(departmentSystems))
-      dispatch(setFilteredAssets(getAssetsForDepartment(node.id)))
+      dispatch(setFilteredAssets(getAssetsForNodeFunction(node.id)))
       dispatch(setSelectedDepartmentId(node.id))
       // 清除资产选择
       dispatch(setSelectedAssetId(null))
@@ -52,7 +70,7 @@ const OrganizationTree: React.FC = () => {
       // 如果在当前systems中找不到，从全量数据中查找
       if (!currentSystem) {
         console.log('🔄 从全量数据中查找...')
-        const allSystems = generateMockSystems()
+        const allSystems = generateSystemsFunction()
         currentSystem = allSystems.find(sys => sys.id === node.id)
         console.log('📊 从全量数据查找:', currentSystem ? '找到' : '未找到')
       }
@@ -78,7 +96,7 @@ const OrganizationTree: React.FC = () => {
 
     if (node.type === 'department' && !node.children) {
       // 第一次展开部门，只加载业务系统（不包含具体资产）
-      const systemNodes = generateSystemsForDepartment(node.id).map(system => ({
+      const systemNodes = generateSystemsForNodeFunction(node.id).map(system => ({
         ...system,
         children: undefined // 不显示资产节点
       }))
@@ -165,7 +183,7 @@ const OrganizationTree: React.FC = () => {
                 {node.type === 'root' && (
                   <>
                     <span className="stat-item">
-                      <span className="stat-label">部门:</span>
+                      <span className="stat-label">{labelConfig.rootChildren}:</span>
                       <span className="stat-value">{node.children?.length || 0}</span>
                     </span>
                     <span className="stat-item">
@@ -234,18 +252,11 @@ const OrganizationTree: React.FC = () => {
 
   return (
     <div className="organization-tree-container">
-      <div className="tree-header">
-        <h3>组织架构</h3>
-        {/* <div className="breadcrumb">
-          {selectedOrganization && selectedOrganization.type !== 'root' && (
-            <span className="current-path">
-              {selectedOrganization.type === 'department' && selectedOrganization.name}
-              {selectedOrganization.type === 'system' && `${selectedOrganization.name}`}
-              {selectedOrganization.type === 'asset' && `${selectedOrganization.name}`}
-            </span>
-          )}
-        </div> */}
-      </div>
+      {showHeader && (
+        <div className="tree-header">
+          <h3>{title}</h3>
+        </div>
+      )}
 
       <div className="tree-content">
         {organizations.map(org => renderNodeContent(org, 0))}
