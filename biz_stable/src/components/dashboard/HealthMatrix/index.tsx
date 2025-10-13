@@ -580,13 +580,13 @@ const HealthMatrix: React.FC = () => {
     let cleanup: (() => void) | undefined
 
     // 根据选择的组织类型决定渲染哪种图表
+    // 只有选择了具体系统(system类型),才显示蜂窝图(展示系统内部资产)
+    // 其他情况(root/department)都显示矩阵图(展示应用系统)
     if (selectedOrganization?.type === 'system' && filteredAssets.length > 0) {
-      console.log('✅ 渲染蜂窝图')
-      // 选择了具体系统，渲染蜂窝图
+      console.log('✅ 渲染蜂窝图 - 展示系统内部资产')
       cleanup = renderHoneycombChart()
     } else {
-      console.log('📊 渲染传统矩阵图')
-      // 其他情况渲染传统矩阵图
+      console.log('📊 渲染矩阵图 - 展示应用系统')
       cleanup = renderChart()
     }
 
@@ -613,6 +613,9 @@ const HealthMatrix: React.FC = () => {
   const getChartTitle = () => {
     if (selectedOrganization?.type === 'system' && filteredAssets.length > 0) {
       return `${selectedOrganization.name} - 资产健康状态蜂窝图`
+    }
+    if (selectedOrganization && selectedOrganization.type === 'department') {
+      return `${selectedOrganization.name} - 应用系统健康状态矩阵图`
     }
     return '业务健康状态矩阵图'
   }

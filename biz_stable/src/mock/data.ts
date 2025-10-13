@@ -427,7 +427,7 @@ export const getAllAssets = (): Asset[] => {
 export const mockBusinessDomains: OrganizationNode[] = [
   {
     id: 'BIZ_PORTAL_CATEGORY',
-    name: '一梁：统一受理平台',
+    name: '一梁',
     type: 'department',
     systemCount: 25,
     assetCount: 200,
@@ -438,7 +438,7 @@ export const mockBusinessDomains: OrganizationNode[] = [
   },
   {
     id: 'BIZ_DATABASE_CATEGORY',
-    name: '一库：政务大数据核心数据库',
+    name: '一库',
     type: 'department',
     systemCount: 18,
     assetCount: 144,
@@ -449,7 +449,7 @@ export const mockBusinessDomains: OrganizationNode[] = [
   },
   {
     id: 'BIZ_FOUR_PILLARS_CATEGORY',
-    name: '四柱：统一服务能力',
+    name: '四柱',
     type: 'department',
     systemCount: 45,
     assetCount: 360,
@@ -460,7 +460,7 @@ export const mockBusinessDomains: OrganizationNode[] = [
   },
   {
     id: 'BIZ_APPS_CATEGORY',
-    name: '多应用：委办单位业务应用',
+    name: '多应用',
     type: 'department',
     systemCount: 68,
     assetCount: 536,
@@ -566,6 +566,26 @@ export const generateBusinessDomainSystems = (domainId: string = 'BIZ_ROOT'): Bu
       })
     }
   })
+
+  // 如果传入了具体的domainId,则筛选该domain下的系统
+  if (domainId && domainId !== 'BIZ_ROOT') {
+    // 定义一级板块包含的所有二级业务ID
+    const categoryToSecondLevel: Record<string, string[]> = {
+      'BIZ_PORTAL_CATEGORY': ['BIZ_PORTAL_WEB', 'BIZ_PORTAL_APP', 'BIZ_PORTAL_MINI'],
+      'BIZ_DATABASE_CATEGORY': ['BIZ_DB_PUBLIC', 'BIZ_DB_POPULATION', 'BIZ_DB_GEO'],
+      'BIZ_FOUR_PILLARS_CATEGORY': ['BIZ_PAYMENT', 'BIZ_AUTH', 'BIZ_CUSTOMER', 'BIZ_LOGISTICS'],
+      'BIZ_APPS_CATEGORY': ['BIZ_APP_INNOVATION', 'BIZ_APP_ENTERPRISE', 'BIZ_APP_BIRTH', 'BIZ_APP_MARRIAGE', 'BIZ_APP_EDUCATION', 'BIZ_APP_SOCIAL'],
+    }
+
+    // 如果是一级板块ID,获取其下所有二级业务的ID
+    if (categoryToSecondLevel[domainId]) {
+      const targetDomainIds = categoryToSecondLevel[domainId]
+      return systems.filter(sys => targetDomainIds.includes(sys.departmentId))
+    }
+
+    // 如果是二级业务ID,直接筛选
+    return systems.filter(sys => sys.departmentId === domainId)
+  }
 
   return systems
 }

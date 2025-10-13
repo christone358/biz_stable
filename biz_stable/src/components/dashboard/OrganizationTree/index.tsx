@@ -43,21 +43,23 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
     dispatch(setSelectedOrganization(node))
 
     if (node.type === 'root') {
-      // 点击根节点，显示全部资产
+      // 点击根节点,显示全部系统(矩阵图)
       const allSystems = generateSystemsFunction('ROOT')
       dispatch(setSystems(allSystems))
-      dispatch(setFilteredAssets(getAllAssets()))
+      dispatch(setFilteredAssets([]))  // 清空资产数据,显示矩阵图
       dispatch(setSelectedDepartmentId(null))
-      // 清除资产选择
       dispatch(setSelectedAssetId(null))
     } else if (node.type === 'department') {
-      // 点击部门节点，筛选该部门的数据
-      const allSystems = generateSystemsFunction()
-      const departmentSystems = allSystems.filter(sys => sys.departmentId === node.id)
+      // 点击部门节点,筛选该部门的系统(矩阵图)
+      const departmentSystems = generateSystemsFunction(node.id)
+      console.log('🔍 点击一级节点(department):', {
+        nodeId: node.id,
+        nodeName: node.name,
+        systemsCount: departmentSystems.length
+      })
       dispatch(setSystems(departmentSystems))
-      dispatch(setFilteredAssets(getAssetsForNodeFunction(node.id)))
+      dispatch(setFilteredAssets([]))  // 清空资产数据,显示矩阵图
       dispatch(setSelectedDepartmentId(node.id))
-      // 清除资产选择
       dispatch(setSelectedAssetId(null))
     } else if (node.type === 'system') {
       // 点击系统节点，筛选该系统的资产
