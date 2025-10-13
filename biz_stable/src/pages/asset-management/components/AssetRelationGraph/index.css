@@ -1,0 +1,162 @@
+/* 资产关系展示样式 */
+
+.asset-relation {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.asset-relation-header {
+  padding: var(--space-md, 16px);
+  border-bottom: 1px solid var(--border-color, #f0f0f0);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.asset-relation-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #262626);
+  margin: 0;
+}
+
+.asset-relation-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md, 16px);
+}
+
+/* 统计卡片 */
+.asset-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-md, 16px);
+  margin-bottom: var(--space-lg, 24px);
+}
+
+.asset-stat-card {
+  padding: var(--space-md, 16px);
+  background: var(--background-layout, #f5f5f5);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.asset-stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--primary-color, #1677ff);
+  margin-bottom: var(--space-xs, 4px);
+}
+
+.asset-stat-label {
+  font-size: 13px;
+  color: var(--text-secondary, #8c8c8c);
+}
+
+/* 层级关系图 */
+.asset-relation-diagram {
+  background: var(--background-layout, #f5f5f5);
+  border-radius: 8px;
+  padding: var(--space-lg, 24px);
+  margin-bottom: var(--space-lg, 24px);
+}
+
+.asset-relation-layer {
+  margin-bottom: var(--space-xl, 32px);
+}
+
+.asset-relation-layer:last-child {
+  margin-bottom: 0;
+}
+
+.asset-relation-layer-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #262626);
+  margin-bottom: var(--space-md, 12px);
+  text-align: center;
+}
+
+.asset-relation-layer-items {
+  display: flex;
+  gap: var(--space-md, 12px);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.asset-relation-item {
+  padding: var(--space-sm, 8px) var(--space-md, 12px);
+  background: var(--background-base, #ffffff);
+  border-radius: 6px;
+  border: 1px solid var(--border-color, #d9d9d9);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 4px);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.asset-relation-item:hover {
+  border-color: var(--primary-color, #1677ff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.asset-relation-connector {
+  text-align: center;
+  color: var(--text-secondary, #8c8c8c);
+  font-size: 20px;
+  margin: var(--space-sm, 8px) 0;
+}
+
+/* 健康分布 */
+.health-distribution {
+  background: var(--background-layout, #f5f5f5);
+  border-radius: 8px;
+  padding: var(--space-md, 16px);
+}
+
+.health-distribution-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #262626);
+  margin-bottom: var(--space-md, 12px);
+}
+
+.health-distribution-items {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm, 8px);
+}
+
+.health-distribution-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm, 8px);
+  background: var(--background-base, #ffffff);
+  border-radius: 4px;
+}
+
+.health-distribution-label {
+  font-size: 13px;
+  color: var(--text-secondary, #8c8c8c);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.health-distribution-value {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* 空状态 */
+.asset-relation-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary, #8c8c8c);
+}

@@ -1,0 +1,36 @@
+/* 业务详情面板样式 */
+
+.business-detail-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.business-detail-header {
+  padding: var(--space-md, 16px) var(--space-lg, 24px);
+  border-bottom: 1px solid var(--border-color, #f0f0f0);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.business-detail-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary, #262626);
+}
+
+.business-detail-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md, 16px);
+}
+
+.business-detail-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}

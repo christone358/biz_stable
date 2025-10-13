@@ -5,6 +5,8 @@ import { store } from './store'
 import AppLayout from './components/layout/AppLayout'
 import Dashboard from './pages/dashboard'
 import BusinessPanorama from './pages/business-panorama'
+import AssetManagement from './pages/asset-management'
+import BusinessManagement from './pages/business-management'
 import MockConfig from './pages/mock-config'
 import Test from './pages/test'
 import './App.css'
@@ -21,6 +23,8 @@ function App() {
             <Route element={<AppLayout />}>
               <Route path="/organization-health" element={<Dashboard />} />
               <Route path="/business-panorama" element={<BusinessPanorama />} />
+              <Route path="/business-management" element={<BusinessManagement />} />
+              <Route path="/asset-management" element={<AssetManagement />} />
             </Route>
 
             {/* 其他页面不使用布局 */}

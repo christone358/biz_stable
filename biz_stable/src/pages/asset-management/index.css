@@ -1,0 +1,134 @@
+/* 资产管理页面样式 */
+
+.asset-management-layout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--background-layout, #f5f5f5);
+}
+
+/* 页面头部 */
+.asset-management-header {
+  background: var(--background-base, #ffffff);
+  padding: var(--space-md, 16px) var(--space-lg, 24px);
+  border-bottom: 1px solid var(--border-color, #d9d9d9);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.asset-management-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary, #262626);
+  margin: 0;
+}
+
+.asset-management-actions {
+  display: flex;
+  gap: var(--space-sm, 8px);
+}
+
+/* 主体内容区 */
+.asset-management-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  padding: var(--space-md, 16px);
+  gap: var(--space-md, 16px);
+}
+
+/* 左侧业务选择器 */
+.asset-management-sider {
+  width: 220px;
+  background: var(--background-base, #ffffff);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 中间内容区 */
+.asset-management-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 16px);
+  overflow: hidden;
+}
+
+/* 主内容面板 */
+.asset-management-content {
+  flex: 1;
+  display: flex;
+  gap: var(--space-md, 16px);
+  overflow: hidden;
+}
+
+/* 资产列表区域 */
+.asset-management-list-section {
+  width: 320px;
+  background: var(--background-base, #ffffff);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 关系图区域 */
+.asset-management-graph-section {
+  flex: 1;
+  background: var(--background-base, #ffffff);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 待确认资产区域 */
+.asset-management-pending-section {
+  height: 260px;
+  background: var(--background-base, #ffffff);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* 空状态 */
+.asset-management-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary, #8c8c8c);
+}
+
+/* 响应式 */
+@media (max-width: 1200px) {
+  .asset-management-content {
+    flex-direction: column;
+  }
+
+  .asset-management-list-section {
+    width: 100%;
+    height: 300px;
+  }
+
+  .asset-management-graph-section {
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .asset-management-body {
+    flex-direction: column;
+  }
+
+  .asset-management-sider {
+    width: 100%;
+    height: 150px;
+  }
+
+  .asset-management-pending-section {
+    height: 200px;
+  }
+}

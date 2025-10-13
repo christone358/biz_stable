@@ -1,0 +1,118 @@
+/* 资产列表样式 */
+
+.asset-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.asset-list-header {
+  padding: var(--space-md, 16px);
+  border-bottom: 1px solid var(--border-color, #f0f0f0);
+}
+
+.asset-list-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #262626);
+  margin: 0 0 var(--space-md, 12px) 0;
+}
+
+.asset-list-search {
+  width: 100%;
+  margin-bottom: var(--space-sm, 8px);
+}
+
+.asset-list-filters {
+  display: flex;
+  gap: var(--space-sm, 8px);
+}
+
+.asset-list-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-sm, 8px);
+}
+
+/* 资产分组 */
+.asset-layer-group {
+  margin-bottom: var(--space-md, 16px);
+}
+
+.asset-layer-header {
+  padding: var(--space-sm, 8px) var(--space-md, 12px);
+  background: var(--background-layout, #f5f5f5);
+  border-radius: 4px;
+  margin-bottom: var(--space-sm, 8px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.asset-layer-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #262626);
+}
+
+.asset-layer-count {
+  font-size: 12px;
+  color: var(--text-secondary, #8c8c8c);
+}
+
+/* 资产项 */
+.asset-list-item {
+  padding: var(--space-sm, 8px) var(--space-md, 12px);
+  margin-bottom: var(--space-xs, 4px);
+  border-radius: 4px;
+  border: 1px solid var(--border-color, #f0f0f0);
+  cursor: pointer;
+  transition: all 0.3s;
+  background: var(--background-base, #ffffff);
+}
+
+.asset-list-item:hover {
+  border-color: var(--primary-color, #1677ff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.asset-list-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-xs, 4px);
+}
+
+.asset-list-item-name {
+  font-size: 13px;
+  color: var(--text-primary, #262626);
+  font-weight: 500;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.asset-list-item-status {
+  display: flex;
+  gap: 4px;
+}
+
+.asset-list-item-info {
+  font-size: 12px;
+  color: var(--text-secondary, #8c8c8c);
+  margin-bottom: var(--space-xs, 2px);
+}
+
+.asset-list-item-actions {
+  display: flex;
+  gap: var(--space-sm, 8px);
+  margin-top: var(--space-xs, 4px);
+}
+
+/* 空状态 */
+.asset-list-empty {
+  padding: var(--space-xl, 32px);
+  text-align: center;
+  color: var(--text-secondary, #8c8c8c);
+}

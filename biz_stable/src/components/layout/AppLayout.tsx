@@ -25,6 +25,20 @@ const AppLayout: React.FC = () => {
         },
       ],
     },
+    {
+      key: 'business-asset-management',
+      label: '业务资产管理',
+      children: [
+        {
+          key: '/business-management',
+          label: '业务板块管理',
+        },
+        {
+          key: '/asset-management',
+          label: '业务资产管理',
+        },
+      ],
+    },
   ]
 
   // 获取当前选中的菜单键

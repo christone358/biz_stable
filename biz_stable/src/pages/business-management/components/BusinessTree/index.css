@@ -1,0 +1,54 @@
+/* 业务树样式 */
+
+.business-tree {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.business-tree-header {
+  padding: var(--space-md, 16px);
+  border-bottom: 1px solid var(--border-color, #f0f0f0);
+}
+
+.business-tree-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #262626);
+  margin: 0 0 var(--space-md, 12px) 0;
+}
+
+.business-tree-search {
+  width: 100%;
+  margin-bottom: var(--space-sm, 8px);
+}
+
+.business-tree-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md, 16px);
+}
+
+/* 自定义树节点样式 */
+.business-tree-content .ant-tree .ant-tree-node-content-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+}
+
+.business-tree-content .ant-tree-title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.business-tree-node-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.business-tree-node-status {
+  font-size: 12px;
+}

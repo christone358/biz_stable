@@ -1,0 +1,107 @@
+/* 待确认资产样式 */
+
+.pending-assets {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.pending-assets-header {
+  padding: var(--space-md, 16px);
+  border-bottom: 1px solid var(--border-color, #f0f0f0);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pending-assets-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #262626);
+  margin: 0;
+}
+
+.pending-assets-actions {
+  display: flex;
+  gap: var(--space-sm, 8px);
+}
+
+.pending-assets-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md, 16px);
+}
+
+/* 待确认资产项 */
+.pending-asset-item {
+  padding: var(--space-md, 16px);
+  margin-bottom: var(--space-md, 12px);
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 8px;
+}
+
+.pending-asset-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-sm, 8px);
+}
+
+.pending-asset-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #262626);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 4px);
+}
+
+.pending-asset-confidence {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 4px);
+  font-size: 13px;
+}
+
+.pending-asset-info {
+  font-size: 13px;
+  color: var(--text-secondary, #8c8c8c);
+  margin-bottom: var(--space-xs, 4px);
+}
+
+.pending-asset-reason {
+  font-size: 13px;
+  color: var(--text-primary, #262626);
+  margin: var(--space-sm, 8px) 0;
+  padding: var(--space-sm, 8px);
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 4px;
+}
+
+.pending-asset-evidences {
+  margin: var(--space-sm, 8px) 0;
+}
+
+.pending-asset-evidence-trigger {
+  font-size: 13px;
+  color: var(--primary-color, #1677ff);
+  cursor: pointer;
+}
+
+.pending-asset-evidence-trigger:hover {
+  text-decoration: underline;
+}
+
+.pending-asset-actions {
+  display: flex;
+  gap: var(--space-sm, 8px);
+  margin-top: var(--space-md, 12px);
+}
+
+/* 空状态 */
+.pending-assets-empty {
+  padding: var(--space-xl, 32px);
+  text-align: center;
+  color: var(--text-secondary, #8c8c8c);
+}
