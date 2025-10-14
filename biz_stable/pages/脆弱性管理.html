@@ -1,0 +1,1975 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资产脆弱性管理系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/antd@4/dist/antd.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        /* 顶部导航样式 */
+        .top-nav {
+            background-color: #001529;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            position: sticky;
+            top: 0;
+        }
+        
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            height: 64px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .logo-icon {
+            margin-right: 8px;
+            font-size: 24px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .nav-item {
+            margin: 0 16px;
+            height: 64px;
+            line-height: 64px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .nav-item.selected {
+            color: #1890ff;
+        }
+        
+        .nav-item.selected::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #1890ff;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: #1890ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-left: 16px;
+        }
+        
+        /* 内容区样式 */
+        .content-container {
+            padding: 24px;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 24px;
+            color: #262626;
+        }
+        
+        /* 指标卡片样式 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+            border-top: 4px solid #1890ff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stats-card.pending {
+            border-top-color: #faad14;
+        }
+        
+        .stats-card.high-risk {
+            border-top-color: #f5222d;
+        }
+        
+        .stats-card.unconfirmed {
+            border-top-color: #722ed1;
+        }
+        
+        .stats-title {
+            color: #8c8c8c;
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stats-title-icon {
+            margin-right: 6px;
+            font-size: 16px;
+        }
+        
+        .stats-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #262626;
+            margin-bottom: 4px;
+        }
+        
+        .stats-trend {
+            font-size: 12px;
+        }
+        
+        .trend-up {
+            color: #f5222d;
+        }
+        
+        .trend-down {
+            color: #52c41a;
+        }
+        
+        /* 表格区域样式 */
+        .tables-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        @media (max-width: 1200px) {
+            .tables-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .table-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fafafa;
+        }
+        
+        .table-body {
+            padding: 0;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            background-color: #fafafa;
+            font-weight: 500;
+            color: #595959;
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .table tr {
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+        
+        .table tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        
+        .tag-high {
+            background-color: #fff2f0;
+            color: #cf1322;
+            border: 1px solid #ffccc7;
+        }
+        
+        .tag-medium {
+            background-color: #fff7e6;
+            color: #d46b08;
+            border: 1px solid #ffd591;
+        }
+        
+        .tag-low {
+            background-color: #f6ffed;
+            color: #389e0d;
+            border: 1px solid #b7eb8f;
+        }
+        
+        .tag-info {
+            background-color: #f0f5ff;
+            color: #1d39c4;
+            border: 1px solid #adc6ff;
+        }
+        
+        .status-pending {
+            background-color: #fff7e6;
+            color: #d46b08;
+            border: 1px solid #ffd591;
+        }
+        
+        .status-processing {
+            background-color: #f0f5ff;
+            color: #1d39c4;
+            border: 1px solid #adc6ff;
+        }
+        
+        .status-resolved {
+            background-color: #f6ffed;
+            color: #389e0d;
+            border: 1px solid #b7eb8f;
+        }
+        
+        .status-overdue {
+            background-color: #fff2f0;
+            color: #cf1322;
+            border: 1px solid #ffccc7;
+        }
+        
+        .drill-down {
+            color: #1890ff;
+            cursor: pointer;
+            font-weight: normal;
+            font-size: 14px;
+        }
+        
+        .drill-down:hover {
+            text-decoration: underline;
+        }
+        
+        /* 图表区域样式 */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        @media (max-width: 1200px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+            overflow: hidden;
+        }
+        
+        .chart-container {
+            height: 320px;
+            padding: 20px;
+        }
+        
+        .time-period-selector {
+            display: flex;
+            background: #f5f5f5;
+            border-radius: 6px;
+            padding: 4px;
+        }
+        
+        .time-period {
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .time-period.active {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+        }
+        
+        .ant-btn {
+            height: 32px;
+            padding: 0 15px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #d9d9d9;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .ant-btn-primary {
+            background: #1890ff;
+            border-color: #1890ff;
+            color: white;
+        }
+        
+        .ant-btn-sm {
+            height: 24px;
+            padding: 0 7px;
+            font-size: 12px;
+        }
+        
+        .ant-btn-default {
+            background: white;
+            color: #333;
+        }
+        
+        .ant-progress {
+            display: flex;
+            align-items: center;
+        }
+        
+        .ant-progress-outer {
+            flex: 1;
+            margin-right: 8px;
+        }
+        
+        .ant-progress-inner {
+            background-color: #f5f5f5;
+            border-radius: 100px;
+            overflow: hidden;
+        }
+        
+        .ant-progress-bg {
+            border-radius: 100px;
+            height: 8px;
+            transition: all 0.4s cubic-bezier(0.08, 0.82, 0.17, 1) 0s;
+        }
+        
+        /* 风险趋势指示器 */
+        .risk-trend {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .risk-trend.up {
+            background-color: #fff2f0;
+            color: #cf1322;
+        }
+        
+        .risk-trend.down {
+            background-color: #f6ffed;
+            color: #389e0d;
+        }
+        
+        .risk-trend-icon {
+            margin-right: 2px;
+        }
+        
+        /* 效率评分样式 */
+        .efficiency-score {
+            display: flex;
+            align-items: center;
+        }
+        
+        .efficiency-value {
+            font-weight: bold;
+            margin-left: 8px;
+            min-width: 30px;
+        }
+        
+        .score-high {
+            color: #52c41a;
+        }
+        
+        .score-medium {
+            color: #faad14;
+        }
+        
+        .score-low {
+            color: #f5222d;
+        }
+        
+        /* 操作区域样式 */
+        .action-bar {
+            background: white;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            width: 200px;
+        }
+        
+        .batch-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        /* 分页样式 */
+        .pagination {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .pagination-info {
+            color: #8c8c8c;
+            font-size: 14px;
+        }
+        
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .pagination-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .pagination-btn.active {
+            background: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 900px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .modal-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #8c8c8c;
+        }
+        
+        .close-btn:hover {
+            color: #262626;
+        }
+        
+        .detail-section {
+            margin-bottom: 24px;
+        }
+        
+        .detail-section-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #262626;
+            font-size: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .detail-item {
+            display: flex;
+            margin-bottom: 12px;
+        }
+        
+        .detail-label {
+            width: 120px;
+            color: #8c8c8c;
+            font-size: 14px;
+        }
+        
+        .detail-value {
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            height: 32px;
+            padding: 0 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .form-textarea {
+            height: 80px;
+            padding: 8px 12px;
+            resize: vertical;
+        }
+        
+        /* 筛选器样式 */
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-label {
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #595959;
+        }
+        
+        .filter-select {
+            width: 160px;
+            height: 32px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            padding: 0 12px;
+            font-size: 14px;
+        }
+        
+        /* 表格操作列样式 */
+        .action-link {
+            color: #1890ff;
+            cursor: pointer;
+            margin-right: 12px;
+        }
+        
+        .action-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* 页面切换样式 */
+        .page-container {
+            display: none;
+        }
+        
+        .page-container.active {
+            display: block;
+        }
+        
+        /* 未确认资产表格样式 */
+        .unconfirmed-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+        
+        .unconfirmed-table th {
+            background-color: #fafafa;
+            font-weight: 500;
+            color: #595959;
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .unconfirmed-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .unconfirmed-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px solid #d9d9d9;
+            background: white;
+        }
+        
+        .action-btn.confirm {
+            color: #52c41a;
+            border-color: #52c41a;
+        }
+        
+        .action-btn.ignore {
+            color: #8c8c8c;
+            border-color: #d9d9d9;
+        }
+        
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+        
+        /* 左侧树形导航样式 - 优化版 */
+        .management-layout {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .tree-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+            overflow: hidden;
+        }
+        
+        .tree-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: bold;
+            background-color: #fafafa;
+        }
+        
+        .tree-dimension {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .dimension-select {
+            width: 100%;
+            height: 32px;
+            padding: 0 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .tree-search {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .tree-search-input {
+            width: 100%;
+            height: 32px;
+            padding: 0 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .tree-container {
+            padding: 0;
+            max-height: calc(100vh - 280px);
+            overflow-y: auto;
+        }
+        
+        .tree-node {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .tree-node:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .tree-node.active {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+        
+        .tree-checkbox {
+            margin-right: 12px;
+            width: 16px;
+            height: 16px;
+        }
+        
+        .tree-node-name {
+            flex: 1;
+        }
+        
+        .tree-badge {
+            display: inline-block;
+            background: #f0f0f0;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 12px;
+            color: #8c8c8c;
+        }
+        
+        .tree-node.active .tree-badge {
+            background: #1890ff;
+            color: white;
+        }
+        
+        .management-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-form {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+            
+            .management-layout {
+                flex-direction: column;
+            }
+            
+            .tree-sidebar {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                height: auto;
+                padding: 16px 24px;
+            }
+            
+            .logo {
+                margin-bottom: 16px;
+            }
+            
+            .nav-menu {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .nav-item {
+                margin: 0;
+            }
+            
+            .action-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .batch-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .unconfirmed-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🛡️</span>
+                <span>资产脆弱性管理系统</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item selected" data-page="overview">脆弱性总览</li>
+                <li class="nav-item" data-page="management">脆弱性管理</li>
+            </ul>
+            <div class="user-info">
+                <span>管理员</span>
+                <div class="user-avatar">A</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 内容区 -->
+    <div class="content-container">
+        <!-- 脆弱性总览页面 -->
+        <main class="page-container active" id="overview-page">
+            <h1 class="page-title">脆弱性总览</h1>
+            
+            <!-- 第一层：脆弱性指标 -->
+            <div class="stats-row">
+                <div class="stats-card" onclick="switchToManagement('total')">
+                    <div class="stats-title">
+                        <span class="stats-title-icon">📊</span>
+                        总脆弱性数量
+                    </div>
+                    <div class="stats-value">1,258</div>
+                    <div class="stats-trend trend-up">较上周 +12%</div>
+                </div>
+                <div class="stats-card pending" onclick="switchToManagement('pending')">
+                    <div class="stats-title">
+                        <span class="stats-title-icon">⏳</span>
+                        待处置脆弱性
+                    </div>
+                    <div class="stats-value">386</div>
+                    <div class="stats-trend trend-down">较上周 -5%</div>
+                </div>
+                <div class="stats-card high-risk" onclick="switchToManagement('highRisk')">
+                    <div class="stats-title">
+                        <span class="stats-title-icon">🚨</span>
+                        高危脆弱性
+                    </div>
+                    <div class="stats-value">142</div>
+                    <div class="stats-trend trend-up">较上周 +8%</div>
+                </div>
+                <div class="stats-card unconfirmed" onclick="openUnconfirmedModal()">
+                    <div class="stats-title">
+                        <span class="stats-title-icon">❓</span>
+                        未确认资产脆弱性
+                    </div>
+                    <div class="stats-value">78</div>
+                    <div class="stats-trend trend-up">较上周 +15%</div>
+                </div>
+            </div>
+            
+            <!-- 第二层：表格区域 -->
+            <div class="tables-section">
+                <!-- 业务系统存在脆弱性 -->
+                <div class="table-card">
+                    <div class="table-header">
+                        业务系统存在脆弱性
+                        <span class="drill-down" onclick="switchToManagement('systemTop')">查看全部</span>
+                    </div>
+                    <div class="table-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>业务系统</th>
+                                    <th>脆弱性数量</th>
+                                    <th>高危数量</th>
+                                    <th>风险趋势</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr onclick="switchToManagement('systemDetail', '统一身份认证系统')">
+                                    <td>统一身份认证系统</td>
+                                    <td>156</td>
+                                    <td>32</td>
+                                    <td>
+                                        <span class="risk-trend up">
+                                            <span class="risk-trend-icon">↑</span>
+                                            12%
+                                        </span>
+                                    </td>
+                                    <td><span class="tag tag-high">高风险</span></td>
+                                </tr>
+                                <tr onclick="switchToManagement('systemDetail', '统一总客服系统')">
+                                    <td>统一总客服系统</td>
+                                    <td>134</td>
+                                    <td>28</td>
+                                    <td>
+                                        <span class="risk-trend up">
+                                            <span class="risk-trend-icon">↑</span>
+                                            8%
+                                        </span>
+                                    </td>
+                                    <td><span class="tag tag-high">高风险</span></td>
+                                </tr>
+                                <tr onclick="switchToManagement('systemDetail', '统一公共支付系统')">
+                                    <td>统一公共支付系统</td>
+                                    <td>98</td>
+                                    <td>15</td>
+                                    <td>
+                                        <span class="risk-trend down">
+                                            <span class="risk-trend-icon">↓</span>
+                                            5%
+                                        </span>
+                                    </td>
+                                    <td><span class="tag tag-medium">中风险</span></td>
+                                </tr>
+                                <tr onclick="switchToManagement('systemDetail', '统一物流快递系统')">
+                                    <td>统一物流快递系统</td>
+                                    <td>76</td>
+                                    <td>12</td>
+                                    <td>
+                                        <span class="risk-trend up">
+                                            <span class="risk-trend-icon">↑</span>
+                                            3%
+                                        </span>
+                                    </td>
+                                    <td><span class="tag tag-medium">中风险</span></td>
+                                </tr>
+                                <tr onclick="switchToManagement('systemDetail', '统一数据交换平台')">
+                                    <td>统一数据交换平台</td>
+                                    <td>65</td>
+                                    <td>8</td>
+                                    <td>
+                                        <span class="risk-trend down">
+                                            <span class="risk-trend-icon">↓</span>
+                                            7%
+                                        </span>
+                                    </td>
+                                    <td><span class="tag tag-low">低风险</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 运维责任单位处置 -->
+                <div class="table-card">
+                    <div class="table-header">
+                        运维责任单位处置
+                        <span class="drill-down" onclick="switchToManagement('deptEfficiencyTop')">查看全部</span>
+                    </div>
+                    <div class="table-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>责任单位</th>
+                                    <th>总任务数</th>
+                                    <th>已处置</th>
+                                    <th>修复率</th>
+                                    <th>效率分</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr onclick="switchToManagement('deptDetail', '基础架构组')">
+                                    <td>基础架构组</td>
+                                    <td>142</td>
+                                    <td>132</td>
+                                    <td>92%</td>
+                                    <td>
+                                        <div class="efficiency-score">
+                                            <div class="ant-progress-outer">
+                                                <div class="ant-progress-inner">
+                                                    <div class="ant-progress-bg" style="width: 92%; background-color: #52c41a;"></div>
+                                                </div>
+                                            </div>
+                                            <span class="efficiency-value score-high">92</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr onclick="switchToManagement('deptDetail', '订单运营组')">
+                                    <td>订单运营组</td>
+                                    <td>128</td>
+                                    <td>110</td>
+                                    <td>85%</td>
+                                    <td>
+                                        <div class="efficiency-score">
+                                            <div class="ant-progress-outer">
+                                                <div class="ant-progress-inner">
+                                                    <div class="ant-progress-bg" style="width: 85%; background-color: #52c41a;"></div>
+                                                </div>
+                                            </div>
+                                            <span class="efficiency-value score-high">85</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr onclick="switchToManagement('deptDetail', '用户中心开发部')">
+                                    <td>用户中心开发部</td>
+                                    <td>135</td>
+                                    <td>102</td>
+                                    <td>75%</td>
+                                    <td>
+                                        <div class="efficiency-score">
+                                            <div class="ant-progress-outer">
+                                                <div class="ant-progress-inner">
+                                                    <div class="ant-progress-bg" style="width: 75%; background-color: #faad14;"></div>
+                                                </div>
+                                            </div>
+                                            <span class="efficiency-value score-medium">75</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr onclick="switchToManagement('deptDetail', '支付开发部')">
+                                    <td>支付开发部</td>
+                                    <td>142</td>
+                                    <td>92</td>
+                                    <td>65%</td>
+                                    <td>
+                                        <div class="efficiency-score">
+                                            <div class="ant-progress-outer">
+                                                <div class="ant-progress-inner">
+                                                    <div class="ant-progress-bg" style="width: 65%; background-color: #f5222d;"></div>
+                                                </div>
+                                            </div>
+                                            <span class="efficiency-value score-low">65</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr onclick="switchToManagement('deptDetail', '数据平台组')">
+                                    <td>数据平台组</td>
+                                    <td>98</td>
+                                    <td>76</td>
+                                    <td>78%</td>
+                                    <td>
+                                        <div class="efficiency-score">
+                                            <div class="ant-progress-outer">
+                                                <div class="ant-progress-inner">
+                                                    <div class="ant-progress-bg" style="width: 78%; background-color: #faad14;"></div>
+                                                </div>
+                                            </div>
+                                            <span class="efficiency-value score-medium">78</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 第三层：图表区域 -->
+            <div class="charts-section">
+                <!-- 脆弱性变化趋势 -->
+                <div class="chart-card">
+                    <div class="table-header">
+                        脆弱性变化趋势
+                        <div class="time-period-selector">
+                            <span class="time-period active" onclick="changeTrendPeriod('week')">近一周</span>
+                            <span class="time-period" onclick="changeTrendPeriod('month')">近一月</span>
+                            <span class="time-period" onclick="changeTrendPeriod('quarter')">近一季度</span>
+                        </div>
+                    </div>
+                    <div class="chart-container" id="trendChart"></div>
+                </div>
+                
+                <!-- 风险等级分布 -->
+                <div class="chart-card">
+                    <div class="table-header">
+                        风险等级分布
+                        <span class="drill-down" onclick="switchToManagement('riskDistribution')">查看详情</span>
+                    </div>
+                    <div class="chart-container" id="riskChart"></div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 脆弱性管理页面 -->
+        <main class="page-container" id="management-page">
+            <h1 class="page-title">脆弱性管理</h1>
+            
+            <div class="management-layout">
+                <!-- 左侧树形导航 -->
+                <div class="tree-sidebar">
+                    <div class="tree-header">脆弱性视图</div>
+                    <div class="tree-dimension">
+                        <select class="dimension-select" id="dimensionSelect">
+                            <option value="business-system">业务系统</option>
+                            <option value="department">归属单位</option>
+                            <option value="vulnerability-type">脆弱性类型</option>
+                        </select>
+                    </div>
+                    <div class="tree-search">
+                        <input type="text" class="tree-search-input" placeholder="请输入关键字">
+                    </div>
+                    <div class="tree-container" id="vulnerabilityTree">
+                        <!-- 树形结构将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 右侧内容区域 -->
+                <div class="management-content">
+                    <!-- 操作区域 -->
+                    <div class="action-bar">
+                        <div class="search-form">
+                            <input type="text" class="form-control search-input" placeholder="搜索脆弱性名称、CVE编号...">
+                            <select class="filter-select">
+                                <option value="">全部风险等级</option>
+                                <option value="high">高危</option>
+                                <option value="medium">中危</option>
+                                <option value="low">低危</option>
+                            </select>
+                            <select class="filter-select">
+                                <option value="">全部状态</option>
+                                <option value="pending">待处理</option>
+                                <option value="processing">处理中</option>
+                                <option value="resolved">已解决</option>
+                                <option value="overdue">已超期</option>
+                            </select>
+                            <select class="filter-select">
+                                <option value="">全部业务系统</option>
+                                <option value="auth">统一身份认证系统</option>
+                                <option value="service">统一总客服系统</option>
+                                <option value="payment">统一公共支付系统</option>
+                                <option value="logistics">统一物流快递系统</option>
+                            </select>
+                            <button class="ant-btn ant-btn-primary">查询</button>
+                            <button class="ant-btn ant-btn-default">重置</button>
+                        </div>
+                        <div class="batch-actions">
+                            <button class="ant-btn ant-btn-primary" onclick="openAssignModal()">批量派发</button>
+                            <button class="ant-btn ant-btn-default">导出数据</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 脆弱性列表 -->
+                    <div class="table-card">
+                        <div class="table-header">
+                            脆弱性列表
+                            <div>
+                                <span>共 256 条记录</span>
+                            </div>
+                        </div>
+                        <div class="table-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th width="40">
+                                            <input type="checkbox" id="selectAll">
+                                        </th>
+                                        <th>脆弱性名称</th>
+                                        <th>CVE编号</th>
+                                        <th>风险等级</th>
+                                        <th>业务系统</th>
+                                        <th>发现时间</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="checkbox" class="row-checkbox"></td>
+                                        <td>Apache Log4j2 远程代码执行漏洞</td>
+                                        <td>CVE-2021-44228</td>
+                                        <td><span class="tag tag-high">高危</span></td>
+                                        <td>统一身份认证系统</td>
+                                        <td>2023-05-12</td>
+                                        <td><span class="tag status-pending">待处理</span></td>
+                                        <td>
+                                            <span class="action-link" onclick="openDetailModal()">查看详情</span>
+                                            <span class="action-link" onclick="openAssignModal()">派发任务</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="row-checkbox"></td>
+                                        <td>Spring Framework 远程代码执行漏洞</td>
+                                        <td>CVE-2022-22965</td>
+                                        <td><span class="tag tag-high">高危</span></td>
+                                        <td>统一总客服系统</td>
+                                        <td>2023-05-10</td>
+                                        <td><span class="tag status-processing">处理中</span></td>
+                                        <td>
+                                            <span class="action-link" onclick="openDetailModal()">查看详情</span>
+                                            <span class="action-link" onclick="openAssignModal()">重新派发</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="row-checkbox"></td>
+                                        <td>OpenSSL 缓冲区溢出漏洞</td>
+                                        <td>CVE-2022-2274</td>
+                                        <td><span class="tag tag-medium">中危</span></td>
+                                        <td>统一公共支付系统</td>
+                                        <td>2023-05-08</td>
+                                        <td><span class="tag status-overdue">已超期</span></td>
+                                        <td>
+                                            <span class="action-link" onclick="openDetailModal()">查看详情</span>
+                                            <span class="action-link" onclick="openAssignModal()">重新派发</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="row-checkbox"></td>
+                                        <td>Redis 未授权访问漏洞</td>
+                                        <td>-</td>
+                                        <td><span class="tag tag-high">高危</span></td>
+                                        <td>统一物流快递系统</td>
+                                        <td>2023-05-05</td>
+                                        <td><span class="tag status-resolved">已解决</span></td>
+                                        <td>
+                                            <span class="action-link" onclick="openDetailModal()">查看详情</span>
+                                            <span class="action-link">查看记录</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="row-checkbox"></td>
+                                        <td>Nginx 路径遍历漏洞</td>
+                                        <td>CVE-2021-23017</td>
+                                        <td><span class="tag tag-medium">中危</span></td>
+                                        <td>统一数据交换平台</td>
+                                        <td>2023-05-03</td>
+                                        <td><span class="tag status-pending">待处理</span></td>
+                                        <td>
+                                            <span class="action-link" onclick="openDetailModal()">查看详情</span>
+                                            <span class="action-link" onclick="openAssignModal()">派发任务</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- 分页 -->
+                        <div class="pagination">
+                            <div class="pagination-info">显示 1-5 条，共 256 条</div>
+                            <div class="pagination-controls">
+                                <div class="pagination-btn">«</div>
+                                <div class="pagination-btn active">1</div>
+                                <div class="pagination-btn">2</div>
+                                <div class="pagination-btn">3</div>
+                                <div class="pagination-btn">4</div>
+                                <div class="pagination-btn">...</div>
+                                <div class="pagination-btn">32</div>
+                                <div class="pagination-btn">»</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 未确认资产脆弱性模态框 -->
+    <div class="modal" id="unconfirmedModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>未确认资产的脆弱性信息</span>
+                <button class="close-btn" onclick="closeUnconfirmedModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <table class="unconfirmed-table">
+                    <thead>
+                        <tr>
+                            <th>资产名称</th>
+                            <th>脆弱性类型</th>
+                            <th>风险等级</th>
+                            <th>发现时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>未知服务器 #SRV-9876</td>
+                            <td>主机漏洞</td>
+                            <td><span class="tag tag-high">高风险</span></td>
+                            <td>2023-06-15 08:32</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn confirm">确认</button>
+                                    <button class="action-btn ignore">忽略</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>未知终端 #PC-4521</td>
+                            <td>应用程序漏洞</td>
+                            <td><span class="tag tag-medium">中风险</span></td>
+                            <td>2023-06-14 15:47</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn confirm">确认</button>
+                                    <button class="action-btn ignore">忽略</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>未知网络设备 #NET-1298</td>
+                            <td>网络漏洞</td>
+                            <td><span class="tag tag-medium">中风险</span></td>
+                            <td>2023-06-13 11:23</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn confirm">确认</button>
+                                    <button class="action-btn ignore">忽略</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>未知数据库 #DB-5632</td>
+                            <td>数据库漏洞</td>
+                            <td><span class="tag tag-low">低风险</span></td>
+                            <td>2023-06-12 09:15</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn confirm">确认</button>
+                                    <button class="action-btn ignore">忽略</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="pagination">
+                    <div class="pagination-info">显示 1-4 条，共 76 条</div>
+                    <div class="pagination-controls">
+                        <div class="pagination-btn">上一页</div>
+                        <div class="pagination-btn active">1</div>
+                        <div class="pagination-btn">2</div>
+                        <div class="pagination-btn">3</div>
+                        <div class="pagination-btn">...</div>
+                        <div class="pagination-btn">19</div>
+                        <div class="pagination-btn">下一页</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="ant-btn ant-btn-primary">批量处理</button>
+                <button class="ant-btn ant-btn-default" onclick="closeUnconfirmedModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 脆弱性详情模态框 -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>脆弱性详情</span>
+                <button class="close-btn" onclick="closeDetailModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section">
+                    <div class="detail-section-title">基本信息</div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">脆弱性名称</div>
+                            <div class="detail-value">Apache Log4j2 远程代码执行漏洞</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">CVE编号</div>
+                            <div class="detail-value">CVE-2021-44228</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">风险等级</div>
+                            <div class="detail-value"><span class="tag tag-high">高危</span></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">CVSS评分</div>
+                            <div class="detail-value">10.0</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">业务系统</div>
+                            <div class="detail-value">统一身份认证系统</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">资产名称</div>
+                            <div class="detail-value">auth-app-server-01</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">IP地址</div>
+                            <div class="detail-value">192.168.1.105</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">发现时间</div>
+                            <div class="detail-value">2023-05-12 14:23:45</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">当前状态</div>
+                            <div class="detail-value"><span class="tag status-pending">待处理</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">漏洞描述</div>
+                    <div class="detail-item">
+                        <div class="detail-value">
+                            Apache Log4j2 是一个基于Java的日志记录工具。该工具存在远程代码执行漏洞，攻击者可直接构造恶意请求，触发远程代码执行。由于Log4j2组件被大量用于业务系统，该漏洞导致攻击者可以控制目标服务器，危害极大。
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">影响范围</div>
+                    <div class="detail-item">
+                        <div class="detail-value">
+                            Apache Log4j2 2.0-beta9 到 2.14.1 版本均受影响
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">修复建议</div>
+                    <div class="detail-item">
+                        <div class="detail-value">
+                            1. 升级Apache Log4j2至最新版本（2.15.0或更高版本）<br>
+                            2. 如无法立即升级，可采用临时缓解措施：设置系统环境变量"FORMAT_MESSAGES_PATTERN_DISABLE_LOOKUPS"为"true"<br>
+                            3. 使用安全防护设备或软件进行防护
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">处理记录</div>
+                    <div class="detail-item">
+                        <div class="detail-value">
+                            <div style="margin-bottom: 12px;">
+                                <strong>2023-05-12 14:30:22</strong> - 漏洞被发现并录入系统
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <strong>2023-05-13 09:15:10</strong> - 分配给基础架构组处理
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="ant-btn ant-btn-primary" onclick="openAssignModal()">派发任务</button>
+                <button class="ant-btn ant-btn-default" onclick="closeDetailModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 派发任务模态框 -->
+    <div class="modal" id="assignModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>派发任务</span>
+                <button class="close-btn" onclick="closeAssignModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">派发给</label>
+                    <select class="form-control">
+                        <option value="">请选择责任单位</option>
+                        <option value="dept1">基础架构组</option>
+                        <option value="dept2">支付开发部</option>
+                        <option value="dept3">用户中心开发部</option>
+                        <option value="dept4">订单运营组</option>
+                        <option value="dept5">数据平台组</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">处理人</label>
+                    <select class="form-control">
+                        <option value="">请选择处理人</option>
+                        <option value="user1">赵六</option>
+                        <option value="user2">王五</option>
+                        <option value="user3">李四</option>
+                        <option value="user4">张三</option>
+                        <option value="user5">钱七</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">优先级</label>
+                    <select class="form-control">
+                        <option value="high">高</option>
+                        <option value="medium" selected>中</option>
+                        <option value="low">低</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">要求完成时间</label>
+                    <input type="date" class="form-control" value="2023-05-20">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">处理说明</label>
+                    <textarea class="form-control form-textarea" placeholder="请输入处理说明或要求..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="ant-btn ant-btn-primary" onclick="assignTask()">确认派发</button>
+                <button class="ant-btn ant-btn-default" onclick="closeAssignModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 树形结构数据
+        const treeData = {
+            'business-system': [
+                { id: 'auth-system', name: '统一身份认证系统', count: 156 },
+                { id: 'service-system', name: '统一总客服系统', count: 134 },
+                { id: 'payment-system', name: '统一公共支付系统', count: 98 },
+                { id: 'logistics-system', name: '统一物流快递系统', count: 76 },
+                { id: 'data-exchange', name: '统一数据交换平台', count: 65 }
+            ],
+            'department': [
+                { id: 'infrastructure', name: '基础架构组', count: 142 },
+                { id: 'order-operation', name: '订单运营组', count: 128 },
+                { id: 'user-center', name: '用户中心开发部', count: 135 },
+                { id: 'payment-dev', name: '支付开发部', count: 142 },
+                { id: 'data-platform', name: '数据平台组', count: 98 }
+            ],
+            'vulnerability-type': [
+                { id: 'host-vuln', name: '主机漏洞', count: 320 },
+                { id: 'web-vuln', name: 'Web漏洞', count: 245 },
+                { id: 'config-vuln', name: '配置缺陷', count: 198 },
+                { id: 'weak-password', name: '弱口令', count: 156 },
+                { id: 'database-vuln', name: '数据库漏洞', count: 112 }
+            ]
+        };
+
+        // 页面切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 菜单点击事件
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 更新菜单选中状态
+                    navItems.forEach(i => i.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // 切换页面显示
+                    const pageId = this.getAttribute('data-page') + '-page';
+                    document.querySelectorAll('.page-container').forEach(page => {
+                        page.classList.remove('active');
+                    });
+                    document.getElementById(pageId).classList.add('active');
+                    
+                    // 如果是管理页面，初始化树形结构
+                    if (pageId === 'management-page') {
+                        initTree();
+                    }
+                });
+            });
+            
+            // 维度选择变化事件
+            document.getElementById('dimensionSelect').addEventListener('change', function() {
+                initTree();
+            });
+            
+            // 初始化图表
+            initCharts();
+            
+            // 添加未确认资产操作按钮事件
+            document.querySelectorAll('.action-btn.confirm').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const assetName = row.cells[0].textContent;
+                    alert(`确认处理资产: ${assetName}`);
+                    // 实际应用中这里应该发送请求到后端处理
+                });
+            });
+            
+            document.querySelectorAll('.action-btn.ignore').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const assetName = row.cells[0].textContent;
+                    if (confirm(`确定要忽略资产 ${assetName} 的脆弱性吗？`)) {
+                        alert(`已忽略资产: ${assetName}`);
+                        // 实际应用中这里应该发送请求到后端处理
+                    }
+                });
+            });
+        });
+        
+        // 初始化树形结构
+        function initTree() {
+            const treeContainer = document.getElementById('vulnerabilityTree');
+            const dimension = document.getElementById('dimensionSelect').value;
+            const data = treeData[dimension] || [];
+            
+            treeContainer.innerHTML = '';
+            
+            // 创建"全部"选项
+            const allNode = document.createElement('div');
+            allNode.className = 'tree-node active';
+            allNode.dataset.id = 'all';
+            
+            allNode.innerHTML = `
+                <input type="checkbox" class="tree-checkbox" checked>
+                <span class="tree-node-name">全部</span>
+                <span class="tree-badge">${data.reduce((sum, item) => sum + item.count, 0)}</span>
+            `;
+            
+            allNode.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                // 更新选中状态
+                document.querySelectorAll('.tree-node').forEach(node => {
+                    node.classList.remove('active');
+                    node.querySelector('.tree-checkbox').checked = false;
+                });
+                this.classList.add('active');
+                this.querySelector('.tree-checkbox').checked = true;
+                
+                // 重置筛选条件
+                filterVulnerabilities('all');
+            });
+            
+            treeContainer.appendChild(allNode);
+            
+            // 创建子节点
+            data.forEach(item => {
+                const childNode = document.createElement('div');
+                childNode.className = 'tree-node';
+                childNode.dataset.id = item.id;
+                
+                childNode.innerHTML = `
+                    <input type="checkbox" class="tree-checkbox">
+                    <span class="tree-node-name">${item.name}</span>
+                    <span class="tree-badge">${item.count}</span>
+                `;
+                
+                // 添加子节点点击事件
+                childNode.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // 更新选中状态
+                    document.querySelectorAll('.tree-node').forEach(node => {
+                        node.classList.remove('active');
+                        node.querySelector('.tree-checkbox').checked = false;
+                    });
+                    this.classList.add('active');
+                    this.querySelector('.tree-checkbox').checked = true;
+                    
+                    // 根据选择的节点筛选数据
+                    filterVulnerabilities(item.id);
+                });
+                
+                treeContainer.appendChild(childNode);
+            });
+        }
+        
+        // 根据树节点筛选脆弱性
+        function filterVulnerabilities(nodeId) {
+            const dimension = document.getElementById('dimensionSelect').value;
+            console.log(`筛选条件: ${dimension} - ${nodeId}`);
+            // 实际应用中这里应该发送请求到后端获取筛选后的数据
+            // 这里只是模拟，实际开发中需要根据具体需求实现
+        }
+        
+        // 切换到脆弱性管理页面
+        function switchToManagement(type, param) {
+            // 切换菜单选中状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('selected');
+                if (item.getAttribute('data-page') === 'management') {
+                    item.classList.add('selected');
+                }
+            });
+            
+            // 切换到管理页面
+            document.querySelectorAll('.page-container').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById('management-page').classList.add('active');
+            
+            // 初始化树形结构
+            initTree();
+            
+            // 根据类型设置筛选条件（实际应用中这里可以设置相应的筛选条件）
+            if (type) {
+                console.log('切换到管理页面，筛选条件:', type, param);
+                // 这里可以根据type和param设置管理页面的筛选条件
+            }
+        }
+        
+        // 初始化图表
+        function initCharts() {
+            // 趋势图
+            const trendChart = echarts.init(document.getElementById('trendChart'));
+            const trendOption = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['主机漏洞', 'Web漏洞', '配置缺陷', '弱口令'],
+                    right: 10,
+                    top: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['01-01', '01-02', '01-03', '01-04', '01-05', '01-06', '01-07']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name: '主机漏洞',
+                        type: 'line',
+                        data: [120, 132, 101, 134, 90, 130, 110],
+                        smooth: true,
+                        lineStyle: { width: 3 },
+                        symbol: 'circle',
+                        symbolSize: 6
+                    },
+                    {
+                        name: 'Web漏洞',
+                        type: 'line',
+                        data: [82, 93, 90, 93, 85, 95, 88],
+                        smooth: true,
+                        lineStyle: { width: 3 },
+                        symbol: 'circle',
+                        symbolSize: 6
+                    },
+                    {
+                        name: '配置缺陷',
+                        type: 'line',
+                        data: [65, 70, 68, 72, 65, 70, 68],
+                        smooth: true,
+                        lineStyle: { width: 3 },
+                        symbol: 'circle',
+                        symbolSize: 6
+                    },
+                    {
+                        name: '弱口令',
+                        type: 'line',
+                        data: [45, 48, 50, 52, 47, 49, 51],
+                        smooth: true,
+                        lineStyle: { width: 3 },
+                        symbol: 'circle',
+                        symbolSize: 6
+                    }
+                ]
+            };
+            trendChart.setOption(trendOption);
+            
+            // 风险分布图
+            const riskChart = echarts.init(document.getElementById('riskChart'));
+            const riskOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    right: 10,
+                    top: 'center',
+                    data: ['高危', '中危', '低危', '信息']
+                },
+                series: [
+                    {
+                        name: '风险等级',
+                        type: 'pie',
+                        radius: ['50%', '70%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '18',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            {value: 142, name: '高危', itemStyle: {color: '#f5222d'}},
+                            {value: 386, name: '中危', itemStyle: {color: '#fa8c16'}},
+                            {value: 530, name: '低危', itemStyle: {color: '#52c41a'}},
+                            {value: 200, name: '信息', itemStyle: {color: '#1890ff'}}
+                        ]
+                    }
+                ]
+            };
+            riskChart.setOption(riskOption);
+            
+            // 响应窗口大小变化
+            window.addEventListener('resize', function() {
+                trendChart.resize();
+                riskChart.resize();
+            });
+        }
+        
+        // 切换趋势周期
+        function changeTrendPeriod(period) {
+            // 更新活动状态
+            document.querySelectorAll('.time-period').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 实际应用中这里应该重新加载对应周期的数据并更新图表
+            console.log(`切换趋势周期为: ${period}`);
+        }
+        
+        // 未确认资产模态框控制
+        function openUnconfirmedModal() {
+            document.getElementById('unconfirmedModal').style.display = 'flex';
+        }
+        
+        function closeUnconfirmedModal() {
+            document.getElementById('unconfirmedModal').style.display = 'none';
+        }
+        
+        // 详情模态框控制
+        function openDetailModal() {
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+        
+        function closeDetailModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+        
+        // 派发任务模态框控制
+        function openAssignModal() {
+            document.getElementById('assignModal').style.display = 'flex';
+            // 关闭详情模态框（如果打开）
+            closeDetailModal();
+        }
+        
+        function closeAssignModal() {
+            document.getElementById('assignModal').style.display = 'none';
+        }
+        
+        function assignTask() {
+            alert('任务派发成功！');
+            closeAssignModal();
+        }
+        
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const unconfirmedModal = document.getElementById('unconfirmedModal');
+            const detailModal = document.getElementById('detailModal');
+            const assignModal = document.getElementById('assignModal');
+            
+            if (event.target === unconfirmedModal) {
+                closeUnconfirmedModal();
+            }
+            
+            if (event.target === detailModal) {
+                closeDetailModal();
+            }
+            
+            if (event.target === assignModal) {
+                closeAssignModal();
+            }
+        }
+        
+        // 全选/取消全选功能
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+    </script>
+</body>
+</html>

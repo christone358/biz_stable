@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>告警记录管理 - 资产监控系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: #000000e0;
+            line-height: 1.5715;
+        }
+        
+        .layout-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 左侧边栏样式 */
+        .sider {
+            width: 80px;
+            background: #001529;
+            color: #fff;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+        
+        .menu-item {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.65);
+        }
+        
+        .menu-item.active {
+            background: #1890ff;
+            color: #fff;
+        }
+        
+        .menu-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .menu-item span {
+            font-size: 12px;
+        }
+        
+        /* 右侧内容区样式 */
+        .content-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* 顶部栏样式 */
+        .header {
+            background: #fff;
+            padding: 0 24px;
+            box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+        
+        .breadcrumb {
+            font-size: 14px;
+        }
+        
+        .breadcrumb a {
+            color: #1890ff;
+            text-decoration: none;
+        }
+        
+        .breadcrumb span:last-child {
+            color: #000000e0;
+        }
+        
+        .time-filter {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-label {
+            font-size: 14px;
+            color: #00000073;
+        }
+        
+        .date-range-picker {
+            display: flex;
+            align-items: center;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            padding: 4px 11px;
+            cursor: pointer;
+            background: #fff;
+        }
+        
+        .date-range-picker:hover {
+            border-color: #40a9ff;
+        }
+        
+        .date-range-picker i {
+            color: #00000040;
+            margin-right: 8px;
+        }
+        
+        .date-text {
+            font-size: 14px;
+        }
+        
+        .ant-select {
+            position: relative;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            padding: 4px 11px;
+            cursor: pointer;
+            background: #fff;
+            min-width: 100px;
+        }
+        
+        .ant-select:hover {
+            border-color: #40a9ff;
+        }
+        
+        .ant-select::after {
+            content: "▼";
+            font-size: 10px;
+            position: absolute;
+            right: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00000040;
+        }
+        
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ant-switch {
+            width: 44px;
+            height: 22px;
+            background-color: rgba(0, 0, 0, 0.25);
+            border-radius: 100px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .ant-switch::after {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .ant-switch-checked {
+            background-color: #1890ff;
+        }
+        
+        .ant-switch-checked::after {
+            left: calc(100% - 20px);
+        }
+        
+        /* 内容区样式 */
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        .content-layout {
+            display: flex;
+            gap: 24px;
+        }
+        
+        /* 资源目录样式 */
+        .resource-directory {
+            width: 280px;
+            flex-shrink: 0;
+        }
+        
+        .resource-card {
+            background: #fff;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16), 0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 5px 12px 4px rgba(0, 0, 0, 0.09);
+        }
+        
+        .card-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 24px;
+        }
+        
+        .resource-category {
+            margin-bottom: 20px;
+        }
+        
+        .category-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #000000e0;
+        }
+        
+        .resource-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .resource-item:hover {
+            color: #1890ff;
+        }
+        
+        .resource-item.active {
+            color: #1890ff;
+        }
+        
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .checkbox.checked {
+            background: #1890ff;
+            border-color: #1890ff;
+        }
+        
+        .checkbox.checked::after {
+            content: "✓";
+            color: #fff;
+            font-size: 12px;
+        }
+        
+        /* 右侧内容区 */
+        .content-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        /* 快速筛选栏样式 */
+        .quick-filter {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-label {
+            font-size: 14px;
+            color: #00000073;
+            white-space: nowrap;
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .filter-tag {
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            border: 1px solid #d9d9d9;
+            transition: all 0.2s;
+        }
+        
+        .filter-tag.active {
+            color: #fff;
+            border-color: transparent;
+        }
+        
+        .level-emergency {
+            background: #ff4d4f;
+        }
+        
+        .level-severe {
+            background: #fa8c16;
+        }
+        
+        .level-warning {
+            background: #faad14;
+        }
+        
+        .status-pending {
+            background: #1890ff;
+        }
+        
+        .status-processing {
+            background: #722ed1;
+        }
+        
+        .status-closed {
+            background: #52c41a;
+        }
+        
+        /* 操作栏样式 */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .ant-btn {
+            height: 32px;
+            padding: 4px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #d9d9d9;
+            background: #fff;
+            color: #000000e0;
+            transition: all 0.2s;
+        }
+        
+        .ant-btn:hover {
+            border-color: #40a9ff;
+            color: #40a9ff;
+        }
+        
+        .ant-btn-primary {
+            background: #1890ff;
+            border-color: #1890ff;
+            color: #fff;
+        }
+        
+        .ant-btn-primary:hover {
+            background: #40a9ff;
+            border-color: #40a9ff;
+        }
+        
+        .search-box {
+            width: 300px;
+            position: relative;
+        }
+        
+        .ant-input {
+            width: 100%;
+            height: 32px;
+            padding: 4px 11px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .ant-input:focus {
+            border-color: #40a9ff;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        
+        .ant-input-search {
+            padding-right: 32px;
+        }
+        
+        .ant-input-search-icon {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00000040;
+            cursor: pointer;
+        }
+        
+        /* 告警列表样式 */
+        .alert-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .alert-table th {
+            background: #fafafa;
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: 600;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        
+        .alert-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        
+        .alert-table tr:hover {
+            background: #fafafa;
+        }
+        
+        .alert-level {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #fff;
+        }
+        
+        .alert-name {
+            font-weight: 500;
+        }
+        
+        .alert-description {
+            font-size: 12px;
+            color: #000000a6; /* 加深颜色，提高可读性 */
+            margin-top: 4px;
+        }
+        
+        .alert-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 16px;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pagination-info {
+            font-size: 14px;
+            color: #00000073;
+            margin-right: 16px;
+        }
+        
+        .pagination-item {
+            min-width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #d9d9d9;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .pagination-item.active {
+            background: #1890ff;
+            color: #fff;
+            border-color: #1890ff;
+        }
+        
+        .pagination-item:hover:not(.active) {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+        
+        .pagination-ellipsis {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+        }
+        
+        .empty {
+            text-align: center;
+            padding: 40px 0;
+            color: #00000040;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout-container">
+        <!-- 左侧边栏 -->
+        <div class="sider">
+            <div class="menu-item active">
+                <i class="fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-chart-line"></i>
+                <span>监控</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-bell"></i>
+                <span>告警</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>设置</span>
+            </div>
+        </div>
+        
+        <!-- 右侧内容区 -->
+        <div class="content-container">
+            <!-- 顶部栏 -->
+            <div class="header">
+                <div class="breadcrumb">
+                    <a href="#">首页</a> / <a href="#">监控管理</a> / <span>告警记录</span>
+                </div>
+                <div class="time-filter">
+                    <div class="filter-item">
+                        <span class="filter-label">时间范围:</span>
+                        <div class="date-range-picker">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="date-text">2023-07-15 ~ 2023-07-16</span>
+                        </div>
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label">自动刷新:</span>
+                        <div class="switch-container">
+                            <div class="ant-switch ant-switch-checked"></div>
+                            <div class="ant-select">
+                                <span>30秒</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 内容区 -->
+            <div class="content">
+                <div class="content-layout">
+                    <!-- 左侧资源目录 -->
+                    <div class="resource-directory">
+                        <div class="resource-card">
+                            <div class="card-header">
+                                <div class="card-title">监控对象资源目录</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="resource-category">
+                                    <div class="category-title">系统服务</div>
+                                    <div class="resource-list">
+                                        <div class="resource-item active">
+                                            <div class="checkbox checked"></div>
+                                            <span>全部</span>
+                                        </div>
+                                        <div class="resource-item">
+                                            <div class="checkbox"></div>
+                                            <span>Web服务</span>
+                                        </div>
+                                        <div class="resource-item">
+                                            <div class="checkbox"></div>
+                                            <span>数据库服务</span>
+                                        </div>
+                                        <div class="resource-item">
+                                            <div class="checkbox"></div>
+                                            <span>中间件服务</span>
+                                        </div>
+                                        <div class="resource-item">
+                                            <div class="checkbox"></div>
+                                            <span>API服务</span>
+                                        </div>
+                                        <div class="resource-item">
+                                            <div class="checkbox"></div>
+                                            <span>缓存服务</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="resource-category">
+                                    <div class="category-title">基础软件</div>
+                                    <div class="resource-list">
+                                        <div class="resource-item">
+                                            <div class="checkbox"></div>
+                                            <span>操作系统</span>
+                                        </div>
+                                        <div class="resource-item">
+                                            <div class="checkbox"></div>
+                                            <span>数据库系统</span>
+                                        </div>
+                                        <div class="resource-item">
+                                            <div class="checkbox"></div>
+                                            <span>应用服务器</span>
+                                        </div>
+                                        <div class="resource-item">
+                                            <div class="checkbox"></div>
+                                            <span>消息队列</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="resource-category">
+                                    <div class="category-title">硬件设施</div>
+                                    <div class="resource-list">
+                                        <div class="resource-item">
+                                            <div class="checkbox"></div>
+                                            <span>服务器</span>
+                                        </div>
+                                        <div class="resource-item">
+                                            <div class="checkbox"></div>
+                                            <span>网络设备</span>
+                                        </div>
+                                        <div class="resource-item">
+                                            <div class="checkbox"></div>
+                                            <span>存储设备</span>
+                                        </div>
+                                        <div class="resource-item">
+                                            <div class="checkbox"></div>
+                                            <span>安全设备</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 右侧内容区 -->
+                    <div class="content-right">
+                        <!-- 快速筛选栏 -->
+                        <div class="resource-card">
+                            <div class="card-header">
+                                <div class="card-title">快速筛选</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="quick-filter">
+                                    <div class="filter-group">
+                                        <span class="filter-label">告警等级:</span>
+                                        <div class="filter-options">
+                                            <div class="filter-tag active">全部等级</div>
+                                            <div class="filter-tag level-emergency">紧急</div>
+                                            <div class="filter-tag level-severe">严重</div>
+                                            <div class="filter-tag level-warning">警告</div>
+                                        </div>
+                                    </div>
+                                    <div class="filter-group">
+                                        <span class="filter-label">处置状态:</span>
+                                        <div class="filter-options">
+                                            <div class="filter-tag active">全部状态</div>
+                                            <div class="filter-tag status-pending">待指派</div>
+                                            <div class="filter-tag">待处理</div>
+                                            <div class="filter-tag status-processing">处理中</div>
+                                            <div class="filter-tag">待关闭</div>
+                                            <div class="filter-tag status-closed">已关闭</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 告警列表 -->
+                        <div class="resource-card">
+                            <div class="card-header">
+                                <div class="card-title">告警列表</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="action-bar">
+                                    <div class="action-buttons">
+                                        <button class="ant-btn ant-btn-primary">
+                                            <i class="fas fa-user-check" style="margin-right: 6px;"></i>
+                                            批量指派
+                                        </button>
+                                        <button class="ant-btn">
+                                            <i class="fas fa-times-circle" style="margin-right: 6px;"></i>
+                                            批量关闭
+                                        </button>
+                                    </div>
+                                    <div class="search-box">
+                                        <input type="text" class="ant-input ant-input-search" placeholder="请输入关键词搜索">
+                                        <span class="ant-input-search-icon">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- 告警列表 -->
+                                <table class="alert-table">
+                                    <thead>
+                                        <tr>
+                                            <th>告警等级</th>
+                                            <th>告警名称</th>
+                                            <th>告警发现时间</th>
+                                            <th>告警ID</th>
+                                            <th>告警对象</th>
+                                            <th>资源类型</th>
+                                            <th>告警状态</th>
+                                            <th>处置责任人</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="alert-level level-emergency">紧急</span></td>
+                                            <td>
+                                                <div class="alert-name">数据库连接数超限</div>
+                                                <div class="alert-description">MySQL-主库 当前连接数: 985/1000</div>
+                                            </td>
+                                            <td>2023-07-15 14:23:45</td>
+                                            <td>ALERT-20230715-001</td>
+                                            <td>MySQL-主库</td>
+                                            <td>数据库服务</td>
+                                            <td><span class="alert-status status-pending">待指派</span></td>
+                                            <td>-</td>
+                                            <td>
+                                                <button class="ant-btn ant-btn-primary" style="padding: 2px 8px; font-size: 12px;">指派</button>
+                                                <button class="ant-btn" style="padding: 2px 8px; font-size: 12px;">关闭</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="alert-level level-severe">严重</span></td>
+                                            <td>
+                                                <div class="alert-name">服务器CPU使用率过高</div>
+                                                <div class="alert-description">APP-SERVER-01 CPU使用率: 92% (阈值: 85%)</div>
+                                            </td>
+                                            <td>2023-07-15 13:45:12</td>
+                                            <td>ALERT-20230715-002</td>
+                                            <td>APP-SERVER-01</td>
+                                            <td>服务器</td>
+                                            <td><span class="alert-status status-processing">处理中</span></td>
+                                            <td>张工程师</td>
+                                            <td>
+                                                <button class="ant-btn ant-btn-primary" style="padding: 2px 8px; font-size: 12px;">重新指派</button>
+                                                <button class="ant-btn" style="padding: 2px 8px; font-size: 12px;">关闭</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="alert-level level-warning">警告</span></td>
+                                            <td>
+                                                <div class="alert-name">磁盘空间不足</div>
+                                                <div class="alert-description">STORAGE-01 磁盘使用率: 88% (阈值: 85%)</div>
+                                            </td>
+                                            <td>2023-07-15 12:30:33</td>
+                                            <td>ALERT-20230715-003</td>
+                                            <td>STORAGE-01</td>
+                                            <td>存储设备</td>
+                                            <td><span class="alert-status status-pending">待指派</span></td>
+                                            <td>-</td>
+                                            <td>
+                                                <button class="ant-btn ant-btn-primary" style="padding: 2px 8px; font-size: 12px;">指派</button>
+                                                <button class="ant-btn" style="padding: 2px 8px; font-size: 12px;">关闭</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="alert-level level-severe">严重</span></td>
+                                            <td>
+                                                <div class="alert-name">API响应超时</div>
+                                                <div class="alert-description">API-GATEWAY 平均响应时间: 2.3s (阈值: 1.5s)</div>
+                                            </td>
+                                            <td>2023-07-15 11:15:22</td>
+                                            <td>ALERT-20230715-004</td>
+                                            <td>API-GATEWAY</td>
+                                            <td>API服务</td>
+                                            <td><span class="alert-status status-closed">已关闭</span></td>
+                                            <td>李工程师</td>
+                                            <td>
+                                                <button class="ant-btn" style="padding: 2px 8px; font-size: 12px;">查看详情</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="alert-level level-emergency">紧急</span></td>
+                                            <td>
+                                                <div class="alert-name">网络设备端口异常</div>
+                                                <div class="alert-description">SWITCH-01 端口3 错误包率: 12% (阈值: 5%)</div>
+                                            </td>
+                                            <td>2023-07-15 10:05:18</td>
+                                            <td>ALERT-20230715-005</td>
+                                            <td>SWITCH-01</td>
+                                            <td>网络设备</td>
+                                            <td><span class="alert-status status-processing">处理中</span></td>
+                                            <td>王工程师</td>
+                                            <td>
+                                                <button class="ant-btn ant-btn-primary" style="padding: 2px 8px; font-size: 12px;">重新指派</button>
+                                                <button class="ant-btn" style="padding: 2px 8px; font-size: 12px;">关闭</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="alert-level level-warning">警告</span></td>
+                                            <td>
+                                                <div class="alert-name">内存使用率偏高</div>
+                                                <div class="alert-description">APP-SERVER-02 内存使用率: 82% (阈值: 80%)</div>
+                                            </td>
+                                            <td>2023-07-15 09:45:30</td>
+                                            <td>ALERT-20230715-006</td>
+                                            <td>APP-SERVER-02</td>
+                                            <td>服务器</td>
+                                            <td><span class="alert-status status-pending">待指派</span></td>
+                                            <td>-</td>
+                                            <td>
+                                                <button class="ant-btn ant-btn-primary" style="padding: 2px 8px; font-size: 12px;">指派</button>
+                                                <button class="ant-btn" style="padding: 2px 8px; font-size: 12px;">关闭</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="alert-level level-severe">严重</span></td>
+                                            <td>
+                                                <div class="alert-name">数据库备份失败</div>
+                                                <div class="alert-description">MySQL-从库 备份任务失败，错误码: 503</div>
+                                            </td>
+                                            <td>2023-07-15 08:20:15</td>
+                                            <td>ALERT-20230715-007</td>
+                                            <td>MySQL-从库</td>
+                                            <td>数据库服务</td>
+                                            <td><span class="alert-status status-processing">处理中</span></td>
+                                            <td>赵工程师</td>
+                                            <td>
+                                                <button class="ant-btn ant-btn-primary" style="padding: 2px 8px; font-size: 12px;">重新指派</button>
+                                                <button class="ant-btn" style="padding: 2px 8px; font-size: 12px;">关闭</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <!-- 分页 -->
+                                <div class="pagination">
+                                    <div class="pagination-info">共 52 条记录</div>
+                                    <div class="pagination-item">上一页</div>
+                                    <div class="pagination-item active">1</div>
+                                    <div class="pagination-item">2</div>
+                                    <div class="pagination-item">3</div>
+                                    <div class="pagination-ellipsis">...</div>
+                                    <div class="pagination-item">6</div>
+                                    <div class="pagination-item">下一页</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 交互逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            // 快速筛选标签点击事件
+            const filterTags = document.querySelectorAll('.filter-tag');
+            filterTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    // 移除同组其他标签的active类
+                    const parent = this.parentElement;
+                    const siblings = parent.querySelectorAll('.filter-tag');
+                    siblings.forEach(sibling => sibling.classList.remove('active'));
+                    
+                    // 给当前标签添加active类
+                    this.classList.add('active');
+                });
+            });
+            
+            // 资源项点击事件
+            const resourceItems = document.querySelectorAll('.resource-item');
+            resourceItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 切换复选框状态
+                    const checkbox = this.querySelector('.checkbox');
+                    checkbox.classList.toggle('checked');
+                    
+                    // 如果点击的是"全部"，则取消其他选项
+                    if (this.textContent.includes('全部')) {
+                        const parent = this.parentElement;
+                        const siblings = parent.querySelectorAll('.resource-item');
+                        siblings.forEach(sibling => {
+                            if (!sibling.textContent.includes('全部')) {
+                                sibling.querySelector('.checkbox').classList.remove('checked');
+                            }
+                        });
+                    } else {
+                        // 如果选择其他选项，则取消"全部"选项
+                        const parent = this.parentElement;
+                        const allItem = Array.from(parent.querySelectorAll('.resource-item')).find(item => 
+                            item.textContent.includes('全部')
+                        );
+                        if (allItem) {
+                            allItem.querySelector('.checkbox').classList.remove('checked');
+                        }
+                    }
+                });
+            });
+            
+            // 菜单项点击事件
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有菜单项的active类
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    
+                    // 给当前菜单项添加active类
+                    this.classList.add('active');
+                });
+            });
+            
+            // 分页点击事件
+            const paginationItems = document.querySelectorAll('.pagination-item');
+            paginationItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有分页项的active类
+                    paginationItems.forEach(i => i.classList.remove('active'));
+                    
+                    // 给当前分页项添加active类
+                    this.classList.add('active');
+                });
+            });
+            
+            // 开关切换事件
+            const switchElement = document.querySelector('.ant-switch');
+            switchElement.addEventListener('click', function() {
+                this.classList.toggle('ant-switch-checked');
+            });
+            
+            // 下拉选择框点击事件
+            const selectElements = document.querySelectorAll('.ant-select');
+            selectElements.forEach(select => {
+                select.addEventListener('click', function() {
+                    // 这里可以添加下拉菜单的展开逻辑
+                    console.log('展开下拉菜单');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

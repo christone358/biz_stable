@@ -1,0 +1,2440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>业务资产全景视图 - 优化版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: rgba(0, 0, 0, 0.85);
+            line-height: 1.5715;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* 顶部导航栏 - Ant Design风格 */
+        .header {
+            height: 64px;
+            background: #001529;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 12px;
+            font-size: 24px;
+            color: #1890ff;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .user-actions i {
+            font-size: 16px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.65);
+            transition: color 0.3s;
+        }
+        
+        .user-actions i:hover {
+            color: white;
+        }
+        
+        /* 左侧业务列表 - Ant Design风格 */
+        .sidebar {
+            width: 280px;
+            background-color: white;
+            border-right: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 16px;
+        }
+        
+        .sidebar-title {
+            padding: 12px 16px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .search-box {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .search-box input:focus {
+            border-color: #40a9ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+            outline: 0;
+        }
+        
+        .business-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .business-group {
+            margin-bottom: 8px;
+        }
+        
+        .group-title {
+            padding: 8px 16px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .business-item {
+            padding: 12px 16px 12px 24px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .business-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .business-item.active {
+            background-color: #e6f7ff;
+            border-left-color: #1890ff;
+            color: #1890ff;
+            font-weight: 500;
+        }
+        
+        .business-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            display: inline-block;
+        }
+        
+        .status-normal {
+            background-color: #52c41a;
+        }
+        
+        .status-warning {
+            background-color: #faad14;
+        }
+        
+        .status-error {
+            background-color: #f5222d;
+        }
+        
+        .business-count {
+            background-color: #f5f5f5;
+            color: rgba(0, 0, 0, 0.45);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        
+        .business-item.active .business-count {
+            background-color: #1890ff;
+            color: white;
+        }
+        
+        .filter-box {
+            padding: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .filter-box select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .filter-box select:focus {
+            border-color: #40a9ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+            outline: 0;
+        }
+        
+        /* 右侧内容区 - Ant Design风格 */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .content-header {
+            padding: 16px 24px;
+            background-color: white;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .breadcrumb {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .breadcrumb a {
+            color: #1890ff;
+            text-decoration: none;
+        }
+        
+        .global-search {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 24px;
+        }
+        
+        .global-search input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .global-search input:focus {
+            border-color: #40a9ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+            outline: 0;
+        }
+        
+        .view-switcher {
+            display: flex;
+            gap: 0;
+            background-color: #f5f5f5;
+            border-radius: 6px;
+            padding: 4px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .view-btn {
+            padding: 6px 16px;
+            border: none;
+            background: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+        
+        .view-btn.active {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: #1890ff;
+        }
+        
+        .back-btn {
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+        }
+        
+        .back-btn:hover {
+            background-color: #40a9ff;
+        }
+        
+        .content-body {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        /* 业务基础信息面板 - Ant Design风格 */
+        .business-info {
+            background-color: white;
+            border-radius: 6px;
+            padding: 24px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 6px rgba(0, 0, 0, 0.03);
+            margin-bottom: 24px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .info-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .info-badges {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .info-badge {
+            background-color: #e6f7ff;
+            color: #1890ff;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            border: 1px solid #91d5ff;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.45);
+            margin-bottom: 4px;
+        }
+        
+        .info-value {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* 责任主体卡片 */
+        .responsible-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        
+        .responsible-card {
+            background-color: #fafafa;
+            border-radius: 6px;
+            padding: 16px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-title i {
+            color: #1890ff;
+        }
+        
+        .card-item {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .card-label {
+            color: rgba(0, 0, 0, 0.45);
+            min-width: 80px;
+        }
+        
+        .card-value {
+            color: rgba(0, 0, 0, 0.85);
+            font-weight: 500;
+        }
+        
+        /* 资产分层视图 - Ant Design风格 */
+        .asset-layers-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .layer-section {
+            background-color: white;
+            border-radius: 6px;
+            padding: 24px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 6px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .layer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .layer-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .layer-icon {
+            color: #1890ff;
+        }
+        
+        .layer-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .detail-link {
+            color: #1890ff;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .detail-link:hover {
+            color: #40a9ff;
+        }
+        
+        .manage-link {
+            color: #52c41a;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .manage-link:hover {
+            color: #73d13d;
+        }
+        
+        .layer-stats {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1890ff;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.45);
+        }
+        
+        /* 环比箭头 */
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 8px;
+            font-size: 12px;
+        }
+        
+        .trend-up {
+            color: #f5222d;
+        }
+        
+        .trend-down {
+            color: #52c41a;
+        }
+        
+        /* 容量预警 */
+        .capacity-warning {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 8px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .warning-low {
+            background-color: #fffbe6;
+            color: #faad14;
+            border: 1px solid #ffe58f;
+        }
+        
+        .warning-medium {
+            background-color: #fff2e8;
+            color: #fa541c;
+            border: 1px solid #ffbb96;
+        }
+        
+        .warning-high {
+            background-color: #fff2f0;
+            color: #f5222d;
+            border: 1px solid #ffccc7;
+        }
+        
+        /* 蜂窝矩阵 */
+        .honeycomb-container {
+            margin-top: 16px;
+        }
+        
+        .honeycomb-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        
+        .honeycomb-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .hexagon {
+            width: 80px;
+            height: 92px;
+            background-color: #ccc;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            padding: 8px 4px;
+            text-align: center;
+        }
+        
+        .hexagon:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .hexagon-icon {
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+        
+        .hexagon-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70px;
+            font-weight: 500;
+        }
+        
+        .cell-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 20;
+        }
+        
+        .hexagon:hover .cell-tooltip {
+            opacity: 1;
+        }
+        
+        .cell-legend {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        
+        /* 依赖分析视图 */
+        .dependency-view {
+            background-color: white;
+            border-radius: 6px;
+            padding: 24px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 6px rgba(0, 0, 0, 0.03);
+            height: 600px;
+            overflow: auto;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .dependency-canvas {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            border: 1px solid #f0f0f0;
+            border-radius: 6px;
+            position: relative;
+            background-color: #fafafa;
+        }
+        
+        .node {
+            position: absolute;
+            padding: 12px 16px;
+            border-radius: 6px;
+            background-color: white;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 6px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-width: 120px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 5;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .node:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .node-business {
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+        }
+        
+        .node-resource {
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+        }
+        
+        .node-database {
+            background-color: #f9f0ff;
+            border: 1px solid #d3adf7;
+        }
+        
+        .node-service {
+            background-color: #fff7e6;
+            border: 1px solid #ffd591;
+        }
+        
+        .node-app {
+            background-color: #fff2e8;
+            border: 1px solid #ffbb96;
+        }
+        
+        .node-icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+        
+        .node-title {
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .node-desc {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.45);
+        }
+        
+        .connection {
+            position: absolute;
+            height: 2px;
+            background-color: #d9d9d9;
+            transform-origin: 0 0;
+            z-index: 1;
+        }
+        
+        .connection-arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 8px solid #d9d9d9;
+        }
+        
+        /* 操作按钮 */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        .action-btn {
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+        }
+        
+        .action-btn:hover {
+            background-color: #40a9ff;
+        }
+        
+        /* 台账表格 */
+        .table-container {
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 6px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .table-header {
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .table-actions input, .table-actions select {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .table-actions input:focus, .table-actions select:focus {
+            border-color: #40a9ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+            outline: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        th {
+            background-color: #fafafa;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+        }
+        
+        tr:hover {
+            background-color: #fafafa;
+        }
+        
+        .status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        
+        .status-running {
+            background-color: #52c41a;
+        }
+        
+        .status-stopped {
+            background-color: #f5222d;
+        }
+        
+        .status-idle {
+            background-color: #faad14;
+        }
+        
+        .detail-btn {
+            background-color: transparent;
+            color: #1890ff;
+            border: 1px solid #1890ff;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .detail-btn:hover {
+            background-color: #e6f7ff;
+        }
+        
+        .pagination {
+            padding: 16px 24px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .pagination button {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            background-color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pagination button.active {
+            background-color: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .responsible-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 300px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .layer-stats {
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-project-diagram"></i>
+            <span>业务资产全景视图</span>
+        </div>
+        <div class="user-actions">
+            <i class="fas fa-bell"></i>
+            <i class="fas fa-cog"></i>
+            <i class="fas fa-user-circle"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 左侧业务列表 -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <span>全部业务</span>
+                </div>
+                <div class="search-box">
+                    <input type="text" placeholder="搜索业务...">
+                </div>
+                <div class="business-list" id="all-business-list">
+                    <!-- 一梁 -->
+                    <div class="business-group">
+                        <div class="group-title">
+                            <span>一梁</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="business-item active" data-business="businessA">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>一网通办门户</span>
+                            </div>
+                            <span class="business-count">28</span>
+                        </div>
+                        <div class="business-item" data-business="businessB">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>随申办APP</span>
+                            </div>
+                            <span class="business-count">15</span>
+                        </div>
+                        <div class="business-item" data-business="businessC">
+                            <div>
+                                <span class="business-status status-warning"></span>
+                                <span>小程序</span>
+                            </div>
+                            <span class="business-count">12</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 多应用 -->
+                    <div class="business-group">
+                        <div class="group-title">
+                            <span>多应用</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="business-item" data-business="businessD">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>创新创业</span>
+                            </div>
+                            <span class="business-count">8</span>
+                        </div>
+                        <div class="business-item" data-business="businessE">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>企业开办</span>
+                            </div>
+                            <span class="business-count">6</span>
+                        </div>
+                        <div class="business-item" data-business="businessF">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>出生</span>
+                            </div>
+                            <span class="business-count">5</span>
+                        </div>
+                        <div class="business-item" data-business="businessG">
+                            <div>
+                                <span class="business-status status-error"></span>
+                                <span>结婚落户</span>
+                            </div>
+                            <span class="business-count">4</span>
+                        </div>
+                        <div class="business-item" data-business="businessH">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>不动产登记</span>
+                            </div>
+                            <span class="business-count">7</span>
+                        </div>
+                        <div class="business-item" data-business="businessI">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>社保医保</span>
+                            </div>
+                            <span class="business-count">9</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 四柱 -->
+                    <div class="business-group">
+                        <div class="group-title">
+                            <span>四柱</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="business-item" data-business="businessJ">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>统一公共支付</span>
+                            </div>
+                            <span class="business-count">18</span>
+                        </div>
+                        <div class="business-item" data-business="businessK">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>统一身份认证</span>
+                            </div>
+                            <span class="business-count">22</span>
+                        </div>
+                        <div class="business-item" data-business="businessL">
+                            <div>
+                                <span class="business-status status-warning"></span>
+                                <span>统一总客服</span>
+                            </div>
+                            <span class="business-count">14</span>
+                        </div>
+                        <div class="business-item" data-business="businessM">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>统一物流快递</span>
+                            </div>
+                            <span class="business-count">11</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 一库 -->
+                    <div class="business-group">
+                        <div class="group-title">
+                            <span>一库</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="business-item" data-business="businessN">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>公共信息</span>
+                            </div>
+                            <span class="business-count">35</span>
+                        </div>
+                        <div class="business-item" data-business="businessO">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>人口信息库</span>
+                            </div>
+                            <span class="business-count">42</span>
+                        </div>
+                        <div class="business-item" data-business="businessP">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>空间地理</span>
+                            </div>
+                            <span class="business-count">26</span>
+                        </div>
+                        <div class="business-item" data-business="businessQ">
+                            <div>
+                                <span class="business-status status-normal"></span>
+                                <span>法人信息库</span>
+                            </div>
+                            <span class="business-count">31</span>
+                        </div>
+                        <div class="business-item" data-business="businessR">
+                            <div>
+                                <span class="business-status status-warning"></span>
+                                <span>电子证照库</span>
+                            </div>
+                            <span class="business-count">19</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-box">
+                <select>
+                    <option>全部业务</option>
+                    <option>活跃业务</option>
+                    <option>下线业务</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 右侧内容区 -->
+        <div class="content">
+            <div class="content-header">
+                <div class="breadcrumb">
+                    <span id="breadcrumb-text">一网通办门户 - 资产全景</span>
+                </div>
+                
+                <div class="global-search">
+                    <input type="text" placeholder="搜索全局资产...">
+                </div>
+                
+                <div class="view-switcher">
+                    <button class="view-btn active" data-view="overview">
+                        <i class="fas fa-th-large"></i>
+                        资产全景
+                    </button>
+                    <button class="view-btn" data-view="dependency">
+                        <i class="fas fa-project-diagram"></i>
+                        依赖分析
+                    </button>
+                </div>
+                
+                <button class="back-btn" id="back-btn" style="display: none;">
+                    <i class="fas fa-arrow-left"></i>
+                    返回全景
+                </button>
+            </div>
+            
+            <div class="content-body" id="content-body">
+                <!-- 业务基础信息面板 -->
+                <div class="business-info" id="business-info">
+                    <div class="info-header">
+                        <div class="info-title">业务基础信息</div>
+                        <div class="info-badges">
+                            <span class="info-badge">运行中</span>
+                            <span class="info-badge">核心业务</span>
+                        </div>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">业务ID</div>
+                            <div class="info-value">PORTAL-2023-001</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">业务状态</div>
+                            <div class="info-value">正常运行</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">创建时间</div>
+                            <div class="info-value">2021-03-15</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">SLA等级</div>
+                            <div class="info-value">99.9%</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">访问量</div>
+                            <div class="info-value">1.2亿/月</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">用户数</div>
+                            <div class="info-value">4500万</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">业务描述</div>
+                            <div class="info-value">政务服务统一入口，提供一站式在线办事服务</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-header" style="margin-top: 24px;">
+                        <div class="info-title">责任主体</div>
+                    </div>
+                    <div class="responsible-cards">
+                        <div class="responsible-card">
+                            <div class="card-title">
+                                <i class="fas fa-user-tie"></i>
+                                <span>责任主体</span>
+                            </div>
+                            <div class="card-item">
+                                <div class="card-label">单位/组织</div>
+                                <div class="card-value">市大数据中心</div>
+                            </div>
+                            <div class="card-item">
+                                <div class="card-label">联系人</div>
+                                <div class="card-value">张主任</div>
+                            </div>
+                            <div class="card-item">
+                                <div class="card-label">联系电话</div>
+                                <div class="card-value">138****1234</div>
+                            </div>
+                        </div>
+                        
+                        <div class="responsible-card">
+                            <div class="card-title">
+                                <i class="fas fa-code"></i>
+                                <span>开发主体</span>
+                            </div>
+                            <div class="card-item">
+                                <div class="card-label">单位/组织</div>
+                                <div class="card-value">市信息化发展公司</div>
+                            </div>
+                            <div class="card-item">
+                                <div class="card-label">联系人</div>
+                                <div class="card-value">王工程师</div>
+                            </div>
+                            <div class="card-item">
+                                <div class="card-label">联系电话</div>
+                                <div class="card-value">139****5678</div>
+                            </div>
+                        </div>
+                        
+                        <div class="responsible-card">
+                            <div class="card-title">
+                                <i class="fas fa-tools"></i>
+                                <span>运维主体</span>
+                            </div>
+                            <div class="card-item">
+                                <div class="card-label">单位/组织</div>
+                                <div class="card-value">市政务云运营中心</div>
+                            </div>
+                            <div class="card-item">
+                                <div class="card-label">联系人</div>
+                                <div class="card-value">李运维</div>
+                            </div>
+                            <div class="card-item">
+                                <div class="card-label">联系电话</div>
+                                <div class="card-value">136****9012</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 资产全景视图 -->
+                <div id="overview-view">
+                    <!-- 垂直资产分层 -->
+                    <div class="asset-layers-vertical">
+                        <!-- 应用层 -->
+                        <div class="layer-section">
+                            <div class="layer-header">
+                                <div class="layer-title">
+                                    <i class="fas fa-cubes layer-icon"></i>
+                                    <span>应用层</span>
+                                </div>
+                                <div class="layer-actions">
+                                    <a class="detail-link" id="view-app-detail">
+                                        详情 <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                    <a class="manage-link" id="manage-app">
+                                        台账管理 <i class="fas fa-cog"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="layer-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">12</div>
+                                    <div class="stat-label">总应用数</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">10</div>
+                                    <div class="stat-label">运行中</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">2</div>
+                                    <div class="stat-label">异常</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">
+                                        +2
+                                        <span class="trend-indicator trend-up"><i class="fas fa-arrow-up"></i></span>
+                                    </div>
+                                    <div class="stat-label">本月新增</div>
+                                </div>
+                            </div>
+                            
+                            <div class="honeycomb-container">
+                                <div class="honeycomb-title">应用分布</div>
+                                <div class="honeycomb-grid" id="app-honeycomb">
+                                    <!-- 应用蜂窝矩阵将通过JS动态生成 -->
+                                </div>
+                                <div class="cell-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #fa541c;"></div>
+                                        <span>前端应用 (5)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #722ed1;"></div>
+                                        <span>后端服务 (6)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #13c2c2;"></div>
+                                        <span>中间件 (1)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 计算层 -->
+                        <div class="layer-section">
+                            <div class="layer-header">
+                                <div class="layer-title">
+                                    <i class="fas fa-server layer-icon"></i>
+                                    <span>计算层资源</span>
+                                </div>
+                                <div class="layer-actions">
+                                    <a class="detail-link" id="view-compute-detail">
+                                        详情 <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                    <a class="manage-link" id="manage-compute">
+                                        台账管理 <i class="fas fa-cog"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="layer-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">28</div>
+                                    <div class="stat-label">总资源数</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">25</div>
+                                    <div class="stat-label">运行中</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">3</div>
+                                    <div class="stat-label">异常</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">
+                                        -1
+                                        <span class="trend-indicator trend-down"><i class="fas fa-arrow-down"></i></span>
+                                    </div>
+                                    <div class="stat-label">本月变化</div>
+                                </div>
+                            </div>
+                            
+                            <div class="honeycomb-container">
+                                <div class="honeycomb-title">资源分布</div>
+                                <div class="honeycomb-grid" id="compute-honeycomb">
+                                    <!-- 蜂窝矩阵将通过JS动态生成 -->
+                                </div>
+                                <div class="cell-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #52c41a;"></div>
+                                        <span>云服务器 (18)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #1890ff;"></div>
+                                        <span>容器集群 (8)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #faad14;"></div>
+                                        <span>函数计算 (2)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 存储层 -->
+                        <div class="layer-section">
+                            <div class="layer-header">
+                                <div class="layer-title">
+                                    <i class="fas fa-database layer-icon"></i>
+                                    <span>存储层资源</span>
+                                </div>
+                                <div class="layer-actions">
+                                    <a class="detail-link" id="view-storage-detail">
+                                        详情 <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                    <a class="manage-link" id="manage-storage">
+                                        台账管理 <i class="fas fa-cog"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="layer-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">15</div>
+                                    <div class="stat-label">总资源数</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">15</div>
+                                    <div class="stat-label">正常</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">0</div>
+                                    <div class="stat-label">异常</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">
+                                        +3
+                                        <span class="trend-indicator trend-up"><i class="fas fa-arrow-up"></i></span>
+                                    </div>
+                                    <div class="stat-label">本月新增</div>
+                                </div>
+                            </div>
+                            
+                            <div class="honeycomb-container">
+                                <div class="honeycomb-title">资源分布</div>
+                                <div class="honeycomb-grid" id="storage-honeycomb">
+                                    <!-- 蜂窝矩阵将通过JS动态生成 -->
+                                </div>
+                                <div class="cell-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #722ed1;"></div>
+                                        <span>对象存储 (8)</span>
+                                        <span class="capacity-warning warning-high">92%</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #1890ff;"></div>
+                                        <span>块存储 (4)</span>
+                                        <span class="capacity-warning warning-medium">78%</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #13c2c2;"></div>
+                                        <span>文件存储 (3)</span>
+                                        <span class="capacity-warning warning-low">65%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 网络层 -->
+                        <div class="layer-section">
+                            <div class="layer-header">
+                                <div class="layer-title">
+                                    <i class="fas fa-network-wired layer-icon"></i>
+                                    <span>网络层资源</span>
+                                </div>
+                                <div class="layer-actions">
+                                    <a class="detail-link" id="view-network-detail">
+                                        详情 <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                    <a class="manage-link" id="manage-network">
+                                        台账管理 <i class="fas fa-cog"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="layer-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">9</div>
+                                    <div class="stat-label">总资源数</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">9</div>
+                                    <div class="stat-label">正常</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">0</div>
+                                    <div class="stat-label">异常</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">
+                                        0
+                                        <span class="trend-indicator">-</span>
+                                    </div>
+                                    <div class="stat-label">本月变化</div>
+                                </div>
+                            </div>
+                            
+                            <div class="honeycomb-container">
+                                <div class="honeycomb-title">资源分布</div>
+                                <div class="honeycomb-grid" id="network-honeycomb">
+                                    <!-- 蜂窝矩阵将通过JS动态生成 -->
+                                </div>
+                                <div class="cell-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #fa8c16;"></div>
+                                        <span>负载均衡 (3)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #52c41a;"></div>
+                                        <span>VPN网关 (2)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #1890ff;"></div>
+                                        <span>NAT网关 (2)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #eb2f96;"></div>
+                                        <span>CDN (2)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 依赖分析视图 (初始隐藏) -->
+                <div id="dependency-view" style="display: none;">
+                    <div class="dependency-view">
+                        <div class="dependency-canvas" id="dependency-canvas">
+                            <!-- 依赖图将通过JS动态生成 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 台账视图 (初始隐藏) -->
+                <div id="detail-view" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div id="detail-title">资源台账</div>
+                            <div class="table-actions">
+                                <input type="text" placeholder="搜索资产...">
+                                <select>
+                                    <option>状态: 全部</option>
+                                    <option>运行中</option>
+                                    <option>已停止</option>
+                                    <option>空闲</option>
+                                </select>
+                                <select>
+                                    <option>类型: 全部</option>
+                                    <option>云服务器</option>
+                                    <option>容器集群</option>
+                                    <option>函数计算</option>
+                                </select>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>名称</th>
+                                    <th>类型</th>
+                                    <th>状态</th>
+                                    <th>IP/地址</th>
+                                    <th>配置</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detail-table-body">
+                                <!-- 表格内容将通过JS动态生成 -->
+                            </tbody>
+                        </table>
+                        <div class="pagination">
+                            <button class="active">1</button>
+                            <button>2</button>
+                            <button>3</button>
+                            <button>...</button>
+                            <button>10</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 台账管理视图 (初始隐藏) -->
+                <div id="manage-view" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div id="manage-title">台账管理</div>
+                            <div class="table-actions">
+                                <button class="action-btn">
+                                    <i class="fas fa-plus"></i>
+                                    新增资产
+                                </button>
+                                <button class="action-btn">
+                                    <i class="fas fa-download"></i>
+                                    导出数据
+                                </button>
+                                <input type="text" placeholder="搜索资产...">
+                                <select>
+                                    <option>状态: 全部</option>
+                                    <option>运行中</option>
+                                    <option>已停止</option>
+                                    <option>空闲</option>
+                                </select>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>名称</th>
+                                    <th>类型</th>
+                                    <th>状态</th>
+                                    <th>IP/地址</th>
+                                    <th>配置</th>
+                                    <th>责任人</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manage-table-body">
+                                <!-- 表格内容将通过JS动态生成 -->
+                            </tbody>
+                        </table>
+                        <div class="pagination">
+                            <button class="active">1</button>
+                            <button>2</button>
+                            <button>3</button>
+                            <button>...</button>
+                            <button>10</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 业务数据
+        const businessData = {
+            businessA: {
+                name: "一网通办门户",
+                info: {
+                    id: "PORTAL-2023-001",
+                    status: "正常运行",
+                    createTime: "2021-03-15",
+                    sla: "99.9%",
+                    visits: "1.2亿/月",
+                    users: "4500万",
+                    description: "政务服务统一入口，提供一站式在线办事服务"
+                },
+                responsible: {
+                    owner: {
+                        org: "市大数据中心",
+                        contact: "张主任",
+                        phone: "138****1234"
+                    },
+                    developer: {
+                        org: "市信息化发展公司",
+                        contact: "王工程师",
+                        phone: "139****5678"
+                    },
+                    operator: {
+                        org: "市政务云运营中心",
+                        contact: "李运维",
+                        phone: "136****9012"
+                    }
+                },
+                assets: {
+                    app: { total: 12, running: 10, abnormal: 2, change: 2 },
+                    compute: { total: 28, running: 25, abnormal: 3, change: -1 },
+                    storage: { total: 15, running: 15, abnormal: 0, change: 3 },
+                    network: { total: 9, running: 9, abnormal: 0, change: 0 }
+                }
+            },
+            businessB: {
+                name: "随申办APP",
+                info: {
+                    id: "APP-2023-002",
+                    status: "正常运行",
+                    createTime: "2020-08-10",
+                    sla: "99.95%",
+                    visits: "8000万/月",
+                    users: "3200万",
+                    description: "移动端政务服务应用，提供便捷的掌上办事体验"
+                },
+                responsible: {
+                    owner: {
+                        org: "市大数据中心",
+                        contact: "赵主任",
+                        phone: "137****3456"
+                    },
+                    developer: {
+                        org: "市信息化发展公司",
+                        contact: "刘工程师",
+                        phone: "135****7890"
+                    },
+                    operator: {
+                        org: "市政务云运营中心",
+                        contact: "陈运维",
+                        phone: "139****2345"
+                    }
+                },
+                assets: {
+                    app: { total: 8, running: 7, abnormal: 1, change: 1 },
+                    compute: { total: 15, running: 14, abnormal: 1, change: 0 },
+                    storage: { total: 10, running: 10, abnormal: 0, change: 2 },
+                    network: { total: 6, running: 6, abnormal: 0, change: 0 }
+                }
+            }
+        };
+
+        // 蜂窝矩阵数据
+        const honeycombData = {
+            app: [
+                { type: "前端应用", count: 5, color: "#fa541c", status: "normal", assets: ["门户首页", "用户中心", "办事大厅", "我的办件", "消息中心"] },
+                { type: "后端服务", count: 6, color: "#722ed1", status: "normal", assets: ["用户服务", "认证服务", "办件服务", "支付服务", "消息服务", "文件服务"] },
+                { type: "中间件", count: 1, color: "#13c2c2", status: "abnormal", assets: ["消息队列"] }
+            ],
+            compute: [
+                { type: "云服务器", count: 18, color: "#52c41a", status: "normal", assets: ["WEB-01", "WEB-02", "WEB-03", "APP-01", "APP-02", "DB-01", "DB-02", "CACHE-01", "CACHE-02", "SEARCH-01", "SEARCH-02", "FILE-01", "FILE-02", "AUTH-01", "AUTH-02", "PAY-01", "PAY-02", "MSG-01"] },
+                { type: "容器集群", count: 8, color: "#1890ff", status: "normal", assets: ["K8S-MASTER", "K8S-NODE-01", "K8S-NODE-02", "K8S-NODE-03", "K8S-NODE-04", "K8S-NODE-05", "K8S-NODE-06", "K8S-NODE-07"] },
+                { type: "函数计算", count: 2, color: "#faad14", status: "abnormal", assets: ["FC-IMAGE", "FC-DOC"] }
+            ],
+            storage: [
+                { type: "对象存储", count: 8, color: "#722ed1", status: "normal", assets: ["OSS-USER", "OSS-FILE", "OSS-IMAGE", "OSS-VIDEO", "OSS-BACKUP", "OSS-TEMP", "OSS-LOG", "OSS-ARCHIVE"] },
+                { type: "块存储", count: 4, color: "#1890ff", status: "normal", assets: ["DISK-DB", "DISK-CACHE", "DISK-SEARCH", "DISK-BACKUP"] },
+                { type: "文件存储", count: 3, color: "#13c2c2", status: "normal", assets: ["NAS-SHARE", "NAS-BACKUP", "NAS-TEMP"] }
+            ],
+            network: [
+                { type: "负载均衡", count: 3, color: "#fa8c16", status: "normal", assets: ["SLB-WEB", "SLB-APP", "SLB-API"] },
+                { type: "VPN网关", count: 2, color: "#52c41a", status: "normal", assets: ["VPN-OFFICE", "VPN-MOBILE"] },
+                { type: "NAT网关", count: 2, color: "#1890ff", status: "normal", assets: ["NAT-PUBLIC", "NAT-BACKUP"] },
+                { type: "CDN", count: 2, color: "#eb2f96", status: "normal", assets: ["CDN-STATIC", "CDN-VIDEO"] }
+            ]
+        };
+
+        // 依赖图数据
+        const dependencyData = [
+            {
+                id: "businessA",
+                type: "business",
+                name: "一网通办门户",
+                x: 300,
+                y: 100,
+                connections: ["web-app", "payment-app", "user-app"]
+            },
+            {
+                id: "web-app",
+                type: "app",
+                name: "Web应用",
+                x: 150,
+                y: 200,
+                connections: ["web-service", "load-balancer"]
+            },
+            {
+                id: "payment-app",
+                type: "app",
+                name: "支付应用",
+                x: 300,
+                y: 200,
+                connections: ["payment-service", "payment-db"]
+            },
+            {
+                id: "user-app",
+                type: "app",
+                name: "用户应用",
+                x: 450,
+                y: 200,
+                connections: ["user-service", "user-db"]
+            },
+            {
+                id: "web-service",
+                type: "service",
+                name: "Web服务",
+                x: 100,
+                y: 300,
+                connections: ["app-server-1", "app-server-2"]
+            },
+            {
+                id: "payment-service",
+                type: "service",
+                name: "支付服务",
+                x: 250,
+                y: 300,
+                connections: ["payment-db", "redis-cache"]
+            },
+            {
+                id: "user-service",
+                type: "service",
+                name: "用户服务",
+                x: 400,
+                y: 300,
+                connections: ["user-db", "redis-cache"]
+            },
+            {
+                id: "load-balancer",
+                type: "resource",
+                name: "负载均衡",
+                x: 150,
+                y: 400
+            },
+            {
+                id: "app-server-1",
+                type: "resource",
+                name: "应用服务器1",
+                x: 50,
+                y: 400
+            },
+            {
+                id: "app-server-2",
+                type: "resource",
+                name: "应用服务器2",
+                x: 100,
+                y: 450
+            },
+            {
+                id: "payment-db",
+                type: "database",
+                name: "支付数据库",
+                x: 250,
+                y: 400
+            },
+            {
+                id: "user-db",
+                type: "database",
+                name: "用户数据库",
+                x: 400,
+                y: 400
+            },
+            {
+                id: "redis-cache",
+                type: "resource",
+                name: "Redis缓存",
+                x: 325,
+                y: 450
+            }
+        ];
+
+        // 台账数据
+        const detailData = {
+            app: [
+                { name: "门户首页", type: "前端应用", status: "running", address: "https://zwdt.sh.gov.cn", config: "Vue 3.0", operation: "详情" },
+                { name: "用户中心", type: "前端应用", status: "running", address: "https://user.zwdt.sh.gov.cn", config: "React 18", operation: "详情" },
+                { name: "办事大厅", type: "前端应用", status: "running", address: "https://service.zwdt.sh.gov.cn", config: "Vue 3.0", operation: "详情" },
+                { name: "我的办件", type: "前端应用", status: "running", address: "https://my.zwdt.sh.gov.cn", config: "React 18", operation: "详情" },
+                { name: "消息中心", type: "前端应用", status: "abnormal", address: "https://message.zwdt.sh.gov.cn", config: "Vue 3.0", operation: "详情" },
+                { name: "用户服务", type: "后端服务", status: "running", address: "10.0.1.1:8080", config: "Java Spring", operation: "详情" },
+                { name: "认证服务", type: "后端服务", status: "running", address: "10.0.1.2:8080", config: "Java Spring", operation: "详情" },
+                { name: "办件服务", type: "后端服务", status: "running", address: "10.0.1.3:8080", config: "Java Spring", operation: "详情" },
+                { name: "支付服务", type: "后端服务", status: "running", address: "10.0.1.4:8080", config: "Java Spring", operation: "详情" },
+                { name: "消息服务", type: "后端服务", status: "running", address: "10.0.1.5:8080", config: "Java Spring", operation: "详情" },
+                { name: "文件服务", type: "后端服务", status: "abnormal", address: "10.0.1.6:8080", config: "Java Spring", operation: "详情" },
+                { name: "消息队列", type: "中间件", status: "running", address: "10.0.1.7:5672", config: "RabbitMQ", operation: "详情" }
+            ],
+            compute: [
+                { name: "WEB-01", type: "云服务器", status: "running", address: "192.168.1.1", config: "4核8G", operation: "详情" },
+                { name: "WEB-02", type: "云服务器", status: "running", address: "192.168.1.2", config: "4核8G", operation: "详情" },
+                { name: "WEB-03", type: "云服务器", status: "running", address: "192.168.1.3", config: "4核8G", operation: "详情" },
+                { name: "APP-01", type: "云服务器", status: "running", address: "192.168.1.4", config: "8核16G", operation: "详情" },
+                { name: "APP-02", type: "云服务器", status: "running", address: "192.168.1.5", config: "8核16G", operation: "详情" },
+                { name: "DB-01", type: "云服务器", status: "running", address: "192.168.1.6", config: "16核32G", operation: "详情" },
+                { name: "DB-02", type: "云服务器", status: "running", address: "192.168.1.7", config: "16核32G", operation: "详情" },
+                { name: "CACHE-01", type: "云服务器", status: "running", address: "192.168.1.8", config: "4核8G", operation: "详情" },
+                { name: "CACHE-02", type: "云服务器", status: "running", address: "192.168.1.9", config: "4核8G", operation: "详情" },
+                { name: "SEARCH-01", type: "云服务器", status: "running", address: "192.168.1.10", config: "8核16G", operation: "详情" },
+                { name: "SEARCH-02", type: "云服务器", status: "running", address: "192.168.1.11", config: "8核16G", operation: "详情" },
+                { name: "FILE-01", type: "云服务器", status: "running", address: "192.168.1.12", config: "8核16G", operation: "详情" },
+                { name: "FILE-02", type: "云服务器", status: "running", address: "192.168.1.13", config: "8核16G", operation: "详情" },
+                { name: "AUTH-01", type: "云服务器", status: "running", address: "192.168.1.14", config: "4核8G", operation: "详情" },
+                { name: "AUTH-02", type: "云服务器", status: "running", address: "192.168.1.15", config: "4核8G", operation: "详情" },
+                { name: "PAY-01", type: "云服务器", status: "running", address: "192.168.1.16", config: "4核8G", operation: "详情" },
+                { name: "PAY-02", type: "云服务器", status: "abnormal", address: "192.168.1.17", config: "4核8G", operation: "详情" },
+                { name: "MSG-01", type: "云服务器", status: "abnormal", address: "192.168.1.18", config: "4核8G", operation: "详情" },
+                { name: "K8S-MASTER", type: "容器集群", status: "running", address: "10.0.0.1", config: "4节点", operation: "详情" },
+                { name: "K8S-NODE-01", type: "容器集群", status: "running", address: "10.0.0.2", config: "8核16G", operation: "详情" },
+                { name: "K8S-NODE-02", type: "容器集群", status: "running", address: "10.0.0.3", config: "8核16G", operation: "详情" },
+                { name: "K8S-NODE-03", type: "容器集群", status: "running", address: "10.0.0.4", config: "8核16G", operation: "详情" },
+                { name: "K8S-NODE-04", type: "容器集群", status: "running", address: "10.0.0.5", config: "8核16G", operation: "详情" },
+                { name: "K8S-NODE-05", type: "容器集群", status: "running", address: "10.0.0.6", config: "8核16G", operation: "详情" },
+                { name: "K8S-NODE-06", type: "容器集群", status: "running", address: "10.0.0.7", config: "8核16G", operation: "详情" },
+                { name: "K8S-NODE-07", type: "容器集群", status: "abnormal", address: "10.0.0.8", config: "8核16G", operation: "详情" },
+                { name: "FC-IMAGE", type: "函数计算", status: "idle", address: "-", config: "512MB", operation: "详情" },
+                { name: "FC-DOC", type: "函数计算", status: "abnormal", address: "-", config: "512MB", operation: "详情" }
+            ],
+            storage: [
+                { name: "OSS-USER", type: "对象存储", status: "running", address: "oss://user-bucket", config: "100GB", operation: "详情" },
+                { name: "OSS-FILE", type: "对象存储", status: "running", address: "oss://file-bucket", config: "500GB", operation: "详情" },
+                { name: "OSS-IMAGE", type: "对象存储", status: "running", address: "oss://image-bucket", config: "200GB", operation: "详情" },
+                { name: "OSS-VIDEO", type: "对象存储", status: "running", address: "oss://video-bucket", config: "1TB", operation: "详情" },
+                { name: "OSS-BACKUP", type: "对象存储", status: "running", address: "oss://backup-bucket", config: "2TB", operation: "详情" },
+                { name: "OSS-TEMP", type: "对象存储", status: "running", address: "oss://temp-bucket", config: "50GB", operation: "详情" },
+                { name: "OSS-LOG", type: "对象存储", status: "running", address: "oss://log-bucket", config: "100GB", operation: "详情" },
+                { name: "OSS-ARCHIVE", type: "对象存储", status: "running", address: "oss://archive-bucket", config: "500GB", operation: "详情" },
+                { name: "DISK-DB", type: "块存储", status: "running", address: "/dev/sdb1", config: "1TB", operation: "详情" },
+                { name: "DISK-CACHE", type: "块存储", status: "running", address: "/dev/sdc1", config: "500GB", operation: "详情" },
+                { name: "DISK-SEARCH", type: "块存储", status: "running", address: "/dev/sdd1", config: "500GB", operation: "详情" },
+                { name: "DISK-BACKUP", type: "块存储", status: "running", address: "/dev/sde1", config: "2TB", operation: "详情" },
+                { name: "NAS-SHARE", type: "文件存储", status: "running", address: "nas://share1", config: "1TB", operation: "详情" },
+                { name: "NAS-BACKUP", type: "文件存储", status: "running", address: "nas://backup1", config: "2TB", operation: "详情" },
+                { name: "NAS-TEMP", type: "文件存储", status: "running", address: "nas://temp1", config: "500GB", operation: "详情" }
+            ],
+            network: [
+                { name: "SLB-WEB", type: "负载均衡", status: "running", address: "slb.zwdt.sh.gov.cn", config: "HTTP/HTTPS", operation: "详情" },
+                { name: "SLB-APP", type: "负载均衡", status: "running", address: "api.zwdt.sh.gov.cn", config: "HTTP/HTTPS", operation: "详情" },
+                { name: "SLB-API", type: "负载均衡", status: "running", address: "gateway.zwdt.sh.gov.cn", config: "HTTP/HTTPS", operation: "详情" },
+                { name: "VPN-OFFICE", type: "VPN网关", status: "running", address: "vpn.office.sh.gov.cn", config: "IPSec", operation: "详情" },
+                { name: "VPN-MOBILE", type: "VPN网关", status: "running", address: "vpn.mobile.sh.gov.cn", config: "SSL", operation: "详情" },
+                { name: "NAT-PUBLIC", type: "NAT网关", status: "running", address: "nat.public.sh.gov.cn", config: "SNAT/DNAT", operation: "详情" },
+                { name: "NAT-BACKUP", type: "NAT网关", status: "running", address: "nat.backup.sh.gov.cn", config: "SNAT/DNAT", operation: "详情" },
+                { name: "CDN-STATIC", type: "CDN", status: "running", address: "cdn.static.sh.gov.cn", config: "静态加速", operation: "详情" },
+                { name: "CDN-VIDEO", type: "CDN", status: "running", address: "cdn.video.sh.gov.cn", config: "视频加速", operation: "详情" }
+            ]
+        };
+
+        // 台账管理数据
+        const manageData = {
+            app: [
+                { name: "门户首页", type: "前端应用", status: "running", address: "https://zwdt.sh.gov.cn", config: "Vue 3.0", owner: "前端团队", operation: "编辑" },
+                { name: "用户中心", type: "前端应用", status: "running", address: "https://user.zwdt.sh.gov.cn", config: "React 18", owner: "前端团队", operation: "编辑" },
+                { name: "办事大厅", type: "前端应用", status: "running", address: "https://service.zwdt.sh.gov.cn", config: "Vue 3.0", owner: "前端团队", operation: "编辑" },
+                { name: "我的办件", type: "前端应用", status: "running", address: "https://my.zwdt.sh.gov.cn", config: "React 18", owner: "前端团队", operation: "编辑" },
+                { name: "消息中心", type: "前端应用", status: "abnormal", address: "https://message.zwdt.sh.gov.cn", config: "Vue 3.0", owner: "前端团队", operation: "编辑" },
+                { name: "用户服务", type: "后端服务", status: "running", address: "10.0.1.1:8080", config: "Java Spring", owner: "后端团队", operation: "编辑" }
+            ],
+            compute: [
+                { name: "WEB-01", type: "云服务器", status: "running", address: "192.168.1.1", config: "4核8G", owner: "运维团队", operation: "编辑" },
+                { name: "WEB-02", type: "云服务器", status: "running", address: "192.168.1.2", config: "4核8G", owner: "运维团队", operation: "编辑" },
+                { name: "WEB-03", type: "云服务器", status: "running", address: "192.168.1.3", config: "4核8G", owner: "运维团队", operation: "编辑" },
+                { name: "APP-01", type: "云服务器", status: "running", address: "192.168.1.4", config: "8核16G", owner: "运维团队", operation: "编辑" },
+                { name: "APP-02", type: "云服务器", status: "running", address: "192.168.1.5", config: "8核16G", owner: "运维团队", operation: "编辑" },
+                { name: "DB-01", type: "云服务器", status: "running", address: "192.168.1.6", config: "16核32G", owner: "DBA团队", operation: "编辑" }
+            ],
+            storage: [
+                { name: "OSS-USER", type: "对象存储", status: "running", address: "oss://user-bucket", config: "100GB", owner: "存储团队", operation: "编辑" },
+                { name: "OSS-FILE", type: "对象存储", status: "running", address: "oss://file-bucket", config: "500GB", owner: "存储团队", operation: "编辑" },
+                { name: "OSS-IMAGE", type: "对象存储", status: "running", address: "oss://image-bucket", config: "200GB", owner: "存储团队", operation: "编辑" },
+                { name: "OSS-VIDEO", type: "对象存储", status: "running", address: "oss://video-bucket", config: "1TB", owner: "存储团队", operation: "编辑" },
+                { name: "OSS-BACKUP", type: "对象存储", status: "running", address: "oss://backup-bucket", config: "2TB", owner: "存储团队", operation: "编辑" },
+                { name: "OSS-TEMP", type: "对象存储", status: "running", address: "oss://temp-bucket", config: "50GB", owner: "存储团队", operation: "编辑" }
+            ],
+            network: [
+                { name: "SLB-WEB", type: "负载均衡", status: "running", address: "slb.zwdt.sh.gov.cn", config: "HTTP/HTTPS", owner: "网络团队", operation: "编辑" },
+                { name: "SLB-APP", type: "负载均衡", status: "running", address: "api.zwdt.sh.gov.cn", config: "HTTP/HTTPS", owner: "网络团队", operation: "编辑" },
+                { name: "SLB-API", type: "负载均衡", status: "running", address: "gateway.zwdt.sh.gov.cn", config: "HTTP/HTTPS", owner: "网络团队", operation: "编辑" },
+                { name: "VPN-OFFICE", type: "VPN网关", status: "running", address: "vpn.office.sh.gov.cn", config: "IPSec", owner: "网络团队", operation: "编辑" },
+                { name: "VPN-MOBILE", type: "VPN网关", status: "running", address: "vpn.mobile.sh.gov.cn", config: "SSL", owner: "网络团队", operation: "编辑" },
+                { name: "NAT-PUBLIC", type: "NAT网关", status: "running", address: "nat.public.sh.gov.cn", config: "SNAT/DNAT", owner: "网络团队", operation: "编辑" }
+            ]
+        };
+
+        // 初始化蜂窝矩阵
+        function initHoneycomb() {
+            for (const layer in honeycombData) {
+                const container = document.getElementById(`${layer}-honeycomb`);
+                container.innerHTML = '';
+                
+                honeycombData[layer].forEach(item => {
+                    for (let i = 0; i < item.count; i++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'hexagon';
+                        cell.style.backgroundColor = item.color;
+                        
+                        const assetName = item.assets && i < item.assets.length ? item.assets[i] : `${item.type} ${i+1}`;
+                        
+                        cell.innerHTML = `
+                            <div class="hexagon-icon"><i class="fas fa-${getIconForType(item.type)}"></i></div>
+                            <div class="hexagon-name">${assetName}</div>
+                        `;
+                        
+                        const tooltip = document.createElement('div');
+                        tooltip.className = 'cell-tooltip';
+                        tooltip.textContent = assetName;
+                        cell.appendChild(tooltip);
+                        
+                        // 添加异常状态标识
+                        if (item.status === 'abnormal') {
+                            const warning = document.createElement('div');
+                            warning.className = 'status status-stopped';
+                            warning.style.position = 'absolute';
+                            warning.style.top = '2px';
+                            warning.style.right = '2px';
+                            warning.style.margin = '0';
+                            cell.appendChild(warning);
+                        }
+                        
+                        container.appendChild(cell);
+                    }
+                });
+            }
+        }
+
+        // 初始化依赖图
+        function initDependencyGraph() {
+            const canvas = document.getElementById('dependency-canvas');
+            canvas.innerHTML = '';
+            
+            // 创建连接线
+            dependencyData.forEach(node => {
+                if (node.connections) {
+                    node.connections.forEach(targetId => {
+                        const targetNode = dependencyData.find(n => n.id === targetId);
+                        if (targetNode) {
+                            createConnection(node, targetNode);
+                        }
+                    });
+                }
+            });
+            
+            // 创建节点
+            dependencyData.forEach(node => {
+                createNode(node);
+            });
+        }
+        
+        function createNode(nodeData) {
+            const canvas = document.getElementById('dependency-canvas');
+            const node = document.createElement('div');
+            node.className = `node node-${nodeData.type}`;
+            node.id = `node-${nodeData.id}`;
+            node.style.left = `${nodeData.x}px`;
+            node.style.top = `${nodeData.y}px`;
+            
+            let icon = 'cube';
+            if (nodeData.type === 'business') icon = 'building';
+            if (nodeData.type === 'app') icon = 'cubes';
+            if (nodeData.type === 'service') icon = 'cogs';
+            if (nodeData.type === 'database') icon = 'database';
+            if (nodeData.type === 'resource') icon = 'server';
+            
+            node.innerHTML = `
+                <div class="node-icon"><i class="fas fa-${icon}"></i></div>
+                <div class="node-title">${nodeData.name}</div>
+                <div class="node-desc">${nodeData.type}</div>
+            `;
+            
+            canvas.appendChild(node);
+            
+            // 添加节点拖拽功能
+            makeDraggable(node);
+        }
+        
+        function createConnection(source, target) {
+            const canvas = document.getElementById('dependency-canvas');
+            
+            // 计算连接线的起点和终点
+            const startX = source.x + 60;
+            const startY = source.y + 40;
+            const endX = target.x + 60;
+            const endY = target.y + 40;
+            
+            // 计算连接线长度和角度
+            const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+            const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+            
+            // 创建连接线
+            const connection = document.createElement('div');
+            connection.className = 'connection';
+            connection.style.width = `${length}px`;
+            connection.style.left = `${startX}px`;
+            connection.style.top = `${startY}px`;
+            connection.style.transform = `rotate(${angle}deg)`;
+            
+            // 创建箭头
+            const arrow = document.createElement('div');
+            arrow.className = 'connection-arrow';
+            arrow.style.left = `${length - 5}px`;
+            arrow.style.top = '-4px';
+            arrow.style.transform = `rotate(${angle}deg)`;
+            
+            connection.appendChild(arrow);
+            canvas.appendChild(connection);
+        }
+        
+        function makeDraggable(element) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            
+            element.onmousedown = dragMouseDown;
+            
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // 获取鼠标初始位置
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+            
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // 计算新的位置
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                // 设置元素新位置
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+            }
+            
+            function closeDragElement() {
+                // 停止移动
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
+        // 根据资源类型获取图标
+        function getIconForType(type) {
+            const iconMap = {
+                "前端应用": "desktop",
+                "后端服务": "server",
+                "中间件": "cogs",
+                "云服务器": "server",
+                "容器集群": "cubes",
+                "函数计算": "bolt",
+                "对象存储": "hdd",
+                "块存储": "hdd",
+                "文件存储": "file",
+                "负载均衡": "balance-scale",
+                "VPN网关": "key",
+                "NAT网关": "exchange-alt",
+                "CDN": "network-wired"
+            };
+            return iconMap[type] || "cube";
+        }
+
+        // 获取状态类名
+        function getStatusClass(status) {
+            const statusMap = {
+                "running": "status-running",
+                "stopped": "status-stopped",
+                "idle": "status-idle",
+                "abnormal": "status-stopped"
+            };
+            return statusMap[status] || "status-idle";
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            const statusMap = {
+                "running": "运行中",
+                "stopped": "已停止",
+                "idle": "空闲",
+                "abnormal": "异常"
+            };
+            return statusMap[status] || "未知";
+        }
+
+        // 获取趋势指示器
+        function getTrendIndicator(change) {
+            if (change > 0) {
+                return `<span class="trend-indicator trend-up"><i class="fas fa-arrow-up"></i></span>`;
+            } else if (change < 0) {
+                return `<span class="trend-indicator trend-down"><i class="fas fa-arrow-down"></i></span>`;
+            } else {
+                return `<span class="trend-indicator">-</span>`;
+            }
+        }
+
+        // 更新业务信息
+        function updateBusinessInfo(businessKey) {
+            const business = businessData[businessKey];
+            if (!business) return;
+            
+            document.getElementById('breadcrumb-text').textContent = `${business.name} - 资产全景`;
+            
+            const info = business.info;
+            const infoGrid = document.querySelector('.info-grid');
+            infoGrid.innerHTML = `
+                <div class="info-item">
+                    <div class="info-label">业务ID</div>
+                    <div class="info-value">${info.id}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">业务状态</div>
+                    <div class="info-value">${info.status}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">创建时间</div>
+                    <div class="info-value">${info.createTime}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">SLA等级</div>
+                    <div class="info-value">${info.sla}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">访问量</div>
+                    <div class="info-value">${info.visits}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">用户数</div>
+                    <div class="info-value">${info.users}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">业务描述</div>
+                    <div class="info-value">${info.description}</div>
+                </div>
+            `;
+            
+            // 更新责任主体卡片
+            const responsible = business.responsible;
+            const responsibleCards = document.querySelector('.responsible-cards');
+            responsibleCards.innerHTML = `
+                <div class="responsible-card">
+                    <div class="card-title">
+                        <i class="fas fa-user-tie"></i>
+                        <span>责任主体</span>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">单位/组织</div>
+                        <div class="card-value">${responsible.owner.org}</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">联系人</div>
+                        <div class="card-value">${responsible.owner.contact}</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">联系电话</div>
+                        <div class="card-value">${responsible.owner.phone}</div>
+                    </div>
+                </div>
+                
+                <div class="responsible-card">
+                    <div class="card-title">
+                        <i class="fas fa-code"></i>
+                        <span>开发主体</span>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">单位/组织</div>
+                        <div class="card-value">${responsible.developer.org}</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">联系人</div>
+                        <div class="card-value">${responsible.developer.contact}</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">联系电话</div>
+                        <div class="card-value">${responsible.developer.phone}</div>
+                    </div>
+                </div>
+                
+                <div class="responsible-card">
+                    <div class="card-title">
+                        <i class="fas fa-tools"></i>
+                        <span>运维主体</span>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">单位/组织</div>
+                        <div class="card-value">${responsible.operator.org}</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">联系人</div>
+                        <div class="card-value">${responsible.operator.contact}</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">联系电话</div>
+                        <div class="card-value">${responsible.operator.phone}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 更新资产统计
+            const assets = business.assets;
+            document.querySelectorAll('.layer-stats .stat-value').forEach((stat, index) => {
+                const layers = ['app', 'compute', 'storage', 'network'];
+                if (index < layers.length) {
+                    const layer = layers[index];
+                    const totalStat = stat.parentElement;
+                    totalStat.querySelector('.stat-value').innerHTML = `${assets[layer].total}`;
+                    
+                    const runningStat = totalStat.nextElementSibling;
+                    runningStat.querySelector('.stat-value').textContent = assets[layer].running;
+                    
+                    const abnormalStat = runningStat.nextElementSibling;
+                    abnormalStat.querySelector('.stat-value').textContent = assets[layer].abnormal;
+                    
+                    const changeStat = abnormalStat.nextElementSibling;
+                    changeStat.querySelector('.stat-value').innerHTML = `
+                        ${assets[layer].change > 0 ? '+' : ''}${assets[layer].change}
+                        ${getTrendIndicator(assets[layer].change)}
+                    `;
+                }
+            });
+        }
+
+        // 显示台账详情
+        function showDetailView(layer) {
+            document.getElementById('overview-view').style.display = 'none';
+            document.getElementById('detail-view').style.display = 'block';
+            document.getElementById('dependency-view').style.display = 'none';
+            document.getElementById('manage-view').style.display = 'none';
+            document.getElementById('back-btn').style.display = 'flex';
+            
+            // 更新标题
+            const layerTitles = {
+                'app': '应用资源台账',
+                'compute': '计算资源台账',
+                'storage': '存储资源台账',
+                'network': '网络资源台账'
+            };
+            document.getElementById('detail-title').textContent = layerTitles[layer] || '资源台账';
+            document.getElementById('breadcrumb-text').innerHTML = `一网通办门户 > ${layerTitles[layer] || '资源台账'}`;
+            
+            // 更新表格内容
+            const tableBody = document.getElementById('detail-table-body');
+            tableBody.innerHTML = '';
+            
+            if (detailData[layer]) {
+                detailData[layer].forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>${item.type}</td>
+                        <td><span class="status ${getStatusClass(item.status)}"></span>${getStatusText(item.status)}</td>
+                        <td>${item.address}</td>
+                        <td>${item.config}</td>
+                        <td><button class="detail-btn">${item.operation}</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        // 显示台账管理
+        function showManageView(layer) {
+            document.getElementById('overview-view').style.display = 'none';
+            document.getElementById('detail-view').style.display = 'none';
+            document.getElementById('dependency-view').style.display = 'none';
+            document.getElementById('manage-view').style.display = 'block';
+            document.getElementById('back-btn').style.display = 'flex';
+            
+            // 更新标题
+            const layerTitles = {
+                'app': '应用资源台账管理',
+                'compute': '计算资源台账管理',
+                'storage': '存储资源台账管理',
+                'network': '网络资源台账管理'
+            };
+            document.getElementById('manage-title').textContent = layerTitles[layer] || '资源台账管理';
+            document.getElementById('breadcrumb-text').innerHTML = `一网通办门户 > ${layerTitles[layer] || '资源台账管理'}`;
+            
+            // 更新表格内容
+            const tableBody = document.getElementById('manage-table-body');
+            tableBody.innerHTML = '';
+            
+            if (manageData[layer]) {
+                manageData[layer].forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>${item.type}</td>
+                        <td><span class="status ${getStatusClass(item.status)}"></span>${getStatusText(item.status)}</td>
+                        <td>${item.address}</td>
+                        <td>${item.config}</td>
+                        <td>${item.owner}</td>
+                        <td><button class="detail-btn">${item.operation}</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        // 切换业务项
+        document.querySelectorAll('.business-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.business-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                const businessKey = this.getAttribute('data-business');
+                updateBusinessInfo(businessKey);
+            });
+        });
+        
+        // 视图切换
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.view-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                const view = this.getAttribute('data-view');
+                if (view === 'overview') {
+                    document.getElementById('overview-view').style.display = 'block';
+                    document.getElementById('dependency-view').style.display = 'none';
+                    document.getElementById('detail-view').style.display = 'none';
+                    document.getElementById('manage-view').style.display = 'none';
+                    document.getElementById('back-btn').style.display = 'none';
+                    document.getElementById('breadcrumb-text').textContent = '一网通办门户 - 资产全景';
+                } else if (view === 'dependency') {
+                    document.getElementById('overview-view').style.display = 'none';
+                    document.getElementById('dependency-view').style.display = 'block';
+                    document.getElementById('detail-view').style.display = 'none';
+                    document.getElementById('manage-view').style.display = 'none';
+                    document.getElementById('back-btn').style.display = 'none';
+                    initDependencyGraph();
+                }
+            });
+        });
+        
+        // 详情链接点击事件
+        document.getElementById('view-app-detail').addEventListener('click', function() {
+            showDetailView('app');
+        });
+        
+        document.getElementById('view-compute-detail').addEventListener('click', function() {
+            showDetailView('compute');
+        });
+        
+        document.getElementById('view-storage-detail').addEventListener('click', function() {
+            showDetailView('storage');
+        });
+        
+        document.getElementById('view-network-detail').addEventListener('click', function() {
+            showDetailView('network');
+        });
+        
+        // 管理链接点击事件
+        document.getElementById('manage-app').addEventListener('click', function() {
+            showManageView('app');
+        });
+        
+        document.getElementById('manage-compute').addEventListener('click', function() {
+            showManageView('compute');
+        });
+        
+        document.getElementById('manage-storage').addEventListener('click', function() {
+            showManageView('storage');
+        });
+        
+        document.getElementById('manage-network').addEventListener('click', function() {
+            showManageView('network');
+        });
+        
+        // 返回全景
+        document.getElementById('back-btn').addEventListener('click', function() {
+            document.getElementById('overview-view').style.display = 'block';
+            document.getElementById('detail-view').style.display = 'none';
+            document.getElementById('dependency-view').style.display = 'none';
+            document.getElementById('manage-view').style.display = 'none';
+            this.style.display = 'none';
+            document.getElementById('breadcrumb-text').textContent = '一网通办门户 - 资产全景';
+            
+            // 重置视图切换按钮
+            document.querySelectorAll('.view-btn').forEach(b => {
+                b.classList.remove('active');
+            });
+            document.querySelector('.view-btn[data-view="overview"]').classList.add('active');
+        });
+        
+        // 业务组折叠/展开
+        document.querySelectorAll('.group-title').forEach(title => {
+            title.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('fa-chevron-down')) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initHoneycomb();
+            updateBusinessInfo('businessA');
+        });
+    </script>
+</body>
+</html>
