@@ -3,6 +3,7 @@ import dashboardReducer from './slices/dashboardSlice'
 import mockConfigReducer from './slices/mockConfigSlice'
 import assetManagementReducer from './slices/assetManagementSlice'
 import businessManagementReducer from './slices/businessManagementSlice'
+import systemConfigReducer from './slices/systemConfigSlice'
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     mockConfig: mockConfigReducer,
     assetManagement: assetManagementReducer,
     businessManagement: businessManagementReducer,
+    systemConfig: systemConfigReducer,
   },
 })
 

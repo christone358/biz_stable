@@ -1,6 +1,8 @@
 import React from 'react'
 import { Layout, Menu } from 'antd'
 import { useNavigate, useLocation, Outlet } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store'
 import './AppLayout.css'
 
 const { Header, Content } = Layout
@@ -8,6 +10,7 @@ const { Header, Content } = Layout
 const AppLayout: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
+  const systemConfig = useSelector((state: RootState) => state.systemConfig.config)
 
   // 菜单项配置
   const menuItems = [
@@ -57,7 +60,7 @@ const AppLayout: React.FC = () => {
     <Layout className="app-layout">
       <Header className="app-header">
         <div className="header-left">
-          <div className="logo">XX市大数据中心</div>
+          <div className="logo">{systemConfig?.systemName || '系统配置'}</div>
         </div>
         <Menu
           mode="horizontal"

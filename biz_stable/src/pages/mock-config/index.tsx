@@ -18,6 +18,7 @@ import {
   Row,
   Col,
   Divider,
+  Descriptions,
 } from 'antd'
 import {
   PlusOutlined,
@@ -38,6 +39,8 @@ import {
   setIsEditing,
   toggleConfigEnabled,
 } from '../../store/slices/mockConfigSlice'
+import { setSystemConfig } from '../../store/slices/systemConfigSlice'
+import { saveSystemConfig, getSystemConfig, SystemConfig } from '../../mock/system-config'
 import { generateMockSystems, mockOrganizations, mockMetrics } from '../../mock/data'
 import type { ColumnsType } from 'antd/es/table'
 import './index.css'
@@ -53,10 +56,13 @@ const MockConfig: React.FC = () => {
   const { configs, selectedConfig, isEditing, loading } = useSelector(
     (state: RootState) => state.mockConfig
   )
+  const currentSystemConfig = useSelector((state: RootState) => state.systemConfig.config)
 
   const [form] = Form.useForm()
+  const [systemConfigForm] = Form.useForm()
   const [previewData, setPreviewData] = useState<any>(null)
   const [previewVisible, setPreviewVisible] = useState(false)
+  const [isEditingSystemConfig, setIsEditingSystemConfig] = useState(false)
 
   // 初始化Mock配置数据
   useEffect(() => {
@@ -123,6 +129,35 @@ const MockConfig: React.FC = () => {
   const handleToggleEnabled = (id: string) => {
     dispatch(toggleConfigEnabled(id))
     message.success('状态更新成功')
+  }
+
+  // 系统基本信息配置相关处理
+  const handleEditSystemConfig = () => {
+    systemConfigForm.setFieldsValue({
+      systemName: currentSystemConfig?.systemName || ''
+    })
+    setIsEditingSystemConfig(true)
+  }
+
+  const handleSaveSystemConfig = async () => {
+    try {
+      const values = await systemConfigForm.validateFields()
+      const config: SystemConfig = {
+        systemName: values.systemName
+      }
+      // 保存到localStorage
+      saveSystemConfig(config)
+      // 更新Redux状态
+      dispatch(setSystemConfig(config))
+      setIsEditingSystemConfig(false)
+      message.success('系统配置保存成功')
+    } catch (error) {
+      message.error('请检查表单填写')
+    }
+  }
+
+  const handleCancelSystemConfig = () => {
+    setIsEditingSystemConfig(false)
   }
 
   const handleSave = async () => {
@@ -326,6 +361,49 @@ const MockConfig: React.FC = () => {
       </Header>
 
       <Content className="mock-config-content">
+        {/* 系统基本信息配置区域 */}
+        <Card
+          title="系统基本信息配置"
+          style={{ marginBottom: 24 }}
+          extra={
+            !isEditingSystemConfig ? (
+              <Button type="primary" onClick={handleEditSystemConfig}>
+                编辑配置
+              </Button>
+            ) : (
+              <Space>
+                <Button onClick={handleCancelSystemConfig}>取消</Button>
+                <Button type="primary" onClick={handleSaveSystemConfig}>
+                  保存
+                </Button>
+              </Space>
+            )
+          }
+        >
+          {!isEditingSystemConfig ? (
+            <Descriptions bordered column={2}>
+              <Descriptions.Item label="系统名称" span={2}>
+                {currentSystemConfig?.systemName || <Text type="secondary">未配置</Text>}
+              </Descriptions.Item>
+            </Descriptions>
+          ) : (
+            <Form
+              form={systemConfigForm}
+              layout="horizontal"
+              labelCol={{ span: 4 }}
+              wrapperCol={{ span: 18 }}
+            >
+              <Form.Item
+                label="系统名称"
+                name="systemName"
+                rules={[{ required: true, message: '请输入系统名称' }]}
+              >
+                <Input placeholder="请输入系统名称，将显示在页面顶部" />
+              </Form.Item>
+            </Form>
+          )}
+        </Card>
+
         <Row gutter={24}>
           <Col span={isEditing ? 12 : 24}>
             <Card
