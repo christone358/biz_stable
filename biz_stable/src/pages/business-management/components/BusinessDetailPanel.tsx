@@ -1,5 +1,5 @@
 import React from 'react'
-import { Tabs, Form, Input, Select, Radio, Checkbox, Button, Space, Empty, message } from 'antd'
+import { Tabs, Form, Input, Select, Radio, Checkbox, Button, Space, Empty, message, Descriptions, Tag, Divider, Card } from 'antd'
 import { SaveOutlined } from '@ant-design/icons'
 import { BusinessDetail, BusinessNode, BusinessImportanceConfig, BusinessTypeOptions, ServiceTargetOptions, OperationTimeOptions, OperationStatusConfig } from '../types'
 import './BusinessDetailPanel.css'
@@ -75,12 +75,12 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
     {
       key: 'basic',
       label: '基本信息',
-      children: (
+      children: isEditing ? (
+        // 编辑模式：使用表单
         <Form
           form={form}
           layout="vertical"
           initialValues={businessDetail}
-          disabled={!isEditing}
         >
           <Form.Item label="业务名称" name="name" rules={[{ required: true }]}>
             <Input placeholder="请输入业务名称" />
@@ -96,6 +96,10 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
                 <Select.Option key={type} value={type}>{type}</Select.Option>
               ))}
             </Select>
+          </Form.Item>
+
+          <Form.Item label="业务描述" name="description">
+            <Input.TextArea rows={4} placeholder="请输入业务描述" />
           </Form.Item>
 
           <Form.Item label="业务重要性" name="importance" rules={[{ required: true }]}>
@@ -116,10 +120,6 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
             </Select>
           </Form.Item>
 
-          <Form.Item label="业务描述" name="description">
-            <Input.TextArea rows={4} placeholder="请输入业务描述" />
-          </Form.Item>
-
           <Form.Item label="服务对象" name="serviceTarget">
             <Checkbox.Group options={ServiceTargetOptions} />
           </Form.Item>
@@ -131,33 +131,245 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
           <Form.Item label="运行时间" name="operationTime">
             <Radio.Group options={OperationTimeOptions} />
           </Form.Item>
+
+          <Form.Item label="年访问量" name="annualVisits">
+            <Input type="number" placeholder="请输入年访问量" />
+          </Form.Item>
+
+          <Form.Item label="覆盖率(%)" name="coverageRate">
+            <Input type="number" placeholder="请输入覆盖率" />
+          </Form.Item>
         </Form>
+      ) : (
+        // 展示模式：使用Descriptions
+        <div>
+          <div className="section-title">
+            <span className="section-title-bar"></span>
+            <span className="section-title-text">基本描述</span>
+          </div>
+          <Descriptions bordered column={2}>
+            <Descriptions.Item label="业务名称" span={2}>
+              {businessDetail.name}
+            </Descriptions.Item>
+            <Descriptions.Item label="业务编码">
+              {businessDetail.code}
+            </Descriptions.Item>
+            <Descriptions.Item label="业务类型">
+              <Tag color="blue">{businessDetail.businessType}</Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="业务描述" span={2}>
+              {businessDetail.description}
+            </Descriptions.Item>
+          </Descriptions>
+
+          <div className="section-title">
+            <span className="section-title-bar"></span>
+            <span className="section-title-text">运行状态</span>
+          </div>
+          <Descriptions bordered column={2}>
+            <Descriptions.Item label="业务重要性">
+              <Tag color={BusinessImportanceConfig[businessDetail.importance].color}>
+                {BusinessImportanceConfig[businessDetail.importance].label}
+              </Tag>
+              <span style={{ marginLeft: 8, color: '#8c8c8c' }}>
+                {BusinessImportanceConfig[businessDetail.importance].description}
+              </span>
+            </Descriptions.Item>
+            <Descriptions.Item label="运行状态">
+              <span style={{ marginRight: 8 }}>
+                {OperationStatusConfig[businessDetail.operationStatus].icon}
+              </span>
+              <Tag color={OperationStatusConfig[businessDetail.operationStatus].color}>
+                {OperationStatusConfig[businessDetail.operationStatus].label}
+              </Tag>
+            </Descriptions.Item>
+          </Descriptions>
+
+          <div className="section-title">
+            <span className="section-title-bar"></span>
+            <span className="section-title-text">服务信息</span>
+          </div>
+          <Descriptions bordered column={2}>
+            <Descriptions.Item label="服务对象">
+              {businessDetail.serviceTarget.map(target => (
+                <Tag key={target} color="green" style={{ marginBottom: 4 }}>
+                  {target}
+                </Tag>
+              ))}
+            </Descriptions.Item>
+            <Descriptions.Item label="服务范围">
+              {businessDetail.serviceScope}
+            </Descriptions.Item>
+            <Descriptions.Item label="运行时间" span={2}>
+              {businessDetail.operationTime}
+            </Descriptions.Item>
+          </Descriptions>
+        </div>
       )
     },
     {
       key: 'responsible',
       label: '责任单位',
       children: (
-        <div style={{ padding: 16 }}>
-          <h3>主责单位</h3>
-          <p>单位名称: {businessDetail.responsibleUnit.unitName}</p>
-          <p>主要负责人: {businessDetail.responsibleUnit.primaryContact.name} - {businessDetail.responsibleUnit.primaryContact.role}</p>
-          <p>联系电话: {businessDetail.responsibleUnit.primaryContact.phone}</p>
-          <p>邮箱: {businessDetail.responsibleUnit.primaryContact.email}</p>
+        <div className="responsible-units-container">
+          {/* 主责单位 */}
+          <div className="section-title">
+            <span className="section-title-bar"></span>
+            <span className="section-title-text">主责单位</span>
+          </div>
+          <Card size="small" style={{ marginBottom: 24 }}>
+            <Descriptions column={2} size="small">
+              <Descriptions.Item label="单位名称" span={2}>
+                {businessDetail.responsibleUnit.unitName}
+              </Descriptions.Item>
+              <Descriptions.Item label="单位编码">
+                {businessDetail.responsibleUnit.unitCode}
+              </Descriptions.Item>
+              <Descriptions.Item label="所属部门">
+                {businessDetail.responsibleUnit.department}
+              </Descriptions.Item>
+            </Descriptions>
 
-          <h3 style={{ marginTop: 24 }}>运维单位</h3>
-          <p>单位名称: {businessDetail.operationUnit.unitName}</p>
-          <p>主要负责人: {businessDetail.operationUnit.primaryContact.name}</p>
+            <div style={{
+              fontSize: 14,
+              fontWeight: 500,
+              color: 'rgba(0, 0, 0, 0.85)',
+              margin: '16px 0 12px 0'
+            }}>
+              主要负责人
+            </div>
+            <Descriptions column={2} size="small">
+              <Descriptions.Item label="姓名">
+                <Tag color="blue">{businessDetail.responsibleUnit.primaryContact.name}</Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="职务">
+                {businessDetail.responsibleUnit.primaryContact.role}
+              </Descriptions.Item>
+              <Descriptions.Item label="联系电话">
+                {businessDetail.responsibleUnit.primaryContact.phone}
+              </Descriptions.Item>
+              <Descriptions.Item label="邮箱">
+                {businessDetail.responsibleUnit.primaryContact.email}
+              </Descriptions.Item>
+            </Descriptions>
 
-          <h3 style={{ marginTop: 24 }}>开发单位</h3>
-          <p>单位名称: {businessDetail.developmentUnit.unitName}</p>
-          <p>主要负责人: {businessDetail.developmentUnit.primaryContact.name}</p>
+            {businessDetail.responsibleUnit.backupContacts.length > 0 && (
+              <>
+                <div style={{
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: 'rgba(0, 0, 0, 0.85)',
+                  margin: '16px 0 12px 0'
+                }}>
+                  备用联系人
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {businessDetail.responsibleUnit.backupContacts.map(contact => (
+                    <div key={contact.id} style={{
+                      padding: '8px 12px',
+                      background: '#fafafa',
+                      borderRadius: 4,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}>
+                      <span>
+                        <Tag>{contact.name}</Tag>
+                        <span style={{ marginLeft: 8, color: '#595959' }}>{contact.role}</span>
+                      </span>
+                      <span style={{ color: '#8c8c8c', fontSize: 13 }}>
+                        {contact.phone} | {contact.email}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </Card>
 
-          {!isEditing && (
-            <p style={{ marginTop: 24, color: '#8c8c8c' }}>
-              责任单位详细编辑功能将在后续完善
-            </p>
-          )}
+          {/* 运维单位 */}
+          <div className="section-title">
+            <span className="section-title-bar"></span>
+            <span className="section-title-text">运维单位</span>
+          </div>
+          <Card size="small" style={{ marginBottom: 24 }}>
+            <Descriptions column={2} size="small">
+              <Descriptions.Item label="单位名称" span={2}>
+                {businessDetail.operationUnit.unitName}
+              </Descriptions.Item>
+              <Descriptions.Item label="单位编码">
+                {businessDetail.operationUnit.unitCode}
+              </Descriptions.Item>
+              <Descriptions.Item label="所属部门">
+                {businessDetail.operationUnit.department}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <div style={{
+              fontSize: 14,
+              fontWeight: 500,
+              color: 'rgba(0, 0, 0, 0.85)',
+              margin: '16px 0 12px 0'
+            }}>
+              主要负责人
+            </div>
+            <Descriptions column={2} size="small">
+              <Descriptions.Item label="姓名">
+                <Tag color="green">{businessDetail.operationUnit.primaryContact.name}</Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="职务">
+                {businessDetail.operationUnit.primaryContact.role}
+              </Descriptions.Item>
+              <Descriptions.Item label="联系电话">
+                {businessDetail.operationUnit.primaryContact.phone}
+              </Descriptions.Item>
+              <Descriptions.Item label="邮箱">
+                {businessDetail.operationUnit.primaryContact.email}
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
+
+          {/* 开发单位 */}
+          <div className="section-title">
+            <span className="section-title-bar"></span>
+            <span className="section-title-text">开发单位</span>
+          </div>
+          <Card size="small">
+            <Descriptions column={2} size="small">
+              <Descriptions.Item label="单位名称" span={2}>
+                {businessDetail.developmentUnit.unitName}
+              </Descriptions.Item>
+              <Descriptions.Item label="单位编码">
+                {businessDetail.developmentUnit.unitCode}
+              </Descriptions.Item>
+              <Descriptions.Item label="所属部门">
+                {businessDetail.developmentUnit.department}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <div style={{
+              fontSize: 14,
+              fontWeight: 500,
+              color: 'rgba(0, 0, 0, 0.85)',
+              margin: '16px 0 12px 0'
+            }}>
+              主要负责人
+            </div>
+            <Descriptions column={2} size="small">
+              <Descriptions.Item label="姓名">
+                <Tag color="orange">{businessDetail.developmentUnit.primaryContact.name}</Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="职务">
+                {businessDetail.developmentUnit.primaryContact.role}
+              </Descriptions.Item>
+              <Descriptions.Item label="联系电话">
+                {businessDetail.developmentUnit.primaryContact.phone}
+              </Descriptions.Item>
+              <Descriptions.Item label="邮箱">
+                {businessDetail.developmentUnit.primaryContact.email}
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
         </div>
       )
     },
@@ -165,18 +377,51 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
       key: 'relation',
       label: '业务关系',
       children: (
-        <div style={{ padding: 16 }}>
-          <h3>上游业务</h3>
-          <p>{businessDetail.upstreamBusinessIds.length > 0 ? businessDetail.upstreamBusinessIds.join(', ') : '暂无'}</p>
+        <div className="business-relation-container">
+          <Card
+            title="上游业务"
+            size="small"
+            style={{ marginBottom: 16 }}
+            headStyle={{ backgroundColor: '#f0f5ff', fontWeight: 600 }}
+          >
+            {businessDetail.upstreamBusinessIds.length > 0 ? (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {businessDetail.upstreamBusinessIds.map(id => (
+                  <Tag key={id} color="blue" style={{ fontSize: 13, padding: '4px 12px' }}>
+                    {id}
+                  </Tag>
+                ))}
+              </div>
+            ) : (
+              <Empty
+                description="暂无上游业务"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{ padding: '20px 0' }}
+              />
+            )}
+          </Card>
 
-          <h3 style={{ marginTop: 24 }}>下游业务</h3>
-          <p>{businessDetail.downstreamBusinessIds.length > 0 ? businessDetail.downstreamBusinessIds.join(', ') : '暂无'}</p>
-
-          {!isEditing && (
-            <p style={{ marginTop: 24, color: '#8c8c8c' }}>
-              业务关系编辑功能将在后续完善
-            </p>
-          )}
+          <Card
+            title="下游业务"
+            size="small"
+            headStyle={{ backgroundColor: '#f6ffed', fontWeight: 600 }}
+          >
+            {businessDetail.downstreamBusinessIds.length > 0 ? (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {businessDetail.downstreamBusinessIds.map(id => (
+                  <Tag key={id} color="green" style={{ fontSize: 13, padding: '4px 12px' }}>
+                    {id}
+                  </Tag>
+                ))}
+              </div>
+            ) : (
+              <Empty
+                description="暂无下游业务"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{ padding: '20px 0' }}
+              />
+            )}
+          </Card>
         </div>
       )
     }

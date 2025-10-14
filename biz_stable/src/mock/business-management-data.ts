@@ -48,41 +48,41 @@ export const generateMockBusinessTree = (): BusinessNode[] => {
       id: 'beam',
       name: '一梁',
       code: 'BEAM',
+      nodeType: 'CATEGORY',
       level: 1,
       parentId: null,
       order: 1,
       hasDetail: false,
-      operationStatus: 'RUNNING',
       children: [
         {
           id: 'beam-portal',
           name: '一网通办门户',
           code: 'PORTAL-001',
+          nodeType: 'CATEGORY',
           level: 2,
           parentId: 'beam',
           order: 1,
-          hasDetail: true,
-          operationStatus: 'RUNNING',
+          hasDetail: false,
           children: [
             {
               id: 'beam-portal-pc',
               name: 'PC门户',
               code: 'PORTAL-PC-001',
+              nodeType: 'BUSINESS',
               level: 3,
               parentId: 'beam-portal',
               order: 1,
-              hasDetail: true,
-              operationStatus: 'RUNNING'
+              hasDetail: true
             },
             {
               id: 'beam-portal-h5',
               name: 'H5门户',
               code: 'PORTAL-H5-001',
+              nodeType: 'BUSINESS',
               level: 3,
               parentId: 'beam-portal',
               order: 2,
-              hasDetail: true,
-              operationStatus: 'RUNNING'
+              hasDetail: true
             }
           ]
         },
@@ -90,31 +90,31 @@ export const generateMockBusinessTree = (): BusinessNode[] => {
           id: 'beam-app',
           name: '随申办APP',
           code: 'APP-001',
+          nodeType: 'CATEGORY',
           level: 2,
           parentId: 'beam',
           order: 2,
-          hasDetail: true,
-          operationStatus: 'RUNNING',
+          hasDetail: false,
           children: [
             {
               id: 'beam-app-ios',
               name: 'iOS版',
               code: 'APP-IOS-001',
+              nodeType: 'BUSINESS',
               level: 3,
               parentId: 'beam-app',
               order: 1,
-              hasDetail: true,
-              operationStatus: 'RUNNING'
+              hasDetail: true
             },
             {
               id: 'beam-app-android',
               name: 'Android版',
               code: 'APP-ANDROID-001',
+              nodeType: 'BUSINESS',
               level: 3,
               parentId: 'beam-app',
               order: 2,
-              hasDetail: true,
-              operationStatus: 'RUNNING'
+              hasDetail: true
             }
           ]
         },
@@ -122,11 +122,11 @@ export const generateMockBusinessTree = (): BusinessNode[] => {
           id: 'beam-miniapp',
           name: '小程序入口',
           code: 'MINIAPP-001',
+          nodeType: 'BUSINESS',
           level: 2,
           parentId: 'beam',
           order: 3,
-          hasDetail: true,
-          operationStatus: 'RUNNING'
+          hasDetail: true
         }
       ]
     },
@@ -136,41 +136,41 @@ export const generateMockBusinessTree = (): BusinessNode[] => {
       id: 'pillar',
       name: '四柱',
       code: 'PILLAR',
+      nodeType: 'CATEGORY',
       level: 1,
       parentId: null,
       order: 2,
       hasDetail: false,
-      operationStatus: 'RUNNING',
       children: [
         {
           id: 'pillar-payment',
           name: '统一公共支付',
           code: 'PAY-001',
+          nodeType: 'CATEGORY',
           level: 2,
           parentId: 'pillar',
           order: 1,
-          hasDetail: true,
-          operationStatus: 'RUNNING',
+          hasDetail: false,
           children: [
             {
               id: 'pillar-payment-gateway',
               name: '支付网关',
               code: 'PAY-GATEWAY-001',
+              nodeType: 'BUSINESS',
               level: 3,
               parentId: 'pillar-payment',
               order: 1,
-              hasDetail: true,
-              operationStatus: 'RUNNING'
+              hasDetail: true
             },
             {
               id: 'pillar-payment-reconciliation',
               name: '对账服务',
               code: 'PAY-RECON-001',
+              nodeType: 'BUSINESS',
               level: 3,
               parentId: 'pillar-payment',
               order: 2,
-              hasDetail: true,
-              operationStatus: 'RUNNING'
+              hasDetail: true
             }
           ]
         },
@@ -178,31 +178,31 @@ export const generateMockBusinessTree = (): BusinessNode[] => {
           id: 'pillar-auth',
           name: '统一身份认证',
           code: 'AUTH-001',
+          nodeType: 'BUSINESS',
           level: 2,
           parentId: 'pillar',
           order: 2,
-          hasDetail: true,
-          operationStatus: 'RUNNING'
+          hasDetail: true
         },
         {
           id: 'pillar-service',
           name: '统一客服',
           code: 'CS-001',
+          nodeType: 'BUSINESS',
           level: 2,
           parentId: 'pillar',
           order: 3,
-          hasDetail: true,
-          operationStatus: 'RUNNING'
+          hasDetail: true
         },
         {
           id: 'pillar-logistics',
           name: '统一物流快递',
           code: 'LOGISTICS-001',
+          nodeType: 'BUSINESS',
           level: 2,
           parentId: 'pillar',
           order: 4,
-          hasDetail: true,
-          operationStatus: 'RUNNING'
+          hasDetail: true
         }
       ]
     },
@@ -212,41 +212,41 @@ export const generateMockBusinessTree = (): BusinessNode[] => {
       id: 'database',
       name: '一库',
       code: 'DATABASE',
+      nodeType: 'CATEGORY',
       level: 1,
       parentId: null,
       order: 3,
       hasDetail: false,
-      operationStatus: 'RUNNING',
       children: [
         {
           id: 'database-public',
           name: '公共信息库',
           code: 'DB-PUBLIC-001',
+          nodeType: 'BUSINESS',
           level: 2,
           parentId: 'database',
           order: 1,
-          hasDetail: true,
-          operationStatus: 'RUNNING'
+          hasDetail: true
         },
         {
           id: 'database-population',
           name: '人口信息库',
           code: 'DB-POP-001',
+          nodeType: 'BUSINESS',
           level: 2,
           parentId: 'database',
           order: 2,
-          hasDetail: true,
-          operationStatus: 'RUNNING'
+          hasDetail: true
         },
         {
           id: 'database-spatial',
           name: '空间地理信息库',
           code: 'DB-SPATIAL-001',
+          nodeType: 'BUSINESS',
           level: 2,
           parentId: 'database',
           order: 3,
-          hasDetail: true,
-          operationStatus: 'RUNNING'
+          hasDetail: true
         }
       ]
     },
@@ -256,51 +256,51 @@ export const generateMockBusinessTree = (): BusinessNode[] => {
       id: 'applications',
       name: '多应用',
       code: 'APPS',
+      nodeType: 'CATEGORY',
       level: 1,
       parentId: null,
       order: 4,
       hasDetail: false,
-      operationStatus: 'RUNNING',
       children: [
         {
           id: 'app-enterprise',
           name: '企业开办一件事',
           code: 'APP-ENT-001',
+          nodeType: 'BUSINESS',
           level: 2,
           parentId: 'applications',
           order: 1,
-          hasDetail: true,
-          operationStatus: 'RUNNING'
+          hasDetail: true
         },
         {
           id: 'app-birth',
           name: '出生一件事',
           code: 'APP-BIRTH-001',
+          nodeType: 'BUSINESS',
           level: 2,
           parentId: 'applications',
           order: 2,
-          hasDetail: true,
-          operationStatus: 'RUNNING'
+          hasDetail: true
         },
         {
           id: 'app-marriage',
           name: '结婚落户一件事',
           code: 'APP-MARRIAGE-001',
+          nodeType: 'BUSINESS',
           level: 2,
           parentId: 'applications',
           order: 3,
-          hasDetail: true,
-          operationStatus: 'RUNNING'
+          hasDetail: true
         },
         {
           id: 'app-innovation',
           name: '创新创业一件事',
           code: 'APP-INNO-001',
+          nodeType: 'BUSINESS',
           level: 2,
           parentId: 'applications',
           order: 4,
-          hasDetail: true,
-          operationStatus: 'RUNNING'
+          hasDetail: true
         }
       ]
     }

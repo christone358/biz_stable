@@ -1,5 +1,8 @@
 // 业务板块管理相关类型定义
 
+// 节点类型
+export type NodeType = 'CATEGORY' | 'BUSINESS'
+
 // 业务重要性
 export type BusinessImportance = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'
 
@@ -19,14 +22,12 @@ export interface BusinessNode {
   id: string
   name: string                    // 业务名称
   code: string                    // 业务编码
+  nodeType: NodeType              // 节点类型：CATEGORY-分类，BUSINESS-业务
   level: number                   // 层级（1-一级，2-二级，3-三级...）
   parentId: string | null         // 父节点ID
   order: number                   // 同级排序
   children?: BusinessNode[]       // 子节点
-
-  // 状态信息（用于树节点显示）
-  operationStatus?: OperationStatus
-  hasDetail: boolean              // 是否有详细信息
+  hasDetail: boolean              // 是否有详细信息（只有BUSINESS类型才有）
 }
 
 // 联系人信息

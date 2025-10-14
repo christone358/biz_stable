@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { Tree, Input, Button } from 'antd'
 import { SearchOutlined, PlusOutlined, FolderOutlined, FileOutlined } from '@ant-design/icons'
 import type { DataNode } from 'antd/es/tree'
-import { BusinessNode, OperationStatusConfig } from '../../types'
+import { BusinessNode } from '../../types'
 import './index.css'
 
 interface BusinessTreeProps {
@@ -25,21 +25,14 @@ const BusinessTree: React.FC<BusinessTreeProps> = ({
   // 将业务节点转换为Ant Design Tree的数据格式
   const convertToTreeData = (nodes: BusinessNode[]): DataNode[] => {
     return nodes.map(node => {
-      const statusConfig = node.operationStatus
-        ? OperationStatusConfig[node.operationStatus]
-        : null
-
       return {
         key: node.id,
         title: (
           <div className="business-tree-node-title">
             <span>
-              {node.level === 1 ? <FolderOutlined /> : <FileOutlined />}
+              {node.nodeType === 'CATEGORY' ? <FolderOutlined /> : <FileOutlined />}
             </span>
             <span>{node.name}</span>
-            {statusConfig && (
-              <span className="business-tree-node-status">{statusConfig.icon}</span>
-            )}
           </div>
         ),
         children: node.children ? convertToTreeData(node.children) : undefined,
@@ -84,17 +77,19 @@ const BusinessTree: React.FC<BusinessTreeProps> = ({
     <div className="business-tree">
       <div className="business-tree-header">
         <div className="business-tree-title">业务板块</div>
-        <Input
-          className="business-tree-search"
-          placeholder="搜索业务"
-          prefix={<SearchOutlined />}
-          allowClear
-        />
-        {onAdd && (
-          <Button type="primary" icon={<PlusOutlined />} block onClick={onAdd}>
-            新建板块
-          </Button>
-        )}
+        <div className="business-tree-actions">
+          <Input
+            className="business-tree-search"
+            placeholder="搜索业务"
+            prefix={<SearchOutlined />}
+            allowClear
+          />
+          {onAdd && (
+            <Button type="primary" icon={<PlusOutlined />} onClick={onAdd}>
+              新建
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="business-tree-content">
