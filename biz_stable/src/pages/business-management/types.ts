@@ -113,7 +113,7 @@ export const BusinessImportanceConfig: Record<BusinessImportance, {
   },
   MEDIUM: {
     label: '一般业务',
-    color: '#1677ff',
+    color: '#1890FF',
     description: '常规业务，正常保障'
   },
   LOW: {
@@ -132,7 +132,7 @@ export const OperationStatusConfig: Record<OperationStatus, {
   RUNNING: { label: '运行中', color: '#52c41a', icon: '🟢' },
   STOPPED: { label: '已停用', color: '#d9d9d9', icon: '⚫' },
   MAINTENANCE: { label: '维护中', color: '#faad14', icon: '🟡' },
-  TESTING: { label: '测试中', color: '#1677ff', icon: '🔵' }
+  TESTING: { label: '测试中', color: '#1890FF', icon: '🔵' }
 }
 
 // 业务类型配置

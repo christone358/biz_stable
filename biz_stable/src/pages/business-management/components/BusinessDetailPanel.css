@@ -1,12 +1,12 @@
 /* 业务详情面板样式 */
 
-.business-detail-panel {
+.b2b-business-detail-panel {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.business-detail-header {
+.b2b-business-detail-header {
   padding: var(--space-md, 16px) var(--space-lg, 24px);
   border-bottom: 1px solid var(--border-color, #f0f0f0);
   display: flex;
@@ -14,20 +14,21 @@
   align-items: center;
 }
 
-.business-detail-header h2 {
+.b2b-business-detail-header h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 600;
+  line-height: 32px;
   color: var(--text-primary, #262626);
 }
 
-.business-detail-content {
+.b2b-business-detail-content {
   flex: 1;
   overflow-y: auto;
   padding: var(--space-md, 16px);
 }
 
-.business-detail-empty {
+.b2b-business-detail-empty {
   flex: 1;
   display: flex;
   align-items: center;
@@ -36,52 +37,62 @@
 }
 
 /* 分组标题样式 - Ant Design 风格 */
-.section-title {
+.b2b-section-title {
   display: flex;
   align-items: center;
   margin: 24px 0 16px 0;
   line-height: 1.5;
 }
 
-.section-title:first-child {
+.b2b-section-title:first-child {
   margin-top: 0;
 }
 
+.b2b-section-title-bar {
+  display: inline-block;
+  width: 3px;
+  height: 16px;
+  background-color: #1890FF;
+  border-radius: 2px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
 
-.section-title-text {
-  font-size: 16px;
-  font-weight: 600;
+.b2b-section-title-text {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
   color: rgba(0, 0, 0, 0.85);
 }
 
 /* 责任单位容器 */
-.responsible-units-container {
+.b2b-responsible-units-container {
   padding: 16px;
 }
 
 /* 业务关系容器 */
-.business-relation-container {
+.b2b-business-relation-container {
   padding: 16px;
 }
 
 /* Descriptions 样式优化 */
-.business-detail-content .ant-descriptions-item-label {
+.b2b-business-detail-content .ant-descriptions-item-label {
   font-weight: 500;
   color: rgba(0, 0, 0, 0.65);
 }
 
-.business-detail-content .ant-descriptions-item-content {
+.b2b-business-detail-content .ant-descriptions-item-content {
   color: rgba(0, 0, 0, 0.88);
 }
 
 /* Card 样式优化 */
-.responsible-units-container .ant-card,
-.business-relation-container .ant-card {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+.b2b-responsible-units-container .ant-card,
+.b2b-business-relation-container .ant-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Divider 样式 */
-.business-detail-content .ant-divider-horizontal.ant-divider-with-text-left {
+.b2b-business-detail-content .ant-divider-horizontal.ant-divider-with-text-left {
   margin: 16px 0;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.65);

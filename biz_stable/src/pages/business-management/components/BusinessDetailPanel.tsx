@@ -26,8 +26,8 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
   // 如果没有选中节点
   if (!selectedNode) {
     return (
-      <div className="business-detail-panel">
-        <div className="business-detail-empty">
+      <div className="b2b-business-detail-panel">
+        <div className="b2b-business-detail-empty">
           <Empty description="请选择业务查看详细信息" />
         </div>
       </div>
@@ -37,11 +37,11 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
   // 如果选中的是一级板块（无详细信息）
   if (selectedNode.level === 1 || !selectedNode.hasDetail) {
     return (
-      <div className="business-detail-panel">
-        <div className="business-detail-header">
+      <div className="b2b-business-detail-panel">
+        <div className="b2b-business-detail-header">
           <h2>{selectedNode.name}</h2>
         </div>
-        <div className="business-detail-content">
+        <div className="b2b-business-detail-content">
           <Empty description="此板块无详细信息，请选择具体业务" />
         </div>
       </div>
@@ -51,8 +51,8 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
   // 如果没有加载详细信息
   if (!businessDetail) {
     return (
-      <div className="business-detail-panel">
-        <div className="business-detail-empty">
+      <div className="b2b-business-detail-panel">
+        <div className="b2b-business-detail-empty">
           <Empty description="加载中..." />
         </div>
       </div>
@@ -79,7 +79,9 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
         // 编辑模式：使用表单
         <Form
           form={form}
-          layout="vertical"
+          layout="horizontal"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 14 }}
           initialValues={businessDetail}
         >
           <Form.Item label="业务名称" name="name" rules={[{ required: true }]}>
@@ -143,9 +145,9 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
       ) : (
         // 展示模式：使用Descriptions
         <div>
-          <div className="section-title">
-            <span className="section-title-bar"></span>
-            <span className="section-title-text">基本描述</span>
+          <div className="b2b-section-title">
+            <span className="b2b-section-title-bar"></span>
+            <span className="b2b-section-title-text">基本描述</span>
           </div>
           <Descriptions bordered column={2}>
             <Descriptions.Item label="业务名称" span={2}>
@@ -162,9 +164,9 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
             </Descriptions.Item>
           </Descriptions>
 
-          <div className="section-title">
-            <span className="section-title-bar"></span>
-            <span className="section-title-text">运行状态</span>
+          <div className="b2b-section-title">
+            <span className="b2b-section-title-bar"></span>
+            <span className="b2b-section-title-text">运行状态</span>
           </div>
           <Descriptions bordered column={2}>
             <Descriptions.Item label="业务重要性">
@@ -185,9 +187,9 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
             </Descriptions.Item>
           </Descriptions>
 
-          <div className="section-title">
-            <span className="section-title-bar"></span>
-            <span className="section-title-text">服务信息</span>
+          <div className="b2b-section-title">
+            <span className="b2b-section-title-bar"></span>
+            <span className="b2b-section-title-text">服务信息</span>
           </div>
           <Descriptions bordered column={2}>
             <Descriptions.Item label="服务对象">
@@ -211,11 +213,11 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
       key: 'responsible',
       label: '责任单位',
       children: (
-        <div className="responsible-units-container">
+        <div className="b2b-responsible-units-container">
           {/* 主责单位 */}
-          <div className="section-title">
-            <span className="section-title-bar"></span>
-            <span className="section-title-text">主责单位</span>
+          <div className="b2b-section-title">
+            <span className="b2b-section-title-bar"></span>
+            <span className="b2b-section-title-text">主责单位</span>
           </div>
           <Card size="small" style={{ marginBottom: 24 }}>
             <Descriptions column={2} size="small">
@@ -288,9 +290,9 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
           </Card>
 
           {/* 运维单位 */}
-          <div className="section-title">
-            <span className="section-title-bar"></span>
-            <span className="section-title-text">运维单位</span>
+          <div className="b2b-section-title">
+            <span className="b2b-section-title-bar"></span>
+            <span className="b2b-section-title-text">运维单位</span>
           </div>
           <Card size="small" style={{ marginBottom: 24 }}>
             <Descriptions column={2} size="small">
@@ -330,9 +332,9 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
           </Card>
 
           {/* 开发单位 */}
-          <div className="section-title">
-            <span className="section-title-bar"></span>
-            <span className="section-title-text">开发单位</span>
+          <div className="b2b-section-title">
+            <span className="b2b-section-title-bar"></span>
+            <span className="b2b-section-title-text">开发单位</span>
           </div>
           <Card size="small">
             <Descriptions column={2} size="small">
@@ -377,7 +379,7 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
       key: 'relation',
       label: '业务关系',
       children: (
-        <div className="business-relation-container">
+        <div className="b2b-business-relation-container">
           <Card
             title="上游业务"
             size="small"
@@ -428,8 +430,8 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
   ]
 
   return (
-    <div className="business-detail-panel">
-      <div className="business-detail-header">
+    <div className="b2b-business-detail-panel">
+      <div className="b2b-business-detail-header">
         <h2>{selectedNode.name}</h2>
         <Space>
           {!isEditing ? (
@@ -443,7 +445,7 @@ const BusinessDetailPanel: React.FC<BusinessDetailPanelProps> = ({
         </Space>
       </div>
 
-      <div className="business-detail-content">
+      <div className="b2b-business-detail-content">
         <Tabs items={tabItems} />
       </div>
     </div>
