@@ -1,0 +1,91 @@
+.alert-panel {
+  margin-bottom: 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.alert-panel .ant-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.alert-summary {
+  margin-bottom: 24px;
+}
+
+.summary-item {
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 4px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.summary-item:hover {
+  background: #f5f5f5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.summary-item.urgent {
+  border-left: 4px solid #FF4D4F;
+}
+
+.summary-item.warning {
+  border-left: 4px solid #FAAD14;
+}
+
+.summary-item.info {
+  border-left: 4px solid #1890FF;
+}
+
+.alert-details {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* 表格行样式 */
+.alert-row-urgent {
+  background-color: #fff1f0 !important;
+}
+
+.alert-row-urgent:hover {
+  background-color: #ffccc7 !important;
+}
+
+.alert-row-warning {
+  background-color: #fffbe6 !important;
+}
+
+.alert-row-warning:hover {
+  background-color: #fff1b8 !important;
+}
+
+.alert-row-info {
+  background-color: #e6f7ff !important;
+}
+
+.alert-row-info:hover {
+  background-color: #bae7ff !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .alert-panel {
+    margin-bottom: 16px;
+  }
+
+  .summary-item {
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  .alert-details {
+    margin-top: 16px;
+    padding-top: 16px;
+  }
+}

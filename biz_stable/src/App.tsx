@@ -3,21 +3,32 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Provider } from 'react-redux'
 import { ConfigProvider, theme } from 'antd'
 import { store } from './store'
-import AppLayout from './components/layout/AppLayout'
+import ManagementLayout from './components/layout/ManagementLayout'
+import CollaborationLayout from './components/layout/CollaborationLayout'
+import { SystemType, getCurrentSystemType } from './config/system'
 import Dashboard from './pages/dashboard'
 import BusinessPanorama from './pages/business-panorama'
 import AssetManagement from './pages/asset-management'
+import AssetPanorama from './pages/asset-management/AssetPanorama'
 import BusinessManagement from './pages/business-management'
+import AlertMonitoring from './pages/management/alert-monitoring'
+import AssetOperations from './pages/management/asset-operations'
+import VulnerabilityManagement from './pages/management/vulnerability'
+import BusinessMonitoring from './pages/management/business-monitoring'
+import VulnerabilityDisposal from './pages/collaboration/vulnerability'
 import MockConfig from './pages/mock-config'
 import Test from './pages/test'
 import './App.css'
 
 function App() {
+  // 根据环境变量获取当前系统类型
+  const systemType = getCurrentSystemType()
+
   return (
     <Provider store={store}>
       <ConfigProvider
         theme={{
-          algorithm: theme.defaultAlgorithm,
+          algorithm: theme.v4Algorithm,
           token: {
             colorPrimary: '#1890FF',
             colorSuccess: '#52C41A',
@@ -55,22 +66,64 @@ function App() {
         <Router>
           <div className="app">
             <Routes>
-              <Route path="/" element={<Navigate to="/organization-health" replace />} />
+              {/* 根据系统类型渲染不同的路由 */}
+              {systemType === SystemType.MANAGEMENT ? (
+                <>
+                  {/* 系统一：业务保障管理系统路由 */}
+                  <Route path="/" element={<Navigate to="/management/business-panorama" replace />} />
 
-              {/* 使用AppLayout作为父布局 */}
-              <Route element={<AppLayout />}>
-                <Route path="/organization-health" element={<Dashboard />} />
-                <Route path="/business-panorama" element={<BusinessPanorama />} />
-                <Route path="/business-management" element={<BusinessManagement />} />
-                <Route path="/asset-management" element={<AssetManagement />} />
-              </Route>
+                  <Route element={<ManagementLayout />}>
+                    {/* 业务全景 */}
+                    <Route path="/management/business-panorama" element={<BusinessPanorama />} />
+                    <Route path="/management/business-monitoring" element={<BusinessMonitoring />} />
 
-              {/* 其他页面不使用布局 */}
+                    {/* 业务资产管理 */}
+                    <Route path="/management/business-management" element={<BusinessManagement />} />
+                    <Route path="/management/asset-management" element={<AssetManagement />} />
+                    <Route path="/management/asset-management/panorama/:businessId" element={<AssetPanorama />} />
+
+                    {/* 业务保障管理 */}
+                    <Route path="/management/alert-monitoring" element={<AlertMonitoring />} />
+                    <Route path="/management/asset-operations" element={<AssetOperations />} />
+                    <Route path="/management/vulnerability" element={<VulnerabilityManagement />} />
+
+                    {/* 协同工作中心 */}
+                    <Route path="/management/task-management" element={<div>协同任务管理（待开发）</div>} />
+                    <Route path="/management/task-records" element={<div>任务执行记录（待开发）</div>} />
+                  </Route>
+
+                  {/* 兼容旧路由 */}
+                  <Route path="/dashboard" element={<Navigate to="/management/business-panorama" replace />} />
+                  <Route path="/organization-health" element={<Navigate to="/management/business-panorama" replace />} />
+                  <Route path="/business-panorama" element={<Navigate to="/management/business-panorama" replace />} />
+                  <Route path="/business-management" element={<Navigate to="/management/business-management" replace />} />
+                  <Route path="/asset-management" element={<Navigate to="/management/asset-management" replace />} />
+                </>
+              ) : (
+                <>
+                  {/* 系统二：业务协同管理系统路由 */}
+                  <Route path="/" element={<Navigate to="/collaboration/asset-monitoring" replace />} />
+
+                  <Route element={<CollaborationLayout />}>
+                    {/* 业务运行保障 */}
+                    <Route path="/collaboration/asset-monitoring" element={<div>资产监测（待开发）</div>} />
+                    <Route path="/collaboration/runtime-alerts" element={<div>运行告警（待开发）</div>} />
+                    <Route path="/collaboration/vulnerability" element={<VulnerabilityDisposal />} />
+
+                    {/* 协同任务 */}
+                    <Route path="/collaboration/todo-center" element={<div>待办任务中心（待开发）</div>} />
+                    <Route path="/collaboration/task-records" element={<div>任务处置记录（待开发）</div>} />
+
+                    {/* 资产管理 */}
+                    <Route path="/collaboration/asset-info" element={<div>资产信息管理（待开发）</div>} />
+                    <Route path="/collaboration/asset-issues" element={<div>资产异常问题处置（待开发）</div>} />
+                  </Route>
+                </>
+              )}
+
+              {/* 共享页面（两个系统都可访问） */}
               <Route path="/mock-config" element={<MockConfig />} />
               <Route path="/test" element={<Test />} />
-
-              {/* 兼容旧路由 */}
-              <Route path="/dashboard" element={<Navigate to="/organization-health" replace />} />
             </Routes>
           </div>
         </Router>

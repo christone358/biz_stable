@@ -35,6 +35,9 @@
   cursor: pointer;
   transition: all 0.3s;
   border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .business-selector-item:hover {
@@ -44,6 +47,11 @@
 .business-selector-item.active {
   background: #e6f4ff;
   border-color: var(--primary-color, #1677ff);
+}
+
+.business-selector-item-main {
+  flex: 1;
+  min-width: 0;
 }
 
 .business-selector-item-name {
@@ -79,4 +87,18 @@
   padding: var(--space-lg, 24px);
   text-align: center;
   color: var(--text-secondary, #8c8c8c);
+}
+
+.business-selector-panorama-btn {
+  color: var(--primary-color, #1677ff);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.business-selector-item:hover .business-selector-panorama-btn {
+  opacity: 1;
+}
+
+.business-selector-item.active .business-selector-panorama-btn {
+  opacity: 1;
 }

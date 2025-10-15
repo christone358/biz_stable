@@ -1,0 +1,99 @@
+.business-info-card {
+  margin-bottom: 24px;
+}
+
+.business-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.business-info-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--colorText, #1f1f1f);
+}
+
+.business-info-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.business-info-descriptions {
+  margin-bottom: 24px;
+}
+
+.responsible-section {
+  margin-top: 24px;
+}
+
+.responsible-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--colorText, #1f1f1f);
+  margin-bottom: 16px;
+}
+
+.responsible-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.responsible-card {
+  background: var(--colorBgLayout, #f5f5f5);
+  border-radius: 6px;
+}
+
+.responsible-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--colorText, #1f1f1f);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.responsible-icon {
+  font-style: normal;
+  font-size: 16px;
+}
+
+.responsible-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.responsible-item {
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.responsible-label {
+  color: var(--colorTextSecondary, #595959);
+  min-width: 80px;
+}
+
+.responsible-value {
+  color: var(--colorText, #1f1f1f);
+  font-weight: 500;
+}
+
+/* 响应式调整 */
+@media (max-width: 1199px) {
+  .responsible-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 575px) {
+  .business-info-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

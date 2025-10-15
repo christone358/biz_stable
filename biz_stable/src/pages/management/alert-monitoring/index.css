@@ -1,0 +1,73 @@
+.alert-monitoring-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--colorBgLayout);
+  overflow-y: auto;
+  overflow-x: auto;
+  min-width: 1000px; /* 保证横向布局稳定 */
+}
+
+.page-header {
+  background: var(--colorBgContainer);
+  padding: var(--space-lg) var(--gutter-desktop);
+  box-shadow: var(--shadow1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--section-gap-primary);
+}
+
+.page-header .ant-breadcrumb {
+  font-size: 14px;
+}
+
+.filter-label {
+  font-size: var(--fontSize);
+  color: var(--colorTextSecondary);
+  white-space: nowrap;
+}
+
+.page-content {
+  flex: 1;
+  overflow: auto;
+}
+
+.content-layout {
+  display: flex;
+  gap: var(--section-gap-primary);
+  padding: 0 var(--gutter-desktop) var(--gutter-desktop);
+}
+
+.content-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-gap-primary);
+  min-width: 0;
+}
+
+/* 响应式调整 - 只在移动端改变布局 */
+@media (max-width: 576px) {
+  .alert-monitoring-page {
+    min-width: auto;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: var(--section-gap-secondary);
+    align-items: flex-start;
+    padding: var(--space-md) var(--gutter-mobile);
+  }
+
+  .content-layout {
+    flex-direction: column;
+    padding: 0 var(--gutter-mobile) var(--gutter-mobile);
+    gap: var(--gutter-mobile);
+  }
+
+  .content-right {
+    width: 100%;
+    gap: var(--gutter-mobile);
+  }
+}

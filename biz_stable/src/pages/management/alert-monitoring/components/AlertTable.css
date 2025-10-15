@@ -1,0 +1,50 @@
+.alert-table-card {
+  box-shadow: var(--shadow1);
+}
+
+.alert-table-card .ant-card-head {
+  border-bottom: 1px solid var(--colorSplit);
+}
+
+.alert-table-card .ant-card-head-title {
+  font-size: var(--fontSizeHeading3);
+  font-weight: 600;
+}
+
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--section-gap-secondary);
+  align-items: center;
+}
+
+.alert-name {
+  font-weight: 500;
+  font-size: var(--fontSize);
+  color: var(--colorText);
+}
+
+.alert-description {
+  font-size: var(--fontSizeSM);
+  color: var(--colorTextSecondary);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+/* 响应式调整 - 符合 Ant Design 断点规范 */
+@media (max-width: 991px) {
+  .action-bar {
+    flex-direction: column;
+    gap: var(--gutter-mobile);
+    align-items: stretch;
+  }
+
+  .action-bar .ant-space {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .action-bar .ant-input {
+    width: 100% !important;
+  }
+}

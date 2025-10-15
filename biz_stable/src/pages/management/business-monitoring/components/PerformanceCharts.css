@@ -1,0 +1,21 @@
+.performance-charts-card {
+  margin-bottom: 24px;
+}
+
+.chart-wrapper {
+  background: #fafafa;
+  border-radius: 4px;
+  padding: 16px;
+  border: 1px solid #f0f0f0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .performance-charts-card {
+    margin-bottom: 16px;
+  }
+
+  .chart-wrapper {
+    padding: 12px;
+  }
+}

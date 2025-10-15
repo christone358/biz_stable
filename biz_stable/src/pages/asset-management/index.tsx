@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { Button, message } from 'antd'
 import { UploadOutlined, PlusOutlined } from '@ant-design/icons'
 import { RootState } from '../../store'
@@ -32,6 +33,7 @@ import './index.css'
 
 const AssetManagement: React.FC = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   // 从Redux获取状态
   const {
@@ -185,6 +187,11 @@ const AssetManagement: React.FC = () => {
     message.info('添加资产功能将在后续实现')
   }
 
+  // 查看资产全景
+  const handleViewPanorama = (businessId: string) => {
+    navigate(`/management/asset-management/panorama/${businessId}`)
+  }
+
   // 计算展示的资产列表
   const displayAssets = useMemo(() => {
     return searchKeyword ? filteredAssets : assets
@@ -218,6 +225,7 @@ const AssetManagement: React.FC = () => {
             businesses={businesses}
             selectedBusinessId={selectedBusinessId}
             onSelect={handleBusinessSelect}
+            onViewPanorama={handleViewPanorama}
           />
         </div>
 

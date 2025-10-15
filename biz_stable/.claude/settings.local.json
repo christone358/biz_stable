@@ -3,7 +3,13 @@
     "allow": [
       "Bash(mkdir -p src/pages/asset-management/components/{BusinessSelector,AssetList,AssetRelationGraph,PendingAssets,AssetForm})",
       "Bash(npm run dev)",
-      "Bash(lsof:*)"
+      "Bash(lsof:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(timeout 10 npm run dev)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

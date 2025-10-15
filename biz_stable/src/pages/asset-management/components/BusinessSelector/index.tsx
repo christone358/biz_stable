@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react'
-import { Input } from 'antd'
-import { SearchOutlined, DatabaseOutlined } from '@ant-design/icons'
+import { Input, Button, Tooltip } from 'antd'
+import { SearchOutlined, DatabaseOutlined, EnvironmentOutlined } from '@ant-design/icons'
 import { BusinessInfo } from '../../types'
 import './index.css'
 
@@ -8,12 +8,14 @@ interface BusinessSelectorProps {
   businesses: BusinessInfo[]
   selectedBusinessId: string | null
   onSelect: (business: BusinessInfo) => void
+  onViewPanorama?: (businessId: string) => void
 }
 
 const BusinessSelector: React.FC<BusinessSelectorProps> = ({
   businesses,
   selectedBusinessId,
-  onSelect
+  onSelect,
+  onViewPanorama
 }) => {
   const [searchKeyword, setSearchKeyword] = useState('')
 
@@ -29,6 +31,11 @@ const BusinessSelector: React.FC<BusinessSelectorProps> = ({
         b.code.toLowerCase().includes(keyword)
     )
   }, [businesses, searchKeyword])
+
+  const handleViewPanorama = (e: React.MouseEvent, businessId: string) => {
+    e.stopPropagation()
+    onViewPanorama?.(businessId)
+  }
 
   return (
     <div className="business-selector">
@@ -58,14 +65,27 @@ const BusinessSelector: React.FC<BusinessSelectorProps> = ({
               }`}
               onClick={() => onSelect(business)}
             >
-              <div className="business-selector-item-name">{business.name}</div>
-              <div className="business-selector-item-info">
-                <span className="business-selector-item-code">{business.code}</span>
-                <span className="business-selector-item-count">
-                  <DatabaseOutlined />
-                  {business.assetCount}
-                </span>
+              <div className="business-selector-item-main">
+                <div className="business-selector-item-name">{business.name}</div>
+                <div className="business-selector-item-info">
+                  <span className="business-selector-item-code">{business.code}</span>
+                  <span className="business-selector-item-count">
+                    <DatabaseOutlined />
+                    {business.assetCount}
+                  </span>
+                </div>
               </div>
+              {onViewPanorama && (
+                <Tooltip title="查看资产全景">
+                  <Button
+                    type="text"
+                    size="small"
+                    icon={<EnvironmentOutlined />}
+                    className="business-selector-panorama-btn"
+                    onClick={(e) => handleViewPanorama(e, business.id)}
+                  />
+                </Tooltip>
+              )}
             </div>
           ))
         )}

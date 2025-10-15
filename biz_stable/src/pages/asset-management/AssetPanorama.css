@@ -1,0 +1,141 @@
+.asset-panorama-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--colorBgLayout);
+  overflow-y: auto;
+  overflow-x: auto;
+  min-width: 1000px; /* 保证横向布局稳定 */
+}
+
+.asset-panorama-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-size: var(--fontSizeHeading3);
+  color: var(--colorTextSecondary);
+}
+
+.panorama-header {
+  background: var(--colorBgContainer);
+  padding: var(--space-lg) var(--gutter-desktop);
+  box-shadow: var(--shadow1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--section-gap-primary);
+}
+
+.panorama-breadcrumb {
+  flex: 1;
+}
+
+.panorama-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--gutter-mobile);
+}
+
+.panorama-content {
+  flex: 1;
+  overflow: auto;
+  padding: 0 var(--gutter-desktop) var(--gutter-desktop);
+}
+
+.panorama-overview {
+  display: flex;
+  flex-direction: column;
+}
+
+.asset-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.panorama-table-view {
+  background: var(--colorBgContainer);
+  border-radius: var(--borderRadiusLG);
+  padding: var(--gutter-desktop);
+  box-shadow: var(--shadow1);
+}
+
+.table-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--section-gap-secondary);
+}
+
+.table-view-title {
+  font-size: var(--fontSizeHeading3);
+  font-weight: 600;
+  color: var(--colorText);
+}
+
+.table-view-filters {
+  display: flex;
+  gap: var(--gutter-mobile);
+  align-items: center;
+}
+
+/* 状态指示器颜色 */
+.status-indicator.status-running {
+  background-color: var(--colorSuccess);
+}
+
+.status-indicator.status-stopped {
+  background-color: var(--colorError);
+}
+
+.status-indicator.status-idle {
+  background-color: var(--colorWarning);
+}
+
+.status-indicator.status-abnormal {
+  background-color: var(--colorError);
+}
+
+/* 响应式调整 - 只在移动端改变布局 */
+@media (max-width: 576px) {
+  .asset-panorama-page {
+    min-width: auto;
+  }
+
+  .panorama-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--section-gap-secondary);
+    padding: var(--space-md) var(--gutter-mobile);
+  }
+
+  .panorama-content {
+    padding: 0 var(--gutter-mobile) var(--gutter-mobile);
+  }
+
+  .panorama-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .panorama-actions > * {
+    width: 100%;
+  }
+
+  .table-view-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--gutter-mobile);
+  }
+
+  .table-view-filters {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .table-view-filters > * {
+    width: 100%;
+  }
+}

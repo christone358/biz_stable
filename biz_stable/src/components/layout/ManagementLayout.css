@@ -1,0 +1,82 @@
+.management-layout {
+  min-height: 100vh;
+  background: var(--colorBgBase);
+  display: flex;
+  flex-direction: column;
+}
+
+.management-header {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--gutter-desktop);
+  background: var(--colorBgContainer);
+  border-bottom: 1px solid var(--colorSplit);
+  box-shadow: var(--shadow1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.management-header .header-left {
+  margin-right: auto;
+}
+
+.management-header .logo {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--colorText);
+  white-space: nowrap;
+  min-width: 200px;
+}
+
+.management-menu {
+  flex: 1;
+  border-bottom: none;
+  line-height: 64px;
+}
+
+.management-content {
+  padding: 0;
+  background: var(--colorBgLayout);
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* 响应式调整 - 符合 Ant Design 断点规范 */
+/* md 断点: 768px */
+@media (max-width: 991px) {
+  .management-header {
+    padding: 0 var(--gutter-tablet);
+    height: 56px;
+  }
+
+  .management-header .logo {
+    font-size: 16px;
+    min-width: 150px;
+  }
+
+  .management-menu {
+    line-height: 56px;
+  }
+}
+
+/* sm 断点: 576px */
+@media (max-width: 575px) {
+  .management-header {
+    padding: 0 var(--gutter-mobile);
+    height: 48px;
+  }
+
+  .management-header .logo {
+    font-size: 14px;
+    min-width: 120px;
+  }
+
+  .management-menu {
+    line-height: 48px;
+  }
+}
+

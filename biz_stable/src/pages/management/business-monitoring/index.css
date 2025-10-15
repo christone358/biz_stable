@@ -1,0 +1,115 @@
+.business-monitoring-page {
+  padding: var(--gutter-desktop);
+  background: var(--colorBgLayout);
+  min-height: 100%;
+  overflow-y: auto;
+  overflow-x: auto;
+  min-width: 1200px; /* 保证最小宽度，确保布局稳定 */
+}
+
+.business-monitoring-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  background: var(--colorBgLayout);
+}
+
+/* 三栏概览区域 - 保持固定布局，不响应式改变列数 */
+.overview-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  min-width: 1000px; /* 确保三栏布局的最小宽度 */
+}
+
+.overview-left,
+.overview-middle,
+.overview-right {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 确保KPI卡片和面板卡片高度一致 */
+.overview-left > *,
+.overview-middle > *,
+.overview-right > * {
+  flex: 1;
+}
+
+/* Tab区域样式 - 保持固定布局 */
+.tabs-section {
+  background: var(--colorBgContainer);
+  border-radius: var(--borderRadiusLG);
+  box-shadow: var(--shadow1);
+  margin-bottom: var(--space-lg);
+  max-height: 600px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 1000px; /* 保持最小宽度 */
+}
+
+.business-monitoring-tabs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.business-monitoring-tabs .ant-tabs-nav {
+  margin-bottom: 0;
+  padding: 0 var(--space-lg);
+  flex-shrink: 0;
+}
+
+.business-monitoring-tabs .ant-tabs-content-holder {
+  padding: var(--space-lg);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.business-monitoring-tabs .ant-tabs-tabpane {
+  min-height: auto;
+  height: 100%;
+}
+
+/* 响应式设计 - 只调整间距和高度，不改变横向布局结构 */
+@media (max-width: 1600px) {
+  .tabs-section {
+    max-height: 550px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .tabs-section {
+    max-height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tabs-section {
+    max-height: 450px;
+  }
+}
+
+/* 超小屏幕（移动端）才允许改变布局 */
+@media (max-width: 576px) {
+  .business-monitoring-page {
+    min-width: auto;
+    padding: var(--space-sm);
+  }
+
+  .overview-grid {
+    grid-template-columns: 1fr;
+    min-width: auto;
+    gap: var(--space-sm);
+  }
+
+  .tabs-section {
+    min-width: auto;
+    max-height: 400px;
+  }
+}

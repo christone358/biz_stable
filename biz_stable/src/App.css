@@ -2,6 +2,8 @@
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 * {
@@ -11,31 +13,60 @@
 }
 
 :root {
-  /* 颜色变量 */
-  --primary-color: #1677ff;
-  --success-color: #52c41a;
-  --warning-color: #faad14;
-  --error-color: #ff4d4f;
-  --info-color: #13c2c2;
+  /* 颜色系统 - 符合 ant-design-b2b-uiux-spec.md */
+  --colorPrimary: #1890FF;
+  --colorSuccess: #52C41A;
+  --colorWarning: #FAAD14;
+  --colorError: #FF4D4F;
+  --colorInfo: #1890FF;
 
   /* 背景色 */
-  --background-base: #ffffff;
-  --background-layout: #f5f5f5;
-  --background-container: #fafafa;
+  --colorBgBase: #FFFFFF;
+  --colorBgLayout: #F5F5F5;
+  --colorBgContainer: #FFFFFF;
 
   /* 文字颜色 */
-  --text-primary: #262626;
-  --text-secondary: #595959;
-  --text-disabled: #bfbfbf;
+  --colorText: #1F1F1F;
+  --colorTextSecondary: #595959;
+  --colorDisabled: #BFBFBF;
 
   /* 边框颜色 */
-  --border-color: #d9d9d9;
-  --border-color-split: #f0f0f0;
+  --colorBorder: #D9D9D9;
+  --colorSplit: #F0F0F0;
+  --colorLink: #1890FF;
 
-  /* 间距变量 */
+  /* 间距变量 - 基于4px网格，符合 UI/UX 规范 */
+  --space-0: 0;
   --space-xs: 4px;
   --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-xxl: 24px;
+  --space-xxxl: 32px;
+  --space-xxxxl: 40px;
+  --space-xxxxxl: 48px;
+
+  /* 主要使用的标准间距 */
+  --section-gap-primary: 24px;    /* 主模块间距 */
+  --section-gap-secondary: 16px;  /* 次级元素间距 */
+  --gutter-desktop: 24px;
+  --gutter-tablet: 16px;
+  --gutter-mobile: 12px;
+
+  /* 字体 */
+  --fontFamily: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --fontSize: 14px;
+  --fontSizeSM: 12px;
+  --fontSizeHeading1: 32px;
+  --fontSizeHeading2: 24px;
+  --fontSizeHeading3: 20px;
+
+  /* 圆角 */
+  --borderRadius: 4px;
+  --borderRadiusLG: 8px;
+
+  /* 阴影 */
+  --shadow1: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --shadow2: 0 6px 16px rgba(0, 0, 0, 0.15);
 }

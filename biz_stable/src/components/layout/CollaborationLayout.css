@@ -1,0 +1,87 @@
+.collaboration-layout {
+  min-height: 100vh;
+  background: var(--colorBgBase, #ffffff);
+}
+
+.collaboration-header {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  background: var(--colorBgContainer, #ffffff);
+  border-bottom: 1px solid var(--colorSplit, #f0f0f0);
+  box-shadow: var(--shadow1, 0 2px 8px rgba(0, 0, 0, 0.15));
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 64px;
+}
+
+.collaboration-header .header-left {
+  margin-right: auto;
+}
+
+.collaboration-header .logo {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--colorText, #1F1F1F);
+  white-space: nowrap;
+  min-width: 200px;
+}
+
+.collaboration-menu {
+  flex: 1;
+  border-bottom: none;
+  line-height: 64px;
+}
+
+.collaboration-content {
+  padding: 24px;
+  background: var(--colorBgLayout, #f5f5f5);
+  min-height: calc(100vh - 64px);
+}
+
+/* 响应式调整 - 符合 Ant Design 断点规范 */
+/* md 断点: 768px */
+@media (max-width: 991px) {
+  .collaboration-header {
+    padding: 0 16px;
+    height: 56px;
+  }
+
+  .collaboration-header .logo {
+    font-size: 16px;
+    min-width: 150px;
+  }
+
+  .collaboration-menu {
+    line-height: 56px;
+  }
+
+  .collaboration-content {
+    padding: 16px;
+    min-height: calc(100vh - 56px);
+  }
+}
+
+/* sm 断点: 576px */
+@media (max-width: 575px) {
+  .collaboration-header {
+    padding: 0 12px;
+    height: 48px;
+  }
+
+  .collaboration-header .logo {
+    font-size: 14px;
+    min-width: 120px;
+  }
+
+  .collaboration-menu {
+    line-height: 48px;
+  }
+
+  .collaboration-content {
+    padding: 12px;
+    min-height: calc(100vh - 48px);
+  }
+}
+

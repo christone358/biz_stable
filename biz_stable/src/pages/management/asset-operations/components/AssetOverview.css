@@ -1,0 +1,100 @@
+/* 资产类型统计卡片样式 */
+
+.asset-overview {
+  width: 100%;
+}
+
+.asset-type-card {
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.asset-type-card:hover {
+  border-color: var(--ant-color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.asset-type-card.selected {
+  border-color: var(--ant-color-primary);
+  background-color: var(--ant-color-primary-bg);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.card-icon {
+  font-size: 24px;
+  color: var(--ant-color-primary);
+}
+
+.card-title {
+  font-size: 16px;
+}
+
+.card-stats {
+  margin-bottom: 16px;
+}
+
+.stat-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ant-color-border);
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--ant-color-text-secondary);
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ant-color-text);
+}
+
+.stat-details {
+  padding-left: 8px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-text {
+  font-size: 12px;
+  color: var(--ant-color-text-secondary);
+}
+
+.card-footer {
+  padding-top: 12px;
+  border-top: 1px solid var(--ant-color-border);
+}
+
+.footer-text {
+  font-size: 12px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .card-title {
+    font-size: 14px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .card-footer {
+    overflow-x: auto;
+  }
+}

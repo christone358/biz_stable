@@ -1,0 +1,53 @@
+.metric-card {
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.metric-content {
+  position: relative;
+  min-height: 120px;
+}
+
+.metric-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.metric-trend {
+  display: flex;
+  align-items: center;
+}
+
+/* 迷你趋势图 - 定位在右下角 */
+.metric-mini-chart {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  opacity: 0.8;
+}
+
+.metric-mini-chart canvas {
+  display: block;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .metric-card {
+    margin-bottom: 16px;
+  }
+
+  .metric-content {
+    min-height: 100px;
+  }
+}
