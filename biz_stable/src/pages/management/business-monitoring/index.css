@@ -4,7 +4,7 @@
   min-height: 100%;
   overflow-y: auto;
   overflow-x: auto;
-  min-width: 1200px; /* 保证最小宽度，确保布局稳定 */
+  min-width: 1200px;
 }
 
 .business-monitoring-loading {
@@ -15,101 +15,115 @@
   background: var(--colorBgLayout);
 }
 
-/* 三栏概览区域 - 保持固定布局，不响应式改变列数 */
-.overview-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-lg);
-  min-width: 1000px; /* 确保三栏布局的最小宽度 */
-}
-
-.overview-left,
-.overview-middle,
-.overview-right {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 确保KPI卡片和面板卡片高度一致 */
-.overview-left > *,
-.overview-middle > *,
-.overview-right > * {
-  flex: 1;
-}
-
-/* Tab区域样式 - 保持固定布局 */
+/* Tab区域样式 */
 .tabs-section {
   background: var(--colorBgContainer);
   border-radius: var(--borderRadiusLG);
   box-shadow: var(--shadow1);
-  margin-bottom: var(--space-lg);
-  max-height: 600px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  min-width: 1000px; /* 保持最小宽度 */
+  margin-top: var(--space-lg);
+  min-height: 600px;
 }
 
 .business-monitoring-tabs {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  height: 100%;
 }
 
 .business-monitoring-tabs .ant-tabs-nav {
-  margin-bottom: 0;
-  padding: 0 var(--space-lg);
-  flex-shrink: 0;
+  padding-left: var(--space-lg);
 }
 
 .business-monitoring-tabs .ant-tabs-content-holder {
   padding: var(--space-lg);
-  overflow-y: auto;
-  flex: 1;
 }
 
-.business-monitoring-tabs .ant-tabs-tabpane {
-  min-height: auto;
+/* 运行情况Tab内容 */
+.operation-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
   height: 100%;
 }
 
-/* 响应式设计 - 只调整间距和高度，不改变横向布局结构 */
+.kpi-section {
+  flex-shrink: 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.anomaly-section {
+  flex: 1;
+  min-height: 400px;
+}
+
+.anomaly-section .ant-col {
+  height: 100%;
+}
+
+.topology-card {
+  height: 100%;
+  box-shadow: var(--shadow1);
+}
+
+.topology-card .ant-card-body {
+  height: calc(100% - 57px); /* 减去card header高度 */
+  padding: var(--space-lg);
+}
+
+/* 性能监控Tab内容 */
+.performance-tab-content {
+  min-height: 500px;
+}
+
+/* 资产组成Tab内容 */
+.asset-composition-tab-content {
+  min-height: 500px;
+}
+
+/* 响应式设计 */
 @media (max-width: 1600px) {
-  .tabs-section {
-    max-height: 550px;
+  .anomaly-section {
+    min-height: 350px;
   }
 }
 
 @media (max-width: 1200px) {
-  .tabs-section {
-    max-height: 500px;
+  .anomaly-section {
+    min-height: 300px;
+  }
+
+  .business-monitoring-page {
+    min-width: 992px;
   }
 }
 
-@media (max-width: 768px) {
-  .tabs-section {
-    max-height: 450px;
+@media (max-width: 992px) {
+  .anomaly-section .ant-row {
+    flex-direction: column;
+  }
+
+  .anomaly-section .ant-col {
+    max-width: 100% !important;
   }
 }
 
-/* 超小屏幕（移动端）才允许改变布局 */
 @media (max-width: 576px) {
   .business-monitoring-page {
     min-width: auto;
     padding: var(--space-sm);
   }
 
-  .overview-grid {
-    grid-template-columns: 1fr;
-    min-width: auto;
-    gap: var(--space-sm);
-  }
-
   .tabs-section {
-    min-width: auto;
-    max-height: 400px;
+    min-height: 400px;
   }
 }

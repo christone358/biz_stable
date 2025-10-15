@@ -1,0 +1,6 @@
+.dependency-view-card {
+  background-color: var(--colorBgContainer);
+  border-radius: var(--borderRadiusLG);
+  box-shadow: var(--shadow1);
+  min-height: 600px;
+}

@@ -1,0 +1,10 @@
+.asset-table-card {
+  background-color: var(--colorBgContainer);
+  border-radius: var(--borderRadiusLG);
+  box-shadow: var(--shadow1);
+}
+
+.asset-table-card .ant-card-head-title {
+  font-size: var(--fontSizeHeading3);
+  font-weight: 600;
+}

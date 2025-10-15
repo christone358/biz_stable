@@ -1,0 +1,38 @@
+.asset-layer-section {
+  background-color: var(--colorBgContainer);
+  border-radius: var(--borderRadiusLG);
+  box-shadow: var(--shadow1);
+  margin-bottom: var(--section-gap-primary);
+}
+
+.layer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.layer-title {
+  font-size: var(--fontSizeHeading3);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  color: var(--colorText);
+}
+
+.layer-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.layer-stats {
+  margin-bottom: var(--section-gap-secondary);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .layer-stats {
+    flex-wrap: wrap;
+  }
+}

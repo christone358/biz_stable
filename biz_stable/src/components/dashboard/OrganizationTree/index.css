@@ -56,6 +56,7 @@
   min-height: 36px;
   font-size: 14px;
   position: relative;
+  padding-right: 80px; /* 为右侧标签预留固定空间 */
 }
 
 /* 系统和资产节点使用行布局 */
@@ -239,40 +240,47 @@
 /* 节点统计信息 */
 .node-stats {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column; /* 纵向排列 */
+  align-items: flex-start; /* 左对齐 */
+  gap: 4px;
   flex-shrink: 0;
-  margin-left: 8px;
-  flex-wrap: nowrap; /* 防止换行 */
+  position: absolute; /* 使用绝对定位 */
+  right: 12px; /* 距离右侧固定距离 */
+  top: 50%; /* 垂直居中 */
+  transform: translateY(-50%); /* 垂直居中 */
 }
 
 /* 在行布局中的统计信息 */
 .tree-node.level-2 .node-stats,
 .tree-node.level-3 .node-stats {
-  margin-left: 0;
+  /* 所有层级使用统一的绝对定位 */
 }
 
-.stat-item {
+.organization-tree-container .stat-item {
   display: flex;
   align-items: center;
   gap: 3px;
-  background: rgba(0, 0, 0, 0.02);
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-size: 10px;
+  background: transparent !important; /* 强制移除灰色背景 */
+  padding: 0 !important;
+  border-radius: 0 !important;
+  font-size: 14px !important; /* 使用设计规范的正文字体大小 */
   white-space: nowrap;
 }
-.node-multiline-stats .stat-item,.node-stats .stat-item{
+
+.organization-tree-container .node-multiline-stats .stat-item,
+.organization-tree-container .node-stats .stat-item{
   flex-direction: row;
 }
 
-.stat-label {
+.organization-tree-container .stat-label {
   color: var(--text-secondary);
+  font-size: 14px !important; /* 使用设计规范的正文字体大小 */
 }
 
-.stat-value {
+.organization-tree-container .stat-value {
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 400 !important; /* 使用设计规范的正文字重 */
+  font-size: 14px !important; /* 使用设计规范的正文字体大小 */
 }
 
 .asset-type {
@@ -282,7 +290,8 @@
 
 .asset-type-label {
   color: #389e0d;
-  font-weight: 500;
+  font-weight: 400; /* 使用设计规范的正文字重 */
+  font-size: 14px; /* 使用设计规范的正文字体大小 */
 }
 
 /* 资产类型显示（在统计区域内） */
@@ -290,10 +299,10 @@
   background: #f6ffed;
   border: 1px solid #b7eb8f;
   color: #389e0d;
-  font-weight: 500;
+  font-weight: 400; /* 使用设计规范的紧凑正文字重 */
   padding: 2px 6px;
   border-radius: 10px;
-  font-size: 10px;
+  font-size: 12px; /* 使用设计规范的紧凑正文字体大小(标签形式) */
 }
 
 /* 多行统计信息 */

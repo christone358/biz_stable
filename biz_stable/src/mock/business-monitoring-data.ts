@@ -44,10 +44,40 @@ export const mockApplicationInfo: ApplicationInfo = {
   name: '一网通办门户',
   displayName: '一网通办门户系统',
   status: 'running',
+  type: 'core', // 核心业务
   department: '市大数据中心',
   owner: '张三',
   monitoringDuration: '30天',
-  lastUpdateTime: dayjs().subtract(5, 'minute').toISOString()
+  lastUpdateTime: dayjs().subtract(5, 'minute').toISOString(),
+
+  // 资产统计
+  assetStatistics: {
+    hosts: 12,
+    middleware: 8,
+    services: 15
+  },
+
+  // 责任主体信息
+  responsibilities: {
+    owner: {
+      organization: '市大数据中心',
+      contact: '张三',
+      phone: '138-1234-5678',
+      email: 'zhangsan@dataexample.com'
+    },
+    developer: {
+      organization: '数字科技有限公司',
+      contact: '李四',
+      phone: '139-2345-6789',
+      email: 'lisi@techexample.com'
+    },
+    operator: {
+      organization: '运维服务团队',
+      contact: '王五',
+      phone: '137-3456-7890',
+      email: 'wangwu@opsexample.com'
+    }
+  }
 }
 
 // Mock KPI指标数据
@@ -126,7 +156,8 @@ export const mockVulnerabilityDetails: VulnerabilityDetail[] = [
     cvssScore: 9.8,
     title: 'SQL注入漏洞',
     description: '前端服务系统存在SQL注入漏洞，可能导致数据泄露',
-    affectedAsset: '前端服务系统',
+    affectedAsset: '前端服务',
+    affectedAssetId: 'svc_001',
     discoveryDate: dayjs().subtract(2, 'day').toISOString(),
     status: 'FIXING',
     fixRecommendation: '建议立即更新至最新版本并加强输入验证'
@@ -139,6 +170,7 @@ export const mockVulnerabilityDetails: VulnerabilityDetail[] = [
     title: '权限提升漏洞',
     description: 'API网关存在权限提升漏洞',
     affectedAsset: 'API网关',
+    affectedAssetId: 'svc_002',
     discoveryDate: dayjs().subtract(5, 'day').toISOString(),
     status: 'OPEN',
     fixRecommendation: '升级API网关版本至1.2.5以上'
@@ -150,7 +182,8 @@ export const mockVulnerabilityDetails: VulnerabilityDetail[] = [
     cvssScore: 7.5,
     title: 'XSS跨站脚本漏洞',
     description: '用户输入未经充分过滤',
-    affectedAsset: '前端服务系统',
+    affectedAsset: '前端服务',
+    affectedAssetId: 'svc_001',
     discoveryDate: dayjs().subtract(7, 'day').toISOString(),
     status: 'FIXING',
     fixRecommendation: '对用户输入进行严格的XSS过滤'
@@ -162,6 +195,7 @@ export const mockVulnerabilityDetails: VulnerabilityDetail[] = [
     title: '信息泄露漏洞',
     description: 'Redis服务配置不当导致信息泄露风险',
     affectedAsset: 'Redis缓存',
+    affectedAssetId: 'mid_001',
     discoveryDate: dayjs().subtract(10, 'day').toISOString(),
     status: 'OPEN',
     fixRecommendation: '配置访问控制并启用密码认证'
@@ -172,7 +206,8 @@ export const mockVulnerabilityDetails: VulnerabilityDetail[] = [
     cvssScore: 6.8,
     title: '不安全的反序列化',
     description: '应用服务存在不安全的反序列化操作',
-    affectedAsset: '应用服务',
+    affectedAsset: '业务服务',
+    affectedAssetId: 'svc_003',
     discoveryDate: dayjs().subtract(12, 'day').toISOString(),
     status: 'RESOLVED',
     fixRecommendation: '使用安全的序列化库'
@@ -195,7 +230,8 @@ export const mockAlertDetails: AlertDetail[] = [
     type: 'PERFORMANCE',
     title: '响应时间超阈值',
     description: '前端服务系统响应时间超过500ms，当前值：650ms',
-    affectedAsset: '前端服务系统',
+    affectedAsset: '前端服务',
+    affectedAssetId: 'svc_001',
     timestamp: dayjs().subtract(10, 'minute').toISOString(),
     status: 'OPEN',
     duration: 600
@@ -207,6 +243,7 @@ export const mockAlertDetails: AlertDetail[] = [
     title: '数据库连接池耗尽',
     description: 'MySQL数据库连接池使用率达到95%',
     affectedAsset: 'MySQL主库',
+    affectedAssetId: 'mid_002',
     timestamp: dayjs().subtract(30, 'minute').toISOString(),
     status: 'ACKNOWLEDGED',
     duration: 1800
@@ -217,7 +254,8 @@ export const mockAlertDetails: AlertDetail[] = [
     type: 'SECURITY',
     title: '异常登录尝试',
     description: '检测到来自异常IP的大量登录尝试',
-    affectedAsset: '认证服务',
+    affectedAsset: '前端服务',
+    affectedAssetId: 'svc_001',
     timestamp: dayjs().subtract(1, 'hour').toISOString(),
     status: 'OPEN',
     duration: 3600
@@ -229,6 +267,7 @@ export const mockAlertDetails: AlertDetail[] = [
     title: 'CPU使用率过高',
     description: '应用服务器CPU使用率达到85%',
     affectedAsset: '应用服务器-01',
+    affectedAssetId: 'srv_001',
     timestamp: dayjs().subtract(2, 'hour').toISOString(),
     status: 'OPEN',
     duration: 7200
@@ -240,6 +279,7 @@ export const mockAlertDetails: AlertDetail[] = [
     title: '内存使用率告警',
     description: 'Redis缓存服务器内存使用率达到80%',
     affectedAsset: 'Redis缓存',
+    affectedAssetId: 'mid_001',
     timestamp: dayjs().subtract(3, 'hour').toISOString(),
     status: 'RESOLVED',
     duration: 1800

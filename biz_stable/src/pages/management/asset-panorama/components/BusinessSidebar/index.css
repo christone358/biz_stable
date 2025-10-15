@@ -1,0 +1,94 @@
+/* 左侧业务列表 */
+.business-sidebar {
+  width: 280px;
+  background-color: var(--colorBgContainer);
+  border-right: 1px solid var(--colorSplit);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.sidebar-search-box {
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--colorSplit);
+}
+
+.business-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.business-group {
+  margin-bottom: var(--space-sm);
+}
+
+.group-title {
+  padding: var(--space-sm) var(--space-lg);
+  font-weight: 500;
+  color: var(--colorText);
+  font-size: var(--fontSize);
+  background-color: var(--colorBgLayout);
+}
+
+.business-item {
+  padding: var(--space-md) var(--space-lg);
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s;
+}
+
+.business-item:hover {
+  background-color: var(--colorBgLayout);
+}
+
+.business-item.active {
+  background-color: #e6f7ff;
+  border-left-color: var(--colorPrimary);
+}
+
+.business-item.active .ant-badge-status-text {
+  color: var(--colorPrimary);
+  font-weight: 500;
+}
+
+.business-item-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.business-item-content .ant-badge-status-text {
+  font-size: var(--fontSize);
+}
+
+.business-count {
+  background-color: var(--colorBgLayout);
+  color: var(--colorTextSecondary);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: var(--fontSizeSM);
+  margin-left: var(--space-sm);
+}
+
+.business-item.active .business-count {
+  background-color: var(--colorPrimary);
+  color: var(--colorBgContainer);
+}
+
+.sidebar-filter-box {
+  padding: var(--space-lg);
+  border-top: 1px solid var(--colorSplit);
+}
+
+/* 响应式设计 */
+@media (max-width: 576px) {
+  .business-sidebar {
+    width: 100%;
+    max-height: 300px;
+    border-right: none;
+    border-bottom: 1px solid var(--colorSplit);
+  }
+}

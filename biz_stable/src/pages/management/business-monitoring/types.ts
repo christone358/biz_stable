@@ -2,16 +2,42 @@
 
 import { HealthStatus, ImportanceLevel, AlertLevel } from '../../../types'
 
+// 责任主体详细信息
+export interface ResponsibilityDetail {
+  organization: string // 单位/组织名称
+  contact: string // 联系人姓名
+  phone: string // 联系电话
+  email?: string // 邮箱（可选）
+}
+
+// 资产统计
+export interface AssetStatistics {
+  hosts: number // 主机数量
+  middleware: number // 中间件数量
+  services: number // 应用服务数量
+}
+
 // 应用基本信息
 export interface ApplicationInfo {
   id: string
   name: string
   displayName: string
   status: 'running' | 'stopped' | 'warning' | 'error'
+  type: 'core' | 'normal' // 业务类型：核心业务/一般业务
   department: string
   owner: string
   monitoringDuration: string // 监测时长，如 "30天"
   lastUpdateTime: string
+
+  // 新增：资产统计
+  assetStatistics: AssetStatistics
+
+  // 新增：责任主体信息
+  responsibilities: {
+    owner: ResponsibilityDetail // 责任单位
+    developer: ResponsibilityDetail // 开发责任
+    operator: ResponsibilityDetail // 运维责任
+  }
 }
 
 // KPI指标数据
@@ -53,6 +79,7 @@ export interface VulnerabilityDetail {
   title: string
   description: string
   affectedAsset: string
+  affectedAssetId: string // 新增：关联的资产ID（用于联动高亮）
   discoveryDate: string
   status: 'OPEN' | 'FIXING' | 'RESOLVED'
   fixRecommendation?: string
@@ -74,6 +101,7 @@ export interface AlertDetail {
   title: string
   description: string
   affectedAsset: string
+  affectedAssetId: string // 新增：关联的资产ID（用于联动高亮）
   timestamp: string
   status: 'OPEN' | 'ACKNOWLEDGED' | 'RESOLVED'
   duration?: number

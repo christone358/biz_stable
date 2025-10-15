@@ -1,18 +1,37 @@
-.kpi-cards-container {
-  height: 100%;
+.kpi-cards-wrapper {
   display: flex;
   flex-direction: column;
 }
 
-.kpi-cards-container .ant-row {
-  flex: 1;
-  margin: 0 !important;
+.kpi-cards-scroll-container {
+  /* 移除滚动，让所有卡片完整显示 */
+}
+
+.kpi-cards-footer {
+  padding: 16px 0 0 0;
+  text-align: right;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 16px;
 }
 
 /* 移动端响应式 */
 @media (max-width: 576px) {
-  .kpi-cards-container .ant-col {
+  .kpi-cards-scroll-container .ant-col {
     flex: 0 0 100%;
     max-width: 100%;
+  }
+}
+
+@media (min-width: 577px) and (max-width: 768px) {
+  .kpi-cards-scroll-container .ant-col {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+  .kpi-cards-scroll-container .ant-col {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
   }
 }

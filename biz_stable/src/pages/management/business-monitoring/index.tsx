@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Spin, Tabs } from 'antd'
-import ApplicationHeader from './components/ApplicationHeader'
+import { Spin, Tabs, Card, Row, Col, Button } from 'antd'
+import { ArrowRightOutlined } from '@ant-design/icons'
+import BusinessInfoCard from './components/BusinessInfoCard'
 import KPICards from './components/KPICards'
-import VulnerabilityPanel from './components/VulnerabilityPanel'
-import AlertPanel from './components/AlertPanel'
+import AnomalyPanel from './components/AnomalyPanel'
 import AssetTopology from './components/AssetTopology'
 import PerformanceCharts from './components/PerformanceCharts'
 import { mockApplicationMonitoringData, generateMockDataForApplication } from '../../../mock/business-monitoring-data'
@@ -13,21 +13,12 @@ import './index.css'
 const BusinessMonitoring: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<ApplicationMonitoringData>(mockApplicationMonitoringData)
+  const [activeTab, setActiveTab] = useState<string>('operation')
   const [timeRange, setTimeRange] = useState<TimeRange>({
-    label: '最近24小时',
-    value: '24h',
-    hours: 24
+    label: '最近4小时',
+    value: '4h',
+    hours: 4
   })
-  const [activeTab, setActiveTab] = useState<string>('topology')
-
-  // 可用的应用列表（模拟数据）
-  const availableApps = [
-    { id: 'APP_001', name: '一网通办门户' },
-    { id: 'APP_002', name: '随申办APP' },
-    { id: 'APP_003', name: '政务服务平台' },
-    { id: 'APP_004', name: '数据共享交换平台' },
-    { id: 'APP_005', name: '统一身份认证' }
-  ]
 
   // 初始化加载数据
   useEffect(() => {
@@ -40,20 +31,12 @@ const BusinessMonitoring: React.FC = () => {
   // 处理时间范围变化
   const handleTimeRangeChange = (range: TimeRange) => {
     setTimeRange(range)
-    // 这里可以根据时间范围重新加载数据
     console.log('时间范围变更:', range)
   }
 
-  // 处理应用切换
-  const handleApplicationChange = (appId: string) => {
-    setLoading(true)
-    // 模拟切换应用加载数据
-    setTimeout(() => {
-      const newData = generateMockDataForApplication(appId)
-      setData(newData)
-      setLoading(false)
-    }, 500)
-    console.log('切换应用:', appId)
+  // 处理"更多"按钮点击，切换到性能监控标签页
+  const handleMoreClick = () => {
+    setActiveTab('performance')
   }
 
   if (loading) {
@@ -64,42 +47,68 @@ const BusinessMonitoring: React.FC = () => {
     )
   }
 
-  return (
-    <div className="business-monitoring-page">
-      {/* 应用信息头部 */}
-      <ApplicationHeader
-        appInfo={data.appInfo}
-        timeRange={timeRange}
-        onTimeRangeChange={handleTimeRangeChange}
-        onApplicationChange={handleApplicationChange}
-        availableApps={availableApps}
-      />
-
-      {/* 三栏概览区域 */}
-      <div className="overview-grid">
-        {/* 左栏：KPI指标卡片 */}
-        <div className="overview-left">
-          <KPICards kpis={data.kpis} />
+  // Tab 1: 运行概览
+  const operationTab = (
+    <div className="operation-tab-content">
+      {/* 顶部：关键指标区域 */}
+      <div className="kpi-section">
+        <div className="section-header">
+          <div className="section-title-text">关键指标</div>
+          <Button type="link" onClick={handleMoreClick} icon={<ArrowRightOutlined />}>
+            全部指标
+          </Button>
         </div>
-
-        {/* 中栏：脆弱性动态 */}
-        <div className="overview-middle">
-          <VulnerabilityPanel
-            summary={data.vulnerabilities.summary}
-            details={data.vulnerabilities.details}
-          />
-        </div>
-
-        {/* 右栏：待处置告警 */}
-        <div className="overview-right">
-          <AlertPanel
-            summary={data.alerts.summary}
-            details={data.alerts.details}
-          />
-        </div>
+        <KPICards kpis={data.kpis} />
       </div>
 
-      {/* 标签页区域：资产关系 vs 性能监控分析 */}
+      {/* 底部：异常信息区域（左右分栏） */}
+      <div className="anomaly-section">
+        <Row gutter={24}>
+          {/* 左侧：异常信息（告警/脆弱性切换） (40%) */}
+          <Col span={10}>
+            <AnomalyPanel
+              vulnerabilities={data.vulnerabilities}
+              alerts={data.alerts}
+            />
+          </Col>
+
+          {/* 右侧：资产拓扑 (60%) */}
+          <Col span={14}>
+            <Card title="资产拓扑" bordered={false} className="topology-card">
+              <AssetTopology data={data.topology} />
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    </div>
+  )
+
+  // Tab 2: 性能监控
+  const performanceTab = (
+    <div className="performance-tab-content">
+      <Card bordered={false}>
+        <PerformanceCharts metrics={data.performance} />
+      </Card>
+    </div>
+  )
+
+  // Tab 3: 资产组成
+  const assetCompositionTab = (
+    <div className="asset-composition-tab-content">
+      <Card bordered={false}>
+        <div style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
+          资产组成视图开发中...
+        </div>
+      </Card>
+    </div>
+  )
+
+  return (
+    <div className="business-monitoring-page">
+      {/* 业务资产基本信息卡片 */}
+      <BusinessInfoCard businessInfo={data.appInfo} />
+
+      {/* 标签页区域 */}
       <div className="tabs-section">
         <Tabs
           activeKey={activeTab}
@@ -107,14 +116,19 @@ const BusinessMonitoring: React.FC = () => {
           className="business-monitoring-tabs"
           items={[
             {
-              key: 'topology',
-              label: '资产关系',
-              children: <AssetTopology data={data.topology} />
+              key: 'operation',
+              label: '运行概览',
+              children: operationTab
             },
             {
               key: 'performance',
-              label: '性能监控分析',
-              children: <PerformanceCharts metrics={data.performance} />
+              label: '性能监控',
+              children: performanceTab
+            },
+            {
+              key: 'composition',
+              label: '资产组成',
+              children: assetCompositionTab
             }
           ]}
         />

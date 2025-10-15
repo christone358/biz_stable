@@ -1,15 +1,8 @@
-.alert-panel {
-  margin-bottom: 24px;
+.alert-panel-content {
   height: 100%;
   display: flex;
   flex-direction: column;
-}
-
-.alert-panel .ant-card-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
+  padding: var(--space-lg);
 }
 
 .alert-summary {
@@ -43,9 +36,9 @@
 }
 
 .alert-details {
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid #f0f0f0;
+  flex: 1;
+  margin-top: 16px;
+  overflow: hidden;
 }
 
 /* 表格行样式 */
@@ -75,8 +68,8 @@
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .alert-panel {
-    margin-bottom: 16px;
+  .alert-panel-content {
+    padding: var(--space-md);
   }
 
   .summary-item {

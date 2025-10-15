@@ -10,27 +10,29 @@ interface KPICardsProps {
 
 const KPICards: React.FC<KPICardsProps> = ({ kpis }) => {
   return (
-    <div className="kpi-cards-container">
-      <Row gutter={[16, 16]}>
-        <Col span={8}>
-          <MetricCard metric={kpis.healthScore} />
-        </Col>
-        <Col span={8}>
-          <MetricCard metric={kpis.accessVolume} />
-        </Col>
-        <Col span={8}>
-          <MetricCard metric={kpis.logVolume} />
-        </Col>
-        <Col span={8}>
-          <MetricCard metric={kpis.errorRate} />
-        </Col>
-        <Col span={8}>
-          <MetricCard metric={kpis.responseTime} />
-        </Col>
-        <Col span={8}>
-          <MetricCard metric={kpis.sla} />
-        </Col>
-      </Row>
+    <div className="kpi-cards-wrapper">
+      <div className="kpi-cards-scroll-container">
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={12} md={8} lg={4}>
+            <MetricCard metric={kpis.healthScore} />
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={4}>
+            <MetricCard metric={kpis.accessVolume} />
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={4}>
+            <MetricCard metric={kpis.logVolume} />
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={4}>
+            <MetricCard metric={kpis.errorRate} />
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={4}>
+            <MetricCard metric={kpis.responseTime} />
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={4}>
+            <MetricCard metric={kpis.sla} />
+          </Col>
+        </Row>
+      </div>
     </div>
   )
 }

@@ -1,0 +1,86 @@
+.honeycomb-container {
+  margin-top: var(--space-lg);
+}
+
+.honeycomb-title {
+  font-size: var(--fontSize);
+  font-weight: 500;
+  margin-bottom: var(--space-md);
+  color: var(--colorText);
+}
+
+.honeycomb-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.hexagon {
+  width: 80px;
+  height: 92px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: var(--fontSizeSM);
+  cursor: pointer;
+  transition: all 0.3s;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  padding: 8px 4px;
+  text-align: center;
+}
+
+.hexagon:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hexagon-abnormal {
+  border: 2px solid #ff4d4f;
+}
+
+.hexagon-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70px;
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.cell-legend {
+  display: flex;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--fontSizeSM);
+  color: var(--colorTextSecondary);
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+/* 响应式设计 */
+@media (max-width: 576px) {
+  .hexagon {
+    width: 60px;
+    height: 69px;
+  }
+
+  .hexagon-name {
+    font-size: 10px;
+    max-width: 50px;
+  }
+}

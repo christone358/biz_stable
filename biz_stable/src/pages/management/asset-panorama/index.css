@@ -1,0 +1,92 @@
+/* 资产全景页面主容器 */
+.asset-panorama-container {
+  display: flex;
+  height: 100%;
+  background-color: var(--colorBgLayout);
+  overflow: hidden;
+}
+
+/* 右侧内容区 */
+.asset-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 内容头部 */
+.asset-content-header {
+  padding: var(--space-lg) var(--gutter-desktop);
+  background-color: var(--colorBgContainer);
+  border-bottom: 1px solid var(--colorSplit);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-lg);
+  flex-shrink: 0;
+}
+
+.asset-breadcrumb {
+  font-size: var(--fontSizeHeading3);
+  font-weight: 600;
+  color: var(--colorText);
+  white-space: nowrap;
+}
+
+.asset-global-search {
+  flex: 1;
+  max-width: 400px;
+}
+
+.asset-view-switcher {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+/* 内容主体 */
+.asset-content-body {
+  flex: 1;
+  padding: var(--gutter-desktop);
+  overflow-y: auto;
+  overflow-x: auto;
+  min-width: 1000px; /* 保证横向布局稳定 */
+}
+
+/* 资产分层视图 */
+.asset-layers-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-gap-primary);
+}
+
+/* 响应式设计 */
+@media (max-width: 576px) {
+  .asset-panorama-container {
+    flex-direction: column;
+  }
+
+  .asset-content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--space-md) var(--gutter-mobile);
+  }
+
+  .asset-global-search {
+    width: 100%;
+    max-width: none;
+  }
+
+  .asset-view-switcher {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .asset-view-switcher button {
+    width: 100%;
+  }
+
+  .asset-content-body {
+    min-width: auto;
+    padding: var(--gutter-mobile);
+  }
+}

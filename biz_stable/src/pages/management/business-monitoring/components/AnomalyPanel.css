@@ -1,0 +1,40 @@
+.anomaly-panel-card {
+  height: 100%;
+  box-shadow: var(--shadow1);
+}
+
+.anomaly-panel-card .ant-card-body {
+  padding: 0;
+  height: 100%;
+}
+
+.anomaly-tabs {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.anomaly-tabs .ant-tabs-nav {
+  margin-bottom: 0;
+  padding: 16px 24px 0;
+}
+
+.anomaly-tabs .ant-tabs-content-holder {
+  flex: 1;
+  overflow: hidden;
+}
+
+.anomaly-tabs .ant-tabs-content {
+  height: 100%;
+}
+
+.anomaly-tabs .ant-tabs-tabpane {
+  height: 100%;
+  padding: 0;
+}
+
+/* 确保内部面板去掉额外的Card边框 */
+.anomaly-tabs .ant-tabs-tabpane .ant-card {
+  border: none;
+  box-shadow: none;
+}

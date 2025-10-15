@@ -27,9 +27,14 @@ export const managementMenuItems: MenuItem[] = [
         label: '业务板块管理',
       },
       {
-        key: '/management/asset-management',
-        label: '资产管理',
+        key: '/management/asset-panorama',
+        label: '资产全景',
       },
+      // 旧的资产管理页面已隐藏，将使用新的资产全景页面替代
+      // {
+      //   key: '/management/asset-management',
+      //   label: '资产管理',
+      // },
     ],
   },
   {

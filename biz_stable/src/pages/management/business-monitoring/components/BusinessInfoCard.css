@@ -1,0 +1,120 @@
+.business-info-card {
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.business-info-card .ant-card-body {
+  padding: 24px;
+}
+
+/* 第一行：业务名称和状态 */
+.business-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.business-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* 第二行：资产统计和责任主体区域 */
+.info-content {
+  margin-top: 16px;
+}
+
+/* 区域标题样式 */
+.section-title {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+/* 资产统计区域 */
+.asset-statistics-section {
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 4px;
+  border-left: 3px solid #1890ff;
+}
+
+.stat-item-inline {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* 责任主体区域 */
+.responsibility-section {
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 4px;
+  border-left: 3px solid #52c41a;
+}
+
+/* 可交互的责任主体项 */
+.responsibility-item {
+  cursor: pointer;
+  border-bottom: 1px dashed var(--colorBorder);
+  color: var(--colorTextSecondary);
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 0;
+  font-size: 14px;
+}
+
+.responsibility-item:hover {
+  color: var(--colorPrimary);
+  border-bottom-color: var(--colorPrimary);
+}
+
+/* Tooltip样式 */
+.responsibility-tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.responsibility-tooltip-overlay .ant-tooltip-inner {
+  min-width: 200px;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .info-content {
+    flex-direction: column;
+  }
+
+  .asset-statistics-section,
+  .responsibility-section {
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .business-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .stats-content,
+  .responsibility-content {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .stats-content .ant-space,
+  .responsibility-content .ant-space {
+    width: 100%;
+  }
+}
