@@ -36,7 +36,7 @@
   padding: var(--space-lg);
 }
 
-/* 运行情况Tab内容 */
+/*运行概览Tab内容 */
 .operation-tab-content {
   display: flex;
   flex-direction: column;

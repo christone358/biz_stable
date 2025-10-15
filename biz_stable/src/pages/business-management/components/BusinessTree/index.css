@@ -24,10 +24,10 @@
   align-items: center;
 }
 
-.business-tree-search {
+/* .business-tree-search {
   flex: 1;
   min-width: 0;
-}
+} */
 
 .business-tree-content {
   flex: 1;
