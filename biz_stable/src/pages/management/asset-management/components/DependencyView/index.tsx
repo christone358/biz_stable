@@ -1,8 +1,13 @@
 import React from 'react'
 import { Card, Empty } from 'antd'
+import type { DependencyNode } from '../../panorama-types'
 import './index.css'
 
-const DependencyView: React.FC = () => {
+interface DependencyViewProps {
+  dependencyData?: DependencyNode[]
+}
+
+const DependencyView: React.FC<DependencyViewProps> = ({ dependencyData }) => {
   return (
     <Card className="dependency-view-card" bordered={false}>
       <Empty

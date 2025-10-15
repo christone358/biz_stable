@@ -41,30 +41,7 @@
   overflow: hidden;
 }
 
-/* 表格行样式 */
-.alert-row-urgent {
-  background-color: #fff1f0 !important;
-}
-
-.alert-row-urgent:hover {
-  background-color: #ffccc7 !important;
-}
-
-.alert-row-warning {
-  background-color: #fffbe6 !important;
-}
-
-.alert-row-warning:hover {
-  background-color: #fff1b8 !important;
-}
-
-.alert-row-info {
-  background-color: #e6f7ff !important;
-}
-
-.alert-row-info:hover {
-  background-color: #bae7ff !important;
-}
+/* 表格行样式 - 移除背景色，使用默认 */
 
 /* 响应式设计 */
 @media (max-width: 768px) {

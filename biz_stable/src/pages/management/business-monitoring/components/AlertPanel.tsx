@@ -15,9 +15,10 @@ const { Text } = Typography
 interface AlertPanelProps {
   summary: AlertSummary
   details: AlertDetail[]
+  onRowClick?: (affectedAssetId: string) => void
 }
 
-const AlertPanel: React.FC<AlertPanelProps> = ({ summary, details }) => {
+const AlertPanel: React.FC<AlertPanelProps> = ({ summary, details, onRowClick }) => {
   // 告警级别配置
   const levelConfig = {
     urgent: { color: '#FF4D4F', label: '紧急' },
@@ -161,11 +162,14 @@ const AlertPanel: React.FC<AlertPanelProps> = ({ summary, details }) => {
               />
             )
           }}
-          rowClassName={(record) => {
-            if (record.level === 'urgent') return 'alert-row-urgent'
-            if (record.level === 'warning') return 'alert-row-warning'
-            return 'alert-row-info'
-          }}
+          onRow={(record) => ({
+            onClick: () => {
+              if (onRowClick && record.affectedAssetId) {
+                onRowClick(record.affectedAssetId)
+              }
+            },
+            style: { cursor: onRowClick ? 'pointer' : 'default' }
+          })}
         />
       </div>
     </div>

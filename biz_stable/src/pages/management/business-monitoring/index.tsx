@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Spin, Tabs, Card, Row, Col, Button } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import BusinessInfoCard from './components/BusinessInfoCard'
@@ -6,14 +7,27 @@ import KPICards from './components/KPICards'
 import AnomalyPanel from './components/AnomalyPanel'
 import AssetTopology from './components/AssetTopology'
 import PerformanceCharts from './components/PerformanceCharts'
-import { mockApplicationMonitoringData, generateMockDataForApplication } from '../../../mock/business-monitoring-data'
+import { mockApplicationMonitoringData, generateMonitoringDataForAsset } from '../../../mock/business-monitoring-data'
 import { ApplicationMonitoringData, TimeRange } from './types'
 import './index.css'
 
 const BusinessMonitoring: React.FC = () => {
+  const location = useLocation()
+  const locationState = location.state as {
+    businessId?: string
+    businessName?: string
+    systemId?: string
+    department?: string
+    assetId?: string
+    assetName?: string
+    assetType?: string
+    layerType?: string
+  } | null
+
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<ApplicationMonitoringData>(mockApplicationMonitoringData)
   const [activeTab, setActiveTab] = useState<string>('operation')
+  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null)
   const [timeRange, setTimeRange] = useState<TimeRange>({
     label: '最近4小时',
     value: '4h',
@@ -24,14 +38,27 @@ const BusinessMonitoring: React.FC = () => {
   useEffect(() => {
     // 模拟数据加载
     setTimeout(() => {
+      // 如果有从panorama页面传递的参数，则生成相关联的数据
+      if (locationState && (locationState.systemId || locationState.businessId)) {
+        const contextData = generateMonitoringDataForAsset(locationState)
+        setData(contextData)
+      } else {
+        setData(mockApplicationMonitoringData)
+      }
       setLoading(false)
     }, 500)
-  }, [])
+  }, [locationState])
 
   // 处理时间范围变化
   const handleTimeRangeChange = (range: TimeRange) => {
     setTimeRange(range)
     console.log('时间范围变更:', range)
+  }
+
+  // 处理告警或脆弱性点击
+  const handleAnomalyClick = (affectedAssetId: string) => {
+    setSelectedAssetId(affectedAssetId)
+    console.log('选中资产ID:', affectedAssetId)
   }
 
   // 处理"更多"按钮点击，切换到性能监控标签页
@@ -69,13 +96,14 @@ const BusinessMonitoring: React.FC = () => {
             <AnomalyPanel
               vulnerabilities={data.vulnerabilities}
               alerts={data.alerts}
+              onAnomalyClick={handleAnomalyClick}
             />
           </Col>
 
           {/* 右侧：资产拓扑 (60%) */}
           <Col span={14}>
             <Card title="资产拓扑" bordered={false} className="topology-card">
-              <AssetTopology data={data.topology} />
+              <AssetTopology data={data.topology} selectedAssetId={selectedAssetId} />
             </Card>
           </Col>
         </Row>

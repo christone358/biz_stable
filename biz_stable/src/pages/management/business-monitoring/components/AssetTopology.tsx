@@ -6,9 +6,10 @@ import './AssetTopology.css'
 
 interface AssetTopologyProps {
   data: AssetTopologyData
+  selectedAssetId?: string | null
 }
 
-const AssetTopology: React.FC<AssetTopologyProps> = ({ data }) => {
+const AssetTopology: React.FC<AssetTopologyProps> = ({ data, selectedAssetId }) => {
   const svgRef = useRef<SVGSVGElement>(null)
 
   // 节点类型配置
@@ -74,6 +75,14 @@ const AssetTopology: React.FC<AssetTopologyProps> = ({ data }) => {
       .style('stroke', (d) => d.type === 'call' ? '#91D5FF' : '#D9D9D9')
       .style('stroke-width', (d) => d.type === 'call' ? 2 : 1)
       .style('stroke-dasharray', (d) => d.type === 'depend' ? '5,5' : 'none')
+      .style('opacity', (d: any) => {
+        if (!selectedAssetId) return 0.6
+        // 高亮选中节点相关的连线
+        if (d.source.id === selectedAssetId || d.target.id === selectedAssetId) {
+          return 0.8
+        }
+        return 0.2
+      })
 
     // 创建节点组
     const nodes = g.append('g')
@@ -92,8 +101,17 @@ const AssetTopology: React.FC<AssetTopologyProps> = ({ data }) => {
       .attr('r', (d) => nodeConfig[d.type].size / 2)
       .style('fill', (d) => nodeConfig[d.type].color)
       .style('stroke', (d) => healthColors[d.status])
-      .style('stroke-width', 3)
-      .style('filter', 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))')
+      .style('stroke-width', (d) => d.id === selectedAssetId ? 5 : 3)
+      .style('filter', (d) => {
+        if (d.id === selectedAssetId) {
+          return 'drop-shadow(0 4px 16px rgba(255, 77, 79, 0.6))'
+        }
+        return 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))'
+      })
+      .style('opacity', (d) => {
+        if (!selectedAssetId) return 1
+        return d.id === selectedAssetId ? 1 : 0.4
+      })
 
     // 添加节点图标（使用文字模拟）
     nodes.append('text')
@@ -103,6 +121,10 @@ const AssetTopology: React.FC<AssetTopologyProps> = ({ data }) => {
       .style('font-weight', 'bold')
       .style('fill', '#fff')
       .style('pointer-events', 'none')
+      .style('opacity', (d) => {
+        if (!selectedAssetId) return 1
+        return d.id === selectedAssetId ? 1 : 0.4
+      })
       .text((d) => {
         const typeMap: Record<string, string> = {
           application: 'APP',
@@ -121,6 +143,10 @@ const AssetTopology: React.FC<AssetTopologyProps> = ({ data }) => {
       .style('fill', '#262626')
       .style('font-weight', '500')
       .style('pointer-events', 'none')
+      .style('opacity', (d) => {
+        if (!selectedAssetId) return 1
+        return d.id === selectedAssetId ? 1 : 0.4
+      })
       .text((d) => d.name.length > 10 ? d.name.substring(0, 10) + '...' : d.name)
 
     // 创建工具提示
@@ -213,7 +239,7 @@ const AssetTopology: React.FC<AssetTopologyProps> = ({ data }) => {
       tooltip.remove()
       simulation.stop()
     }
-  }, [data])
+  }, [data, selectedAssetId])
 
   return (
     <Card className="asset-topology-card" bordered={false}>

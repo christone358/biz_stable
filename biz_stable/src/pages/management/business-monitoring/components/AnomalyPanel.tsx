@@ -14,9 +14,10 @@ interface AnomalyPanelProps {
     summary: AlertSummary
     details: AlertDetail[]
   }
+  onAnomalyClick?: (affectedAssetId: string) => void
 }
 
-const AnomalyPanel: React.FC<AnomalyPanelProps> = ({ vulnerabilities, alerts }) => {
+const AnomalyPanel: React.FC<AnomalyPanelProps> = ({ vulnerabilities, alerts, onAnomalyClick }) => {
   const [activeTab, setActiveTab] = useState<string>('alerts')
 
   const tabItems = [
@@ -36,6 +37,7 @@ const AnomalyPanel: React.FC<AnomalyPanelProps> = ({ vulnerabilities, alerts }) 
         <AlertPanel
           summary={alerts.summary}
           details={alerts.details}
+          onRowClick={onAnomalyClick}
         />
       )
     },
@@ -55,6 +57,7 @@ const AnomalyPanel: React.FC<AnomalyPanelProps> = ({ vulnerabilities, alerts }) 
         <VulnerabilityPanel
           summary={vulnerabilities.summary}
           details={vulnerabilities.details}
+          onRowClick={onAnomalyClick}
         />
       )
     }

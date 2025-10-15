@@ -120,6 +120,7 @@ export interface AssetNode {
     responseTime?: number
   }
   children?: AssetNode[]
+  highlighted?: boolean // 新增：是否高亮显示（用于跨页面联动）
 }
 
 // 资产关系拓扑数据

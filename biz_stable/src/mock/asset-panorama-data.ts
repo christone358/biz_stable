@@ -6,8 +6,8 @@ import type {
   HoneycombAssetType,
   DependencyNode,
   AssetItem
-} from '../pages/asset-management/panorama-types'
-import { AssetLayerType, AssetStatus } from '../pages/asset-management/panorama-types'
+} from '../pages/management/asset-management/panorama-types'
+import { AssetLayerType, AssetStatus } from '../pages/management/asset-management/panorama-types'
 
 /**
  * 生成业务基础信息

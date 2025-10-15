@@ -1,10 +1,10 @@
 import React from 'react'
 import { Tooltip } from 'antd'
-import type { HoneycombData } from '../../types'
+import type { HoneycombAssetType } from '../../panorama-types'
 import './index.css'
 
 interface HoneycombMatrixProps {
-  data: HoneycombData[]
+  data: HoneycombAssetType[]
 }
 
 const HoneycombMatrix: React.FC<HoneycombMatrixProps> = ({ data }) => {
@@ -15,12 +15,12 @@ const HoneycombMatrix: React.FC<HoneycombMatrixProps> = ({ data }) => {
       <div className="honeycomb-grid">
         {data.map((item, groupIndex) =>
           item.assets.slice(0, Math.min(item.count, 10)).map((asset, assetIndex) => (
-            <Tooltip key={`${groupIndex}-${assetIndex}`} title={asset}>
+            <Tooltip key={`${groupIndex}-${assetIndex}`} title={asset.name}>
               <div
                 className={`hexagon ${item.status === 'abnormal' ? 'hexagon-abnormal' : ''}`}
                 style={{ backgroundColor: item.color }}
               >
-                <div className="hexagon-name">{asset}</div>
+                <div className="hexagon-name">{asset.name}</div>
               </div>
             </Tooltip>
           ))

@@ -1,0 +1,82 @@
+.business-tree-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ffffff;
+}
+
+.business-tree-search {
+  padding: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.business-tree-search .ant-input-affix-wrapper {
+  height: 32px;
+  border-radius: 6px;
+}
+
+.business-tree-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px 12px 12px;
+  min-height: 0;
+}
+
+.business-tree {
+  font-size: 14px;
+}
+
+.business-tree .ant-tree-treenode {
+  padding: 4px 0;
+}
+
+.business-tree .ant-tree-node-content-wrapper {
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.business-tree .ant-tree-node-content-wrapper:hover {
+  background-color: #f5f5f5;
+}
+
+.business-tree .ant-tree-node-selected .ant-tree-node-content-wrapper {
+  background-color: #e6f7ff !important;
+  color: #1890ff;
+  font-weight: 500;
+}
+
+.business-tree .ant-tree-title {
+  font-size: 14px;
+}
+
+/* 业务领域节点样式 */
+.business-tree .ant-tree-treenode[data-level="0"] > .ant-tree-node-content-wrapper {
+  font-weight: 500;
+  color: #262626;
+}
+
+/* 系统节点样式 */
+.business-tree .ant-tree-treenode[data-level="1"] > .ant-tree-node-content-wrapper {
+  color: #595959;
+}
+
+/* 滚动条样式 */
+.business-tree-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.business-tree-wrapper::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 3px;
+}
+
+.business-tree-wrapper::-webkit-scrollbar-thumb {
+  background: #bfbfbf;
+  border-radius: 3px;
+}
+
+.business-tree-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #999999;
+}

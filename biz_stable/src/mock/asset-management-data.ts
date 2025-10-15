@@ -11,53 +11,21 @@ import {
   HealthStatus,
   AssetEvidence
 } from '../pages/asset-management/types'
+import { generateBusinessDomainSystems } from './data'
 
-// 生成业务列表
+// 生成业务列表 - 从统一数据源获取
 export const generateMockBusinesses = (): BusinessInfo[] => {
-  return [
-    {
-      id: 'biz-001',
-      name: '统一公共支付',
-      code: 'PAY-001',
-      status: 'RUNNING',
-      assetCount: 15
-    },
-    {
-      id: 'biz-002',
-      name: '统一身份认证',
-      code: 'AUTH-001',
-      status: 'RUNNING',
-      assetCount: 12
-    },
-    {
-      id: 'biz-003',
-      name: '统一客服',
-      code: 'CS-001',
-      status: 'RUNNING',
-      assetCount: 10
-    },
-    {
-      id: 'biz-004',
-      name: '统一物流快递',
-      code: 'LOGISTICS-001',
-      status: 'RUNNING',
-      assetCount: 8
-    },
-    {
-      id: 'biz-005',
-      name: '随申办APP',
-      code: 'APP-001',
-      status: 'RUNNING',
-      assetCount: 20
-    },
-    {
-      id: 'biz-006',
-      name: '一网通办门户',
-      code: 'PORTAL-001',
-      status: 'RUNNING',
-      assetCount: 18
-    }
-  ]
+  const allSystems = generateBusinessDomainSystems()
+
+  return allSystems.map(system => ({
+    id: system.id,
+    name: system.name,
+    code: system.id,
+    status: system.healthStatus === 'HEALTHY' ? 'RUNNING' :
+            system.healthStatus === 'WARNING' ? 'WARNING' :
+            'ERROR' as 'RUNNING' | 'STOPPED' | 'WARNING' | 'ERROR',
+    assetCount: system.assetCount
+  }))
 }
 
 // 生成资产列表（根据业务ID）

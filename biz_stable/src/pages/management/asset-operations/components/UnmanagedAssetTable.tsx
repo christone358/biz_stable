@@ -8,7 +8,8 @@ import { Table, Tag, Button, Space, Input, Select, message, Tooltip } from 'antd
 import {
   EyeOutlined,
   SendOutlined,
-  DeleteOutlined
+  DeleteOutlined,
+  QuestionCircleOutlined
 } from '@ant-design/icons'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import type { UnmanagedAsset, AssetType, AssetAttribute, PaginationConfig } from '../types'
@@ -80,7 +81,7 @@ const UnmanagedAssetTable: React.FC<UnmanagedAssetTableProps> = ({
       )
     },
     {
-      title: '资产属性',
+      title: '异常类型',
       dataIndex: 'attribute',
       key: 'attribute',
       width: 120,
@@ -89,6 +90,28 @@ const UnmanagedAssetTable: React.FC<UnmanagedAssetTableProps> = ({
           {assetAttributeLabels[attribute]}
         </Tag>
       )
+    },
+    {
+      title: '归属业务',
+      dataIndex: 'belongingBusiness',
+      key: 'belongingBusiness',
+      width: 180,
+      render: (_: string, record: UnmanagedAsset) => {
+        if (!record.belongingBusiness) {
+          return <span style={{ color: '#999' }}>-</span>
+        }
+
+        return (
+          <Space size={4}>
+            <span>{record.belongingBusiness}</span>
+            {record.isRecommended && record.belongingRecommendation && (
+              <Tooltip title={record.belongingRecommendation}>
+                <QuestionCircleOutlined style={{ color: '#1890ff', cursor: 'help' }} />
+              </Tooltip>
+            )}
+          </Space>
+        )
+      }
     },
     {
       title: 'IP地址',

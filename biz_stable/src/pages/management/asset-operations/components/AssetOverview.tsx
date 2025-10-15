@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { Card, Row, Col, Badge, Typography, Space } from 'antd'
+import { Card, Row, Col, Typography, Space } from 'antd'
 import {
   CloudServerOutlined,
   DesktopOutlined,
@@ -12,7 +12,10 @@ import {
   DatabaseOutlined,
   HddOutlined,
   SafetyOutlined,
-  AppstoreOutlined
+  AppstoreOutlined,
+  UserDeleteOutlined,
+  QuestionOutlined,
+  CloseCircleOutlined
 } from '@ant-design/icons'
 import type { AssetTypeStats, AssetType } from '../types'
 import { assetTypeLabels } from '../../../../mock/asset-operations-data'
@@ -38,6 +41,18 @@ const assetTypeIcons: Record<AssetType, React.ReactNode> = {
   OTHER: <AppstoreOutlined />
 }
 
+// 图标CSS类名映射
+const iconClassNames: Record<AssetType, string> = {
+  SERVER: 'icon-server',
+  DESKTOP: 'icon-desktop',
+  NETWORK_DEVICE: 'icon-network',
+  MIDDLEWARE: 'icon-middleware',
+  DATABASE: 'icon-database',
+  STORAGE: 'icon-storage',
+  SECURITY: 'icon-security',
+  OTHER: 'icon-other'
+}
+
 const AssetOverview: React.FC<AssetOverviewProps> = ({
   stats,
   selectedType,
@@ -45,7 +60,12 @@ const AssetOverview: React.FC<AssetOverviewProps> = ({
 }) => {
   const handleCardClick = (type: AssetType) => {
     if (onTypeSelect) {
-      onTypeSelect(type)
+      // 如果点击已选中的卡片，则取消选中
+      if (selectedType === type) {
+        onTypeSelect('all')
+      } else {
+        onTypeSelect(type)
+      }
     }
   }
 
@@ -60,7 +80,9 @@ const AssetOverview: React.FC<AssetOverviewProps> = ({
               onClick={() => handleCardClick(stat.type)}
             >
               <div className="card-header">
-                <div className="card-icon">{assetTypeIcons[stat.type]}</div>
+                <div className={`card-icon ${iconClassNames[stat.type]}`}>
+                  {assetTypeIcons[stat.type]}
+                </div>
                 <Text strong className="card-title">
                   {assetTypeLabels[stat.type]}
                 </Text>
@@ -68,35 +90,31 @@ const AssetOverview: React.FC<AssetOverviewProps> = ({
 
               <div className="card-stats">
                 <div className="stat-main">
-                  <Text className="stat-label">总数</Text>
-                  <Text className="stat-value">{stat.total}</Text>
-                </div>
-
-                <div className="stat-details">
-                  <Space direction="vertical" size={4}>
-                    <div className="stat-item">
-                      <Badge status="success" />
-                      <Text className="stat-text">已纳管: {stat.managed}</Text>
-                    </div>
-                    <div className="stat-item">
-                      <Badge status="error" />
-                      <Text className="stat-text">未纳管: {stat.unmanaged}</Text>
-                    </div>
-                  </Space>
+                  <Text className="stat-label">异常数</Text>
+                  <Text className="stat-value">{stat.abnormalCount}</Text>
                 </div>
               </div>
 
               <div className="card-footer">
-                <Space size={12}>
-                  <Text type="secondary" className="footer-text">
-                    无主: {stat.orphan}
-                  </Text>
-                  <Text type="secondary" className="footer-text">
-                    未知: {stat.unknown}
-                  </Text>
-                  <Text type="secondary" className="footer-text">
-                    不合规: {stat.nonCompliant}
-                  </Text>
+                <Space size={8} wrap={false}>
+                  <Space size={4}>
+                    <UserDeleteOutlined style={{ color: '#fa8c16', fontSize: '12px' }} />
+                    <Text type="secondary" className="footer-text">
+                      无主: {stat.orphan}
+                    </Text>
+                  </Space>
+                  <Space size={4}>
+                    <QuestionOutlined style={{ color: '#ff4d4f', fontSize: '12px' }} />
+                    <Text type="secondary" className="footer-text">
+                      未知: {stat.unknown}
+                    </Text>
+                  </Space>
+                  <Space size={4}>
+                    <CloseCircleOutlined style={{ color: '#ff7a45', fontSize: '12px' }} />
+                    <Text type="secondary" className="footer-text">
+                      不合规: {stat.nonCompliant}
+                    </Text>
+                  </Space>
                 </Space>
               </div>
             </Card>

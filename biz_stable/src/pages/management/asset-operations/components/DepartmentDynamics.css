@@ -1,42 +1,37 @@
-/* 部门资产纳管动态样式 */
+/* 运营概况样式 */
 
-.department-dynamics-card {
+.operations-overview-card {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.department-dynamics-card .ant-card-body {
+.operations-overview-card .ant-card-body {
   flex: 1;
   overflow-y: auto;
 }
 
-.dynamics-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.dynamics-list {
-  max-height: 500px;
+.operations-list {
+  max-height: 600px;
   overflow-y: auto;
 }
 
-.dynamics-list .ant-list-item {
-  padding: 16px 24px;
+.operations-list .ant-list-item {
+  padding: 12px 16px;
   border-bottom: 1px solid var(--ant-color-border);
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-.dynamics-list .ant-list-item:hover {
+.operations-list .ant-list-item:hover {
   background-color: var(--ant-color-fill-secondary);
 }
 
-.dynamics-list .ant-list-item:last-child {
+.operations-list .ant-list-item:last-child {
   border-bottom: none;
 }
 
-.dynamics-content {
+.operations-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -44,81 +39,110 @@
   gap: 16px;
 }
 
-.dynamics-main {
+.operations-main {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.dynamics-title-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.dynamics-description {
-  color: var(--ant-color-text);
-  line-height: 1.5;
-}
-
-.dynamics-meta {
-  display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 16px;
+}
+
+/* 受影响业务视角样式 */
+.business-info {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--ant-color-text-secondary);
-}
-
-.meta-item .anticon {
+.business-name {
   font-size: 14px;
+  font-weight: 500;
+  color: #262626;
+  white-space: nowrap;
 }
 
-.department-link {
-  padding: 0;
-  height: auto;
+.problem-stats {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
+.problem-stats .ant-tag {
+  font-size: 12px;
+  padding: 0 4px;
+  line-height: 20px;
+}
+
+.total-count {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1890ff;
+  line-height: 1;
+  min-width: 40px;
+  text-align: right;
+}
+
+/* 责任单位视角样式 */
+.department-info {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.department-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #262626;
+  white-space: nowrap;
+}
+
+.task-stats {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+}
+
+.task-stats .ant-typography {
   font-size: 12px;
 }
 
 /* 自定义滚动条样式 */
-.dynamics-list::-webkit-scrollbar {
+.operations-list::-webkit-scrollbar {
   width: 6px;
 }
 
-.dynamics-list::-webkit-scrollbar-track {
+.operations-list::-webkit-scrollbar-track {
   background: var(--ant-color-fill-quaternary);
 }
 
-.dynamics-list::-webkit-scrollbar-thumb {
+.operations-list::-webkit-scrollbar-thumb {
   background: var(--ant-color-fill-tertiary);
   border-radius: 3px;
 }
 
-.dynamics-list::-webkit-scrollbar-thumb:hover {
+.operations-list::-webkit-scrollbar-thumb:hover {
   background: var(--ant-color-text-quaternary);
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .dynamics-list .ant-list-item {
+  .operations-list .ant-list-item {
     padding: 12px 16px;
   }
 
-  .dynamics-meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  .total-count {
+    font-size: 24px;
+    min-width: 50px;
   }
 
-  .dynamics-content {
-    flex-direction: column;
-    align-items: flex-start;
+  .problem-stats,
+  .task-stats {
+    font-size: 12px;
   }
 }

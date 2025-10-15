@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Card, List, Tag, Empty, Descriptions, Avatar, Progress, Badge, Space, Switch } from 'antd'
-import { UserOutlined, SafetyOutlined, ExclamationCircleOutlined, BugOutlined, SecurityScanOutlined } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
+import { Card, List, Tag, Empty, Descriptions, Avatar, Progress, Badge, Space, Switch, Button } from 'antd'
+import { UserOutlined, SafetyOutlined, ExclamationCircleOutlined, BugOutlined, SecurityScanOutlined, EyeOutlined } from '@ant-design/icons'
 import { RootState } from '../../../store'
 import { setSelectedOrganization, setFilteredAssets, setSelectedAssetId } from '../../../store/slices/dashboardSlice'
 import { generateMockSystems, getAllAssets } from '../../../mock/data'
@@ -9,6 +10,7 @@ import './index.css'
 
 const SystemDetail: React.FC = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { selectedOrganization, filteredAssets, selectedDepartmentId, systems, selectedAssetId } = useSelector((state: RootState) => state.dashboard)
   const [viewMode, setViewMode] = React.useState<'list' | 'card'>('card')
 
@@ -16,6 +18,18 @@ const SystemDetail: React.FC = () => {
   const handleBackToSystem = () => {
     // 清除资产选择状态
     dispatch(setSelectedAssetId(null))
+  }
+
+  // 跳转到业务监控详情页面
+  const handleViewMonitoring = (system: any) => {
+    navigate('/management/business-monitoring', {
+      state: {
+        businessId: system.id,
+        businessName: system.name,
+        systemId: system.id,
+        department: system.department
+      }
+    })
   }
 
   // 处理系统卡片点击，下钻到系统详情
@@ -195,11 +209,9 @@ const SystemDetail: React.FC = () => {
     <div className="system-detail">
       <div className="panel-header">
         <h4>{system.name}</h4>
-        <Tag color={system.healthStatus === 'HEALTHY' ? 'green' :
-                    system.healthStatus === 'WARNING' ? 'orange' : 'red'}>
-          {system.healthStatus === 'HEALTHY' ? '健康' :
-           system.healthStatus === 'WARNING' ? '警告' : '故障'}
-        </Tag>
+        <Button type="primary" icon={<EyeOutlined />} onClick={() => handleViewMonitoring(system)}>
+          查看详情
+        </Button>
       </div>
 
       <div className="system-detail-content">

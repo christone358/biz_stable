@@ -43,7 +43,7 @@ export interface UnmanagedAsset {
   id: string // 资产ID
   name: string // 资产名称
   type: AssetType // 资产类型
-  attribute: AssetAttribute // 资产属性
+  attribute: AssetAttribute // 资产属性（异常类型）
   ipAddress: string // IP地址
   location?: string // 物理位置
   discoveredTime: string // 发现时间
@@ -53,20 +53,22 @@ export interface UnmanagedAsset {
   os?: string // 操作系统
   version?: string // 版本信息
   manufacturer?: string // 厂商
+  belongingBusiness?: string // 归属业务
+  belongingBusinessId?: string // 归属业务ID
+  belongingRecommendation?: string // 归属推荐理由
+  isRecommended?: boolean // 是否为推荐归属
 }
 
 // 资产类型统计
 export interface AssetTypeStats {
   type: AssetType // 资产类型
-  total: number // 总数
-  unmanaged: number // 未纳管数量
-  managed: number // 已纳管数量
+  abnormalCount: number // 异常数量（无主+未知+不合规）
   orphan: number // 无主资产数量
   unknown: number // 未知资产数量
   nonCompliant: number // 不合规资产数量
 }
 
-// 部门资产纳管动态
+// 部门资产纳管动态（保留用于历史数据）
 export interface DepartmentDynamic {
   id: string // 动态ID
   departmentId: string // 部门ID
@@ -76,6 +78,31 @@ export interface DepartmentDynamic {
   operator: string // 操作人
   operateTime: string // 操作时间
   description: string // 描述
+}
+
+// 责任单位运营情况
+export interface DepartmentOperations {
+  departmentId: string // 部门ID
+  departmentName: string // 部门名称
+  processingCount: number // 处理中的资产数量
+}
+
+// 受影响业务统计
+export interface AffectedBusinessStats {
+  businessId: string // 业务ID
+  businessName: string // 业务名称
+  orphanCount: number // 无主资产数量
+  unknownCount: number // 未知资产数量
+  nonCompliantCount: number // 不合规资产数量
+  totalCount: number // 问题总数
+}
+
+// 责任单位任务统计
+export interface DepartmentTaskStats {
+  departmentId: string // 部门ID
+  departmentName: string // 部门名称
+  processingCount: number // 处理中任务数量
+  overdueCount: number // 超期未完成数量
 }
 
 // 部门信息

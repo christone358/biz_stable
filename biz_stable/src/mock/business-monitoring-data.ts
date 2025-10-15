@@ -14,6 +14,7 @@ import {
   PerformanceDataPoint,
   AssetNode
 } from '../pages/management/business-monitoring/types'
+import { getUnifiedBusinessData } from './unified-business-data'
 
 // 生成时序数据
 const generateTimeSeriesData = (hours: number, baseValue: number, variance: number): PerformanceDataPoint[] => {
@@ -457,4 +458,173 @@ export const generateMockDataForApplication = (appId: string): ApplicationMonito
   // 可以根据不同的appId生成不同的数据
   // 这里简化处理，返回相同结构的数据
   return mockApplicationMonitoringData
+}
+
+// 根据系统ID生成相关联的监控数据
+export const generateMonitoringDataForAsset = (params: {
+  businessId?: string
+  businessName?: string
+  assetId?: string
+  assetName?: string
+  assetType?: string
+  layerType?: string
+  systemId?: string
+  department?: string
+}): ApplicationMonitoringData => {
+  const { systemId, businessId } = params
+
+  // 优先使用systemId，如果没有则使用businessId
+  const targetId = systemId || businessId
+
+  console.log('=== generateMonitoringDataForAsset ===')
+  console.log('Looking for system ID:', targetId)
+
+  if (!targetId) {
+    console.log('No system ID provided, returning default data')
+    return mockApplicationMonitoringData
+  }
+
+  // 从统一数据源获取业务数据
+  const unifiedData = getUnifiedBusinessData(targetId)
+
+  if (!unifiedData) {
+    console.log('System not found, returning default data')
+    return mockApplicationMonitoringData
+  }
+
+  console.log('Found system:', unifiedData.system.name)
+  console.log('Alert count:', unifiedData.monitoring.alerts.length)
+  console.log('Vulnerability count:', unifiedData.monitoring.vulnerabilities.length)
+
+  const system = unifiedData.system
+
+  // 构建ApplicationInfo
+  const appInfo: ApplicationInfo = {
+    id: system.id,
+    name: system.name,
+    displayName: system.displayName || system.name,
+    status: system.healthStatus === 'HEALTHY' ? 'running' :
+            system.healthStatus === 'WARNING' ? 'warning' :
+            system.healthStatus === 'CRITICAL' ? 'error' : 'stopped',
+    type: system.importance === 'CRITICAL' ? 'core' : 'normal',
+    department: system.department,
+    owner: '系统负责人',
+    monitoringDuration: '30天',
+    lastUpdateTime: system.updatedAt,
+    assetStatistics: {
+      hosts: Math.floor(system.assetCount * 0.5),
+      middleware: Math.floor(system.assetCount * 0.2),
+      services: Math.floor(system.assetCount * 0.3)
+    },
+    responsibilities: {
+      owner: {
+        organization: system.department,
+        contact: '责任人',
+        phone: '138-1234-5678',
+        email: 'owner@example.com'
+      },
+      developer: {
+        organization: '开发单位',
+        contact: '开发负责人',
+        phone: '139-2345-6789',
+        email: 'dev@example.com'
+      },
+      operator: {
+        organization: '运维单位',
+        contact: '运维负责人',
+        phone: '137-3456-7890',
+        email: 'ops@example.com'
+      }
+    }
+  }
+
+  // 构建KPI数据
+  const kpis: ApplicationKPIs = {
+    healthScore: {
+      label: '健康度',
+      value: unifiedData.monitoring.kpis.healthScore,
+      unit: '分',
+      trend: 'up',
+      trendValue: 3.5,
+      status: 'good',
+      chartData: Array.from({ length: 12 }, () => Math.random() * 100)
+    },
+    accessVolume: {
+      label: '访问量',
+      value: unifiedData.monitoring.kpis.accessVolume,
+      unit: '次/日',
+      trend: 'up',
+      trendValue: 12.3,
+      status: 'good',
+      chartData: Array.from({ length: 12 }, () => Math.random() * 100)
+    },
+    logVolume: {
+      label: '日志量',
+      value: unifiedData.monitoring.kpis.logVolume,
+      unit: '条/日',
+      trend: 'stable',
+      trendValue: 0.5,
+      status: 'good',
+      chartData: Array.from({ length: 12 }, () => Math.random() * 100)
+    },
+    errorRate: {
+      label: '错误率',
+      value: unifiedData.monitoring.kpis.errorRate,
+      unit: '%',
+      trend: 'down',
+      trendValue: -0.05,
+      status: 'good',
+      chartData: Array.from({ length: 12 }, () => Math.random() * 100)
+    },
+    responseTime: {
+      label: '响应时间',
+      value: unifiedData.monitoring.kpis.responseTime,
+      unit: 'ms',
+      trend: 'down',
+      trendValue: -15,
+      status: 'good',
+      chartData: Array.from({ length: 12 }, () => Math.random() * 100)
+    },
+    sla: {
+      label: 'SLA',
+      value: unifiedData.monitoring.kpis.sla,
+      unit: '%',
+      trend: 'up',
+      trendValue: 0.1,
+      status: 'good',
+      chartData: Array.from({ length: 12 }, () => Math.random() * 100)
+    }
+  }
+
+  // 统计告警
+  const alertSummary: AlertSummary = {
+    urgent: unifiedData.monitoring.alerts.filter(a => a.level === 'urgent').length,
+    warning: unifiedData.monitoring.alerts.filter(a => a.level === 'warning').length,
+    info: unifiedData.monitoring.alerts.filter(a => a.level === 'info').length,
+    total: unifiedData.monitoring.alerts.length
+  }
+
+  // 统计脆弱性
+  const vulnSummary: VulnerabilitySummary = {
+    critical: unifiedData.monitoring.vulnerabilities.filter(v => v.severity === 'CRITICAL').length,
+    high: unifiedData.monitoring.vulnerabilities.filter(v => v.severity === 'HIGH').length,
+    medium: unifiedData.monitoring.vulnerabilities.filter(v => v.severity === 'MEDIUM').length,
+    low: unifiedData.monitoring.vulnerabilities.filter(v => v.severity === 'LOW').length,
+    total: unifiedData.monitoring.vulnerabilities.length
+  }
+
+  return {
+    appInfo,
+    kpis,
+    vulnerabilities: {
+      summary: vulnSummary,
+      details: unifiedData.monitoring.vulnerabilities as VulnerabilityDetail[]
+    },
+    alerts: {
+      summary: alertSummary,
+      details: unifiedData.monitoring.alerts as AlertDetail[]
+    },
+    topology: unifiedData.monitoring.topology as AssetTopologyData,
+    performance: unifiedData.monitoring.performance as PerformanceMetrics
+  }
 }

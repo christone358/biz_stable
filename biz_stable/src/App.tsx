@@ -8,8 +8,7 @@ import CollaborationLayout from './components/layout/CollaborationLayout'
 import { SystemType, getCurrentSystemType } from './config/system'
 import Dashboard from './pages/dashboard'
 import BusinessPanorama from './pages/business-panorama'
-import AssetManagement from './pages/asset-management'
-import AssetPanorama from './pages/management/asset-panorama'
+import AssetManagement from './pages/management/asset-management'
 import BusinessManagement from './pages/business-management'
 import AlertMonitoring from './pages/management/alert-monitoring'
 import AssetOperations from './pages/management/asset-operations'
@@ -79,10 +78,7 @@ function App() {
 
                     {/* 业务资产管理 */}
                     <Route path="/management/business-management" element={<BusinessManagement />} />
-                    <Route path="/management/asset-panorama" element={<AssetPanorama />} />
-                    {/* 旧的资产管理页面已隐藏,使用新的资产全景页面 */}
-                    {/* <Route path="/management/asset-management" element={<AssetManagement />} /> */}
-                    {/* <Route path="/management/asset-management/panorama/:businessId" element={<AssetPanorama />} /> */}
+                    <Route path="/management/asset-management" element={<AssetManagement />} />
 
                     {/* 业务保障管理 */}
                     <Route path="/management/alert-monitoring" element={<AlertMonitoring />} />
@@ -100,6 +96,7 @@ function App() {
                   <Route path="/business-panorama" element={<Navigate to="/management/business-panorama" replace />} />
                   <Route path="/business-management" element={<Navigate to="/management/business-management" replace />} />
                   <Route path="/asset-management" element={<Navigate to="/management/asset-management" replace />} />
+                  <Route path="/management/asset-panorama" element={<Navigate to="/management/asset-management" replace />} />
                 </>
               ) : (
                 <>

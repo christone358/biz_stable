@@ -4,9 +4,11 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react'
-import { Breadcrumb, Row, Col, message } from 'antd'
+import { Row, Col, message, Typography, Card } from 'antd'
+
+const { Title } = Typography
 import AssetOverview from './components/AssetOverview'
-import DepartmentDynamics from './components/DepartmentDynamics'
+import OperationsOverview from './components/DepartmentDynamics'
 import UnmanagedAssetTable from './components/UnmanagedAssetTable'
 import AssetDetailModal from './components/AssetDetailModal'
 import DepartmentAssetModal from './components/DepartmentAssetModal'
@@ -14,7 +16,8 @@ import AssignModal from './components/AssignModal'
 import type {
   UnmanagedAsset,
   AssetTypeStats,
-  DepartmentDynamic,
+  AffectedBusinessStats,
+  DepartmentTaskStats,
   Department,
   DepartmentAsset,
   AssetType,
@@ -26,7 +29,8 @@ import type {
 import {
   generateUnmanagedAssets,
   generateAssetTypeStats,
-  generateDepartmentDynamics,
+  generateAffectedBusinessStats,
+  generateDepartmentTaskStats,
   generateDepartments,
   generateDepartmentAssets
 } from '../../../mock/asset-operations-data'
@@ -36,7 +40,8 @@ const AssetOperations: React.FC = () => {
   // 状态管理
   const [assetTypeStats, setAssetTypeStats] = useState<AssetTypeStats[]>([])
   const [unmanagedAssets, setUnmanagedAssets] = useState<UnmanagedAsset[]>([])
-  const [departmentDynamics, setDepartmentDynamics] = useState<DepartmentDynamic[]>([])
+  const [affectedBusinessList, setAffectedBusinessList] = useState<AffectedBusinessStats[]>([])
+  const [departmentTaskList, setDepartmentTaskList] = useState<DepartmentTaskStats[]>([])
   const [departments, setDepartments] = useState<Department[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -94,12 +99,14 @@ const AssetOperations: React.FC = () => {
     setTimeout(() => {
       const stats = generateAssetTypeStats()
       const assets = generateUnmanagedAssets()
-      const dynamics = generateDepartmentDynamics()
+      const businessList = generateAffectedBusinessStats()
+      const taskList = generateDepartmentTaskStats()
       const depts = generateDepartments()
 
       setAssetTypeStats(stats)
       setUnmanagedAssets(assets)
-      setDepartmentDynamics(dynamics)
+      setAffectedBusinessList(businessList)
+      setDepartmentTaskList(taskList)
       setDepartments(depts)
       setPagination((prev) => ({ ...prev, total: assets.length }))
       setLoading(false)
@@ -236,15 +243,9 @@ const AssetOperations: React.FC = () => {
 
   return (
     <div className="asset-operations-page">
-      {/* 面包屑导航 */}
+      {/* 页面标题 */}
       <div className="page-header">
-        <Breadcrumb
-          items={[
-            { title: '首页' },
-            { title: '业务保障管理' },
-            { title: '资产运营' }
-          ]}
-        />
+        <Title level={3} style={{ margin: 0 }}>异常资产运营</Title>
       </div>
 
       {/* 内容区域 */}
@@ -253,17 +254,23 @@ const AssetOperations: React.FC = () => {
         <Row gutter={[16, 16]} className="top-section">
           {/* 左侧：资产类型统计 */}
           <Col xs={24} lg={14}>
-            <AssetOverview
-              stats={assetTypeStats}
-              selectedType={filterConfig.assetType}
-              onTypeSelect={handleTypeSelect}
-            />
+            <Card title={<Title level={5} style={{ margin: 0 }}>异常概况</Title>} className="abnormal-overview-card">
+              <AssetOverview
+                stats={assetTypeStats}
+                selectedType={filterConfig.assetType}
+                onTypeSelect={handleTypeSelect}
+              />
+            </Card>
           </Col>
 
-          {/* 右侧：部门纳管动态 */}
+          {/* 右侧：运营概况 */}
           <Col xs={24} lg={10}>
-            <DepartmentDynamics
-              dynamics={departmentDynamics}
+            <OperationsOverview
+              affectedBusinessList={affectedBusinessList}
+              departmentTaskList={departmentTaskList}
+              onBusinessClick={(businessId, businessName) => {
+                console.log('点击业务:', businessId, businessName)
+              }}
               onDepartmentClick={handleDepartmentClick}
             />
           </Col>
