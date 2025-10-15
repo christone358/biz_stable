@@ -15,6 +15,12 @@ import AssetOperations from './pages/management/asset-operations'
 import VulnerabilityManagement from './pages/management/vulnerability'
 import BusinessMonitoring from './pages/management/business-monitoring'
 import VulnerabilityDisposal from './pages/collaboration/vulnerability'
+import AssetMonitoring from './pages/collaboration/asset-monitoring'
+import RuntimeAlerts from './pages/collaboration/runtime-alerts'
+import TaskCenter from './pages/collaboration/task-center'
+import TaskRecords from './pages/collaboration/task-records'
+import AssetInfo from './pages/collaboration/asset-info'
+import AssetIssues from './pages/collaboration/asset-issues'
 import MockConfig from './pages/mock-config'
 import Test from './pages/test'
 import './App.css'
@@ -101,21 +107,21 @@ function App() {
               ) : (
                 <>
                   {/* 系统二：业务协同管理系统路由 */}
-                  <Route path="/" element={<Navigate to="/collaboration/asset-monitoring" replace />} />
+                  <Route path="/" element={<Navigate to="/collaboration/task-center" replace />} />
 
                   <Route element={<CollaborationLayout />}>
                     {/* 业务运行保障 */}
-                    <Route path="/collaboration/asset-monitoring" element={<div>资产监测（待开发）</div>} />
-                    <Route path="/collaboration/runtime-alerts" element={<div>运行告警（待开发）</div>} />
+                    <Route path="/collaboration/asset-monitoring" element={<AssetMonitoring />} />
+                    <Route path="/collaboration/runtime-alerts" element={<RuntimeAlerts />} />
                     <Route path="/collaboration/vulnerability" element={<VulnerabilityDisposal />} />
 
                     {/* 协同任务 */}
-                    <Route path="/collaboration/todo-center" element={<div>待办任务中心（待开发）</div>} />
-                    <Route path="/collaboration/task-records" element={<div>任务处置记录（待开发）</div>} />
+                    <Route path="/collaboration/task-center" element={<TaskCenter />} />
+                    <Route path="/collaboration/task-records" element={<TaskRecords />} />
 
                     {/* 资产管理 */}
-                    <Route path="/collaboration/asset-info" element={<div>资产信息管理（待开发）</div>} />
-                    <Route path="/collaboration/asset-issues" element={<div>资产异常问题处置（待开发）</div>} />
+                    <Route path="/collaboration/asset-info" element={<AssetInfo />} />
+                    <Route path="/collaboration/asset-issues" element={<AssetIssues />} />
                   </Route>
                 </>
               )}

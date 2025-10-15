@@ -1,0 +1,78 @@
+.alert-handle-card {
+  margin-bottom: 24px;
+}
+
+.card-header {
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title-icon {
+  font-size: 24px;
+}
+
+/* 筛选和统计区域 */
+.filter-stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.stats {
+  font-size: 14px;
+}
+
+.stat-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.stat-critical {
+  background-color: #ff4d4f;
+}
+
+.stat-important {
+  background-color: #faad14;
+}
+
+.stat-normal {
+  background-color: #8c8c8c;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .card-header {
+    flex-direction: column;
+  }
+
+  .header-right {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .header-right .ant-radio-group {
+    width: 100%;
+  }
+
+  .stats {
+    justify-content: space-between;
+  }
+}

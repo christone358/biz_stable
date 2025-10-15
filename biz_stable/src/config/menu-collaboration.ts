@@ -27,8 +27,8 @@ export const collaborationMenuItems: MenuItem[] = [
     label: '协同任务',
     children: [
       {
-        key: '/collaboration/todo-center',
-        label: '待办任务中心',
+        key: '/collaboration/task-center',
+        label: '任务中心',
       },
       {
         key: '/collaboration/task-records',

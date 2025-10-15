@@ -1,11 +1,16 @@
 {
   "name": "biz_stable",
+  "description": "业务保障管理系统 - Business Assurance Management System (Port: 3000)",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:management": "VITE_SYSTEM_TYPE=management vite --port 3000 --open",
+    "dev:collaboration": "VITE_SYSTEM_TYPE=collaboration vite --port 3001 --open",
     "build": "tsc && vite build",
+    "build:management": "VITE_SYSTEM_TYPE=management tsc && vite build",
+    "build:collaboration": "VITE_SYSTEM_TYPE=collaboration tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix"

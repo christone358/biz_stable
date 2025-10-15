@@ -11,7 +11,10 @@
       "Bash(npm run typecheck:*)",
       "Bash(npx tsc:*)",
       "Bash(cat:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npm run dev:management:*)",
+      "Bash(xargs kill:*)",
+      "Bash(npm run dev:collaboration:*)"
     ],
     "deny": [],
     "ask": []

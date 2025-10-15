@@ -17,13 +17,13 @@ export const SYSTEM_CONFIGS: Record<SystemType, SystemConfig> = {
   [SystemType.MANAGEMENT]: {
     type: SystemType.MANAGEMENT,
     name: '业务保障管理系统',
-    port: 5173,
+    port: 3000,
     routePrefix: '/management'
   },
   [SystemType.COLLABORATION]: {
     type: SystemType.COLLABORATION,
     name: '业务协同管理系统',
-    port: 5174,
+    port: 3001,
     routePrefix: '/collaboration'
   }
 }
