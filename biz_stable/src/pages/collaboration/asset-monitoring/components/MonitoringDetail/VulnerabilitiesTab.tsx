@@ -1,47 +1,42 @@
 import React, { useState, useMemo } from 'react'
-import { Card, Table, Tag, Button, Space, Radio } from 'antd'
-import { BugOutlined } from '@ant-design/icons'
-import type { Vulnerability, FilterStatus } from '../types'
+import { Table, Tag, Button, Space, Radio } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import './VulnerabilityCard.css'
+import type { MonitoringVulnerability, MonitoringVulnerabilityStatus } from '../../types'
 
-interface VulnerabilityCardProps {
-  data: Vulnerability[]
-  onHandle: (id: string) => void
-  onView: (id: string) => void
+interface VulnerabilitiesTabProps {
+  vulnerabilities: MonitoringVulnerability[]
 }
 
 /**
- * 脆弱性处置卡片组件
+ * 脆弱性Tab组件
  */
-const VulnerabilityCard: React.FC<VulnerabilityCardProps> = ({ data, onHandle, onView }) => {
-  const [filter, setFilter] = useState<FilterStatus>('all')
+const VulnerabilitiesTab: React.FC<VulnerabilitiesTabProps> = ({ vulnerabilities }) => {
+  const [filter, setFilter] = useState<'all' | MonitoringVulnerabilityStatus>('all')
 
   // 筛选后的数据
   const filteredData = useMemo(() => {
-    if (filter === 'all') return data
-    return data.filter(item => item.status === filter)
-  }, [data, filter])
+    if (filter === 'all') return vulnerabilities
+    return vulnerabilities.filter(vuln => vuln.status === filter)
+  }, [vulnerabilities, filter])
 
   // 统计数据
   const stats = useMemo(() => {
-    const high = data.filter(v => v.riskLevel === 'high').length
-    const medium = data.filter(v => v.riskLevel === 'medium').length
-    const low = data.filter(v => v.riskLevel === 'low').length
+    const high = vulnerabilities.filter(v => v.riskLevel === 'high').length
+    const medium = vulnerabilities.filter(v => v.riskLevel === 'medium').length
+    const low = vulnerabilities.filter(v => v.riskLevel === 'low').length
     return { high, medium, low }
-  }, [data])
+  }, [vulnerabilities])
 
-  // 表格列配置
-  const columns: ColumnsType<Vulnerability> = [
+  const columns: ColumnsType<MonitoringVulnerability> = [
     {
       title: '漏洞名称',
       dataIndex: 'name',
       key: 'name',
-      width: '22%',
+      width: '25%',
       render: (text, record) => (
         <div>
-          <div className="vulnerability-name">{text}</div>
-          <div className="vulnerability-cve">{record.cveId}</div>
+          <div style={{ fontWeight: 500 }}>{text}</div>
+          <div style={{ fontSize: '12px', color: '#8c8c8c' }}>{record.cveId}</div>
         </div>
       ),
     },
@@ -63,7 +58,7 @@ const VulnerabilityCard: React.FC<VulnerabilityCardProps> = ({ data, onHandle, o
     {
       title: '影响资产',
       key: 'affectedAsset',
-      width: '18%',
+      width: '20%',
       render: (_, record) => (
         <div>
           <div style={{ fontWeight: 500 }}>{record.affectedAsset.name}</div>
@@ -72,16 +67,10 @@ const VulnerabilityCard: React.FC<VulnerabilityCardProps> = ({ data, onHandle, o
       ),
     },
     {
-      title: '影响业务',
-      dataIndex: 'affectedBusiness',
-      key: 'affectedBusiness',
-      width: '13%',
-    },
-    {
       title: '发布时间',
       dataIndex: 'publishTime',
       key: 'publishTime',
-      width: '10%',
+      width: '12%',
     },
     {
       title: '状态',
@@ -101,22 +90,13 @@ const VulnerabilityCard: React.FC<VulnerabilityCardProps> = ({ data, onHandle, o
     {
       title: '操作',
       key: 'action',
-      width: '17%',
+      width: '15%',
       render: (_, record) => (
         <Space>
-          <Button
-            type="primary"
-            size="small"
-            onClick={() => onHandle(record.id)}
-            style={{ width: '80px' }}
-          >
+          <Button type="primary" size="small" style={{ width: '80px' }}>
             {record.status === 'processing' ? '继续处理' : '处理'}
           </Button>
-          <Button
-            size="small"
-            onClick={() => onView(record.id)}
-            style={{ width: '60px' }}
-          >
+          <Button size="small" style={{ width: '60px' }}>
             查看
           </Button>
         </Space>
@@ -125,28 +105,21 @@ const VulnerabilityCard: React.FC<VulnerabilityCardProps> = ({ data, onHandle, o
   ]
 
   return (
-    <Card className="vulnerability-card">
-      {/* 卡片头部 */}
-      <div className="card-header">
-        <h2 className="card-title">
-          脆弱性处置
-        </h2>
-      </div>
-
+    <div className="vulnerabilities-tab">
       {/* 统计和筛选区域 */}
-      <div className="filter-stats-row">
+      <div className="filter-stats-row" style={{ marginBottom: 16 }}>
         {/* 左侧：数量统计 */}
-        <Space size="middle" className="stats">
-          <span className="stat-item">
-            <span className="stat-dot stat-high"></span>
+        <Space size="middle">
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ff4d4f' }}></span>
             高危: {stats.high}
           </span>
-          <span className="stat-item">
-            <span className="stat-dot stat-medium"></span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#faad14' }}></span>
             中危: {stats.medium}
           </span>
-          <span className="stat-item">
-            <span className="stat-dot stat-low"></span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#d9d9d9' }}></span>
             低危: {stats.low}
           </span>
         </Space>
@@ -176,8 +149,8 @@ const VulnerabilityCard: React.FC<VulnerabilityCardProps> = ({ data, onHandle, o
           showTotal: (total) => `共 ${total} 项`,
         }}
       />
-    </Card>
+    </div>
   )
 }
 
-export default VulnerabilityCard
+export default VulnerabilitiesTab

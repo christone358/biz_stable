@@ -37,6 +37,32 @@
   line-height: 64px;
 }
 
+/* 右侧操作区 - 符合Ant Design B2B规范 */
+.management-header .header-actions {
+  flex-shrink: 0;
+  margin-left: var(--space-lg);
+}
+
+.management-header .user-info {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--borderRadius);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.management-header .user-info:hover {
+  background-color: var(--colorBgLayout);
+}
+
+.management-header .user-name {
+  font-size: 14px;
+  color: var(--colorText);
+  line-height: 22px;
+}
+
 .management-content {
   padding: 0;
   background: var(--colorBgLayout);
@@ -61,6 +87,10 @@
   .management-menu {
     line-height: 56px;
   }
+
+  .management-header .user-name {
+    display: none;  /* 中等屏幕隐藏用户名 */
+  }
 }
 
 /* sm 断点: 576px */
@@ -77,6 +107,14 @@
 
   .management-menu {
     line-height: 48px;
+  }
+
+  .management-header .header-actions {
+    margin-left: var(--space-sm);
+  }
+
+  .management-header .user-info {
+    padding: var(--space-xs);
   }
 }
 

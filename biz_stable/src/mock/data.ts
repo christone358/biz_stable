@@ -542,6 +542,11 @@ export const generateBusinessDomainSystems = (domainId: string = 'BIZ_ROOT'): Bu
       const systemId = `SYS_${domain.prefix}_${String(i + 1).padStart(3, '0')}`
       const systemName = `${domain.name}${template.name}`
 
+      // 使用系统ID的哈希值生成确定性的数据
+      const systemHash = systemId.split('').reduce((hash, char) => {
+        return ((hash << 5) - hash + char.charCodeAt(0)) & 0xffffffff
+      }, 0)
+
       const assets = generateAssetsForSystem(systemId, systemName, domain.id, domain.name, assetCount)
 
       systems.push({
@@ -554,15 +559,15 @@ export const generateBusinessDomainSystems = (domainId: string = 'BIZ_ROOT'): Bu
         importance,
         healthStatus,
         assetCount,
-        vulnerabilityCount: (deptIndex + i) % 5,
-        alertCount: (deptIndex + i * 2) % 10,
-        errorRate: ((deptIndex + i) % 50) / 10,
-        responseTime: 50 + ((deptIndex + i) % 500),
-        availability: 95 + ((deptIndex + i) % 5),
+        vulnerabilityCount: (systemHash % 5),  // 0-4个漏洞，基于哈希确保稳定
+        alertCount: (systemHash % 10),          // 0-9个告警，基于哈希确保稳定
+        errorRate: ((systemHash % 50) / 10),    // 0-5%错误率，基于哈希确保稳定
+        responseTime: 50 + (systemHash % 500),  // 50-549ms响应时间，基于哈希确保稳定
+        availability: 95 + ((systemHash % 500) / 100),  // 95-100%可用性，基于哈希确保稳定
         assets,
-        lastCheck: new Date(Date.now() - ((deptIndex + i) % 3600000)).toISOString(),
-        createdAt: new Date(Date.now() - ((deptIndex + i) % (365 * 24 * 3600000))).toISOString(),
-        updatedAt: new Date(Date.now() - ((deptIndex + i) % (24 * 3600000))).toISOString(),
+        lastCheck: new Date(Date.now() - ((systemHash % 3600000))).toISOString(),
+        createdAt: new Date(Date.now() - ((systemHash % (365 * 24 * 3600000)))).toISOString(),
+        updatedAt: new Date(Date.now() - ((systemHash % (24 * 3600000)))).toISOString(),
       })
     }
   })

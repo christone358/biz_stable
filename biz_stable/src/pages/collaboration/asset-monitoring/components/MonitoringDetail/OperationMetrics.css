@@ -1,0 +1,133 @@
+/* 运行指标紧凑型容器 */
+.operation-metrics-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;  /* 减小gap从16px到12px */
+}
+
+/* KPI指标卡片区域 */
+.kpi-cards-section {
+  margin-bottom: 0;  /* 移除额外margin */
+}
+
+.kpi-card-mini {
+  height: 100%;
+  transition: all 0.3s;
+}
+
+.kpi-card-mini:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.kpi-card-mini .ant-card-body {
+  padding: 10px;  /* 减小padding从12px到10px */
+}
+
+.kpi-card-mini .ant-statistic-title {
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.kpi-card-mini .ant-statistic-content {
+  font-size: 20px;
+}
+
+.mini-chart {
+  margin-top: 6px;  /* 减小margin从8px到6px */
+  height: 40px;
+}
+
+/* 实时监控指标卡片 */
+.realtime-metrics-card {
+  margin-bottom: 0;  /* 移除额外margin */
+}
+
+.realtime-metrics-card .ant-card-head {
+  min-height: 36px;  /* 减小header高度从40px到36px */
+  padding: 0 12px;  /* 减小padding */
+}
+
+.realtime-metrics-card .ant-card-head-title {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 0;  /* 减小padding从8px到6px */
+}
+
+.realtime-metrics-card .ant-card-body {
+  padding: 10px;  /* 减小padding从12px到10px */
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;  /* 减小gap从6px到4px */
+}
+
+.metric-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metric-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.metric-item .ant-progress {
+  margin: 0;
+}
+
+/* 性能图表卡片 */
+.performance-charts-card .ant-card-head {
+  min-height: 36px;  /* 减小header高度从40px到36px */
+  padding: 0 12px;  /* 减小padding */
+}
+
+.performance-charts-card .ant-card-head-title {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 0;  /* 减小padding从8px到6px */
+}
+
+.performance-charts-card .ant-card-body {
+  padding: 10px;  /* 减小padding从12px到10px */
+}
+
+/* 响应式布局优化 */
+@media (max-width: 1200px) {
+  .kpi-card-mini .ant-statistic-content {
+    font-size: 18px;
+  }
+
+  .metric-value {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .operation-metrics-compact {
+    gap: 10px;  /* 小屏幕进一步减小gap */
+  }
+
+  .kpi-cards-section {
+    margin-bottom: 0;
+  }
+
+  .realtime-metrics-card .ant-card-body,
+  .performance-charts-card .ant-card-body {
+    padding: 8px;
+  }
+
+  .metric-label {
+    font-size: 11px;
+  }
+
+  .metric-value {
+    font-size: 13px;
+  }
+}

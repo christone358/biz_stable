@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, Button, Statistic, Row, Col } from 'antd'
-import { ArrowRightOutlined, SettingOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons'
+import { SettingOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons'
 import * as Icons from '@ant-design/icons'
 import HoneycombMatrix from '../HoneycombMatrix'
 import type { AssetLayerType, AssetStats, HoneycombData } from '../../types'
@@ -12,7 +12,6 @@ interface AssetLayerProps {
   icon: string
   stats: AssetStats
   honeycombData: HoneycombData[]
-  onShowDetail: () => void
   onShowManage: () => void
 }
 
@@ -21,7 +20,6 @@ const AssetLayer: React.FC<AssetLayerProps> = ({
   icon,
   stats,
   honeycombData,
-  onShowDetail,
   onShowManage
 }) => {
   // 动态获取图标组件
@@ -44,9 +42,6 @@ const AssetLayer: React.FC<AssetLayerProps> = ({
           <span>{title}</span>
         </div>
         <div className="layer-actions">
-          <Button type="link" onClick={onShowDetail}>
-            详情 <ArrowRightOutlined />
-          </Button>
           <Button type="link" onClick={onShowManage} style={{ color: '#52c41a' }}>
             台账管理 <SettingOutlined />
           </Button>

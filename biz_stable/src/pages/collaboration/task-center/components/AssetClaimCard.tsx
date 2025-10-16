@@ -142,32 +142,7 @@ const AssetClaimCard: React.FC<AssetClaimCardProps> = ({ data, onClaim, onReject
 
       {/* 统计和筛选区域 */}
       <div className="filter-stats-row">
-        {/* 左侧：数量统计 */}
-        <Space size="middle" className="stats">
-          <span
-            className={`stat-item stat-clickable ${filter === 'claim' ? 'stat-active' : ''}`}
-            onClick={() => setFilter('claim')}
-          >
-            <span className="stat-dot stat-claim"></span>
-            资产认领: {stats.claim}
-          </span>
-          <span
-            className={`stat-item stat-clickable ${filter === 'compliance' ? 'stat-active' : ''}`}
-            onClick={() => setFilter('compliance')}
-          >
-            <span className="stat-dot stat-compliance"></span>
-            不合规资产处理: {stats.compliance}
-          </span>
-          <span
-            className={`stat-item stat-clickable ${filter === 'responsibility' ? 'stat-active' : ''}`}
-            onClick={() => setFilter('responsibility')}
-          >
-            <span className="stat-dot stat-responsibility"></span>
-            责任人确认: {stats.responsibility}
-          </span>
-        </Space>
-
-        {/* 右侧：状态筛选 */}
+        {/* 左侧：筛选按钮组（带统计） */}
         <Radio.Group
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
@@ -175,9 +150,9 @@ const AssetClaimCard: React.FC<AssetClaimCardProps> = ({ data, onClaim, onReject
           size="small"
         >
           <Radio.Button value="all">全部</Radio.Button>
-          <Radio.Button value="claim">资产认领</Radio.Button>
-          <Radio.Button value="compliance">不合规资产</Radio.Button>
-          <Radio.Button value="responsibility">责任人确认</Radio.Button>
+          <Radio.Button value="claim">资产认领 ({stats.claim})</Radio.Button>
+          <Radio.Button value="compliance">不合规资产 ({stats.compliance})</Radio.Button>
+          <Radio.Button value="responsibility">责任人确认 ({stats.responsibility})</Radio.Button>
         </Radio.Group>
       </div>
 

@@ -114,9 +114,8 @@ const BusinessMonitoring: React.FC = () => {
   // Tab 2: 性能监控
   const performanceTab = (
     <div className="performance-tab-content">
-      <Card bordered={false}>
-        <PerformanceCharts metrics={data.performance} />
-      </Card>
+      {/* 性能趋势图表 */}
+      <PerformanceCharts metrics={data.performance} />
     </div>
   )
 

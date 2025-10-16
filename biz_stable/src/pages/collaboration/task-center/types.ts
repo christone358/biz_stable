@@ -22,7 +22,10 @@ export interface Vulnerability {
   name: string                    // 漏洞名称
   cveId: string                  // CVE编号
   riskLevel: RiskLevel           // 风险等级
-  affectedAssets: number         // 影响资产数量
+  affectedAsset: {               // 受影响的资产
+    name: string                 // 资产名称
+    ipAddress: string            // IP地址
+  }
   affectedBusiness: string       // 影响业务
   publishTime: string            // 发布时间
   status: VulnerabilityStatus    // 状态

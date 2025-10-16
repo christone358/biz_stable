@@ -1,5 +1,6 @@
 import React from 'react'
-import { Card, Table, Tag, Button } from 'antd'
+import { Card, Table, Tag, Button, Space } from 'antd'
+import { ArrowLeftOutlined, ImportOutlined, ExportOutlined, PlusOutlined } from '@ant-design/icons'
 import type { AssetLayerType, AssetItem } from '../../types'
 import './index.css'
 
@@ -8,9 +9,10 @@ interface AssetTableProps {
   title: string
   data: AssetItem[]
   isManageMode: boolean
+  onBack: () => void
 }
 
-const AssetTable: React.FC<AssetTableProps> = ({ title, data, isManageMode }) => {
+const AssetTable: React.FC<AssetTableProps> = ({ title, data, isManageMode, onBack }) => {
   const getStatusTag = (status: string) => {
     const statusMap: Record<string, { color: string; text: string }> = {
       running: { color: 'success', text: '运行中' },
@@ -75,7 +77,23 @@ const AssetTable: React.FC<AssetTableProps> = ({ title, data, isManageMode }) =>
   return (
     <Card
       className="asset-table-card"
-      title={`${title}${isManageMode ? '台账管理' : '台账'}`}
+      title={
+        <Space>
+          <Button type="link" icon={<ArrowLeftOutlined />} onClick={onBack}>
+            返回
+          </Button>
+          <span>{`${title}${isManageMode ? '台账管理' : '台账'}`}</span>
+        </Space>
+      }
+      extra={
+        isManageMode && (
+          <Space>
+            <Button icon={<ImportOutlined />}>导入</Button>
+            <Button icon={<ExportOutlined />}>导出</Button>
+            <Button type="primary" icon={<PlusOutlined />}>新增</Button>
+          </Space>
+        )
+      }
       bordered={false}
     >
       <Table

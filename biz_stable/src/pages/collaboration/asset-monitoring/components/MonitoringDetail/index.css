@@ -1,0 +1,81 @@
+/* MonitoringDetail 监控详情容器样式 */
+
+.monitoring-detail-container {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;  /* 减小padding从24px到16px */
+  /* 移除高度限制，让内容自然撑开 */
+}
+
+/* 确保Tabs组件不限制高度 */
+.monitoring-detail-container .ant-tabs {
+  height: auto;
+}
+
+.monitoring-detail-container .ant-tabs-content-holder {
+  /* 确保Tab内容可以正常滚动 */
+  overflow: visible;
+  height: auto;
+}
+
+.monitoring-detail-container .ant-tabs-content {
+  height: auto;
+}
+
+.monitoring-detail-container .ant-tabs-tabpane {
+  height: auto;
+}
+
+.monitoring-detail-loading,
+.monitoring-detail-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+/* Tab内容通用样式 */
+.filter-stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* 关键指标Tab */
+.key-metrics-tab {
+  padding: 16px 0;
+}
+
+/* 告警Tab */
+.alerts-tab {
+  padding: 16px 0;
+}
+
+/* 脆弱性Tab */
+.vulnerabilities-tab {
+  padding: 16px 0;
+}
+
+/* 调用链Tab */
+.call-chain-tab {
+  padding: 16px 0;
+}
+
+/* 资产Tab */
+.assets-tab {
+  padding: 16px 0;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+  .monitoring-detail-container {
+    padding: 16px;
+  }
+
+  .filter-stats-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

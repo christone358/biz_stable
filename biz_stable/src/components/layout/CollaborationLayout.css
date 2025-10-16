@@ -34,10 +34,38 @@
   line-height: 64px;
 }
 
+/* 右侧操作区 - 符合Ant Design B2B规范 */
+.collaboration-header .header-actions {
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+
+.collaboration-header .user-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.collaboration-header .user-info:hover {
+  background-color: var(--colorBgLayout, #f5f5f5);
+}
+
+.collaboration-header .user-name {
+  font-size: 14px;
+  color: var(--colorText, #1F1F1F);
+  line-height: 22px;
+}
+
 .collaboration-content {
-  padding: 24px;
+  padding: 0;  /* 移除padding，让子页面自己控制padding */
   background: var(--colorBgLayout, #f5f5f5);
   min-height: calc(100vh - 64px);
+  overflow-y: auto;  /* 允许垂直滚动 */
+  overflow-x: hidden;  /* 隐藏水平滚动条 */
 }
 
 /* 响应式调整 - 符合 Ant Design 断点规范 */
@@ -58,8 +86,12 @@
   }
 
   .collaboration-content {
-    padding: 16px;
+    padding: 0;
     min-height: calc(100vh - 56px);
+  }
+
+  .collaboration-header .user-name {
+    display: none;  /* 中等屏幕隐藏用户名 */
   }
 }
 
@@ -80,8 +112,15 @@
   }
 
   .collaboration-content {
-    padding: 12px;
+    padding: 0;
     min-height: calc(100vh - 48px);
   }
-}
 
+  .collaboration-header .header-actions {
+    margin-left: 8px;
+  }
+
+  .collaboration-header .user-info {
+    padding: 4px;
+  }
+}

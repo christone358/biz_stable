@@ -1,37 +1,78 @@
-import React from 'react'
-import { Card, Typography, Empty } from 'antd'
-import { MonitorOutlined } from '@ant-design/icons'
+import React, { useState, useEffect, useMemo } from 'react'
+import SystemOverview from './components/SystemOverview'
+import MonitoringDetail from './components/MonitoringDetail'
+import type { SystemOverview as SystemOverviewType, SystemMonitoringData } from './types'
+import { generateSystemsOverview, generateSystemMonitoringData } from './mock/monitoring-data'
 import './index.css'
 
-const { Title, Paragraph } = Typography
-
 /**
- * 资产监测页面
- *
- * 功能：
- * - 实时监控资产运行状态
- * - 展示资产性能指标
- * - 提供资产健康度评估
+ * 资产监测主页面
  */
 const AssetMonitoring: React.FC = () => {
+  // 系统列表
+  const [systems] = useState<SystemOverviewType[]>(() => generateSystemsOverview())
+
+  // 当前选中的系统ID
+  const [selectedSystemId, setSelectedSystemId] = useState<string | null>(null)
+
+  // 当前系统的监控数据
+  const [monitoringData, setMonitoringData] = useState<SystemMonitoringData | null>(null)
+
+  // 数据加载状态
+  const [loading, setLoading] = useState(false)
+
+  // 选中的系统信息
+  const selectedSystem = useMemo(() => {
+    return systems.find(s => s.id === selectedSystemId) || null
+  }, [systems, selectedSystemId])
+
+  // 页面加载时默认选中第一个系统
+  useEffect(() => {
+    if (systems.length > 0 && !selectedSystemId) {
+      setSelectedSystemId(systems[0].id)
+    }
+  }, [systems, selectedSystemId])
+
+  // 当选中系统变化时，加载该系统的监控数据
+  useEffect(() => {
+    if (selectedSystemId) {
+      setLoading(true)
+      // 模拟异步加载数据
+      setTimeout(() => {
+        const data = generateSystemMonitoringData(selectedSystemId)
+        setMonitoringData(data)
+        setLoading(false)
+      }, 300)
+    } else {
+      setMonitoringData(null)
+    }
+  }, [selectedSystemId])
+
+  // 处理系统选择
+  const handleSystemSelect = (systemId: string) => {
+    setSelectedSystemId(systemId)
+  }
+
   return (
     <div className="asset-monitoring-page">
-      <Card>
-        <Empty
-          image={<MonitorOutlined style={{ fontSize: 64, color: '#1890ff' }} />}
-          description={
-            <div style={{ marginTop: 16 }}>
-              <Title level={4}>资产监测</Title>
-              <Paragraph type="secondary">
-                该功能正在开发中...
-              </Paragraph>
-              <Paragraph type="secondary">
-                此页面将提供资产实时监控、性能指标展示和健康度评估功能
-              </Paragraph>
-            </div>
-          }
+      {/* 顶部：系统健康概览区域 */}
+      <div className="overview-section">
+        <SystemOverview
+          systems={systems}
+          selectedSystemId={selectedSystemId}
+          onSystemSelect={handleSystemSelect}
         />
-      </Card>
+      </div>
+
+      {/* 下方：详细监控数据区域 */}
+      <div className="detail-section">
+        <MonitoringDetail
+          systemId={selectedSystemId}
+          systemName={selectedSystem?.name || null}
+          monitoringData={monitoringData}
+          loading={loading}
+        />
+      </div>
     </div>
   )
 }

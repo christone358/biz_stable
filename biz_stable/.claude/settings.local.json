@@ -14,7 +14,8 @@
       "Bash(node:*)",
       "Bash(npm run dev:management:*)",
       "Bash(xargs kill:*)",
-      "Bash(npm run dev:collaboration:*)"
+      "Bash(npm run dev:collaboration:*)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": []

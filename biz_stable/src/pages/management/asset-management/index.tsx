@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Input, Button, Breadcrumb } from 'antd'
-import { SearchOutlined, AppstoreOutlined, DeploymentUnitOutlined, ArrowLeftOutlined } from '@ant-design/icons'
+import { SearchOutlined, AppstoreOutlined, DeploymentUnitOutlined } from '@ant-design/icons'
 import BusinessTree from './components/BusinessTree'
 import BusinessInfo from './components/BusinessInfo'
 import AssetLayer from './components/AssetLayer'
@@ -109,33 +109,25 @@ const AssetPanorama: React.FC = () => {
 
           {panoramaData && (
             <>
-              <div className="asset-view-switcher">
-                <Button
-                  type={currentView === 'overview' ? 'primary' : 'default'}
-                  icon={<AppstoreOutlined />}
-                  onClick={() => handleViewChange('overview')}
-                >
-                  资产全景
-                </Button>
-                <Button
-                  type={currentView === 'dependency' ? 'primary' : 'default'}
-                  icon={<DeploymentUnitOutlined />}
-                  onClick={() => handleViewChange('dependency')}
-                  style={{ marginLeft: 8 }}
-                >
-                  依赖分析
-                </Button>
-              </div>
-
-              {(currentView === 'detail' || currentView === 'manage') && (
-                <Button
-                  type="primary"
-                  icon={<ArrowLeftOutlined />}
-                  onClick={handleBackToOverview}
-                >
-                  返回全景
-                </Button>
-              )}
+              {currentView === 'overview' || currentView === 'dependency' ? (
+                <div className="asset-view-switcher">
+                  <Button
+                    type={currentView === 'overview' ? 'primary' : 'default'}
+                    icon={<AppstoreOutlined />}
+                    onClick={() => handleViewChange('overview')}
+                  >
+                    资产全景
+                  </Button>
+                  <Button
+                    type={currentView === 'dependency' ? 'primary' : 'default'}
+                    icon={<DeploymentUnitOutlined />}
+                    onClick={() => handleViewChange('dependency')}
+                    style={{ marginLeft: 8 }}
+                  >
+                    依赖分析
+                  </Button>
+                </div>
+              ) : null}
             </>
           )}
         </div>
@@ -170,7 +162,6 @@ const AssetPanorama: React.FC = () => {
                 icon="cubes"
                 stats={panoramaData.layerStatistics[AssetLayerType.APPLICATION]}
                 honeycombData={panoramaData.honeycombData[AssetLayerType.APPLICATION]}
-                onShowDetail={() => handleShowDetail(AssetLayerType.APPLICATION)}
                 onShowManage={() => handleShowManage(AssetLayerType.APPLICATION)}
               />
               <AssetLayer
@@ -179,7 +170,6 @@ const AssetPanorama: React.FC = () => {
                 icon="server"
                 stats={panoramaData.layerStatistics[AssetLayerType.COMPUTE]}
                 honeycombData={panoramaData.honeycombData[AssetLayerType.COMPUTE]}
-                onShowDetail={() => handleShowDetail(AssetLayerType.COMPUTE)}
                 onShowManage={() => handleShowManage(AssetLayerType.COMPUTE)}
               />
               <AssetLayer
@@ -188,7 +178,6 @@ const AssetPanorama: React.FC = () => {
                 icon="database"
                 stats={panoramaData.layerStatistics[AssetLayerType.STORAGE]}
                 honeycombData={panoramaData.honeycombData[AssetLayerType.STORAGE]}
-                onShowDetail={() => handleShowDetail(AssetLayerType.STORAGE)}
                 onShowManage={() => handleShowManage(AssetLayerType.STORAGE)}
               />
               <AssetLayer
@@ -197,7 +186,6 @@ const AssetPanorama: React.FC = () => {
                 icon="global"
                 stats={panoramaData.layerStatistics[AssetLayerType.NETWORK]}
                 honeycombData={panoramaData.honeycombData[AssetLayerType.NETWORK]}
-                onShowDetail={() => handleShowDetail(AssetLayerType.NETWORK)}
                 onShowManage={() => handleShowManage(AssetLayerType.NETWORK)}
               />
             </div>
@@ -213,6 +201,7 @@ const AssetPanorama: React.FC = () => {
               title={getLayerTitle(detailLayer)}
               data={panoramaData.assetDetails[detailLayer] || []}
               isManageMode={isManageMode}
+              onBack={handleBackToOverview}
             />
           )}
         </div>

@@ -110,9 +110,31 @@ export const getUnifiedBusinessData = (systemId: string): UnifiedBusinessData | 
         return ((hash << 5) - hash + char.charCodeAt(0)) & 0xffffffff
       }, 0)
 
-      // 生成KPI指标
-      const healthScore = system.healthStatus === 'HEALTHY' ? 92 :
-                          system.healthStatus === 'WARNING' ? 75 : 45
+      // 生成KPI指标 - 基于系统实际指标计算健康分
+      // 健康分计算公式：基础分100分，根据各项指标扣分
+      let healthScore = 100
+
+      // 错误率扣分：每0.5%扣2分，最多扣20分
+      healthScore -= Math.min(20, (system.errorRate / 0.5) * 2)
+
+      // 响应时间扣分：超过200ms开始扣分，每100ms扣5分，最多扣20分
+      if (system.responseTime > 200) {
+        healthScore -= Math.min(20, ((system.responseTime - 200) / 100) * 5)
+      }
+
+      // 可用性扣分：低于99%开始扣分，每降低1%扣10分
+      if (system.availability < 99) {
+        healthScore -= (99 - system.availability) * 10
+      }
+
+      // 告警扣分：每个告警扣2分，最多扣10分
+      healthScore -= Math.min(10, system.alertCount * 2)
+
+      // 脆弱性扣分：每个脆弱性扣3分，最多扣15分
+      healthScore -= Math.min(15, system.vulnerabilityCount * 3)
+
+      // 确保健康分在0-100之间
+      healthScore = Math.max(0, Math.min(100, Math.round(healthScore)))
 
       // 生成告警数据（数量与system.alertCount一致）
       const alerts = []
@@ -203,8 +225,10 @@ export const getUnifiedBusinessData = (systemId: string): UnifiedBusinessData | 
         monitoring: {
           kpis: {
             healthScore,
-            accessVolume: '2.5M',
-            logVolume: '156K',
+            // 访问量基于系统哈希生成，确保稳定性
+            accessVolume: `${(1.0 + (systemHash % 30) / 10).toFixed(1)}M`,
+            // 日志量基于系统哈希生成，确保稳定性
+            logVolume: `${(100 + (systemHash % 200))}K`,
             errorRate: system.errorRate,
             responseTime: system.responseTime,
             sla: system.availability
