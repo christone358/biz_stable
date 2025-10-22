@@ -15,7 +15,9 @@
       "Bash(npm run dev:management:*)",
       "Bash(xargs kill:*)",
       "Bash(npm run dev:collaboration:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(curl:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

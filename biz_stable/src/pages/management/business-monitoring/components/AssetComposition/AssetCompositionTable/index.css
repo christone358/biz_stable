@@ -1,0 +1,58 @@
+.asset-composition-table-container {
+  background: #fff;
+  border-radius: 4px;
+  padding: 24px;
+}
+
+.table-toolbar {
+  margin-bottom: 16px;
+}
+
+.table-tabs {
+  margin-bottom: 16px;
+}
+
+.table-tabs .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.asset-composition-table .ant-table-thead > tr > th {
+  background: #fafafa;
+  font-weight: 600;
+  color: #262626;
+}
+
+.asset-composition-table .ant-table-tbody > tr:hover > td {
+  background: #e6f7ff;
+}
+
+/* 响应式隐藏列 */
+@media (max-width: 991px) {
+  .hide-on-tablet {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  .asset-composition-table-container {
+    padding: 16px;
+  }
+
+  .table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table-toolbar .ant-space {
+    width: 100%;
+  }
+
+  .table-toolbar .ant-input-search,
+  .table-toolbar .ant-select {
+    width: 100% !important;
+  }
+}

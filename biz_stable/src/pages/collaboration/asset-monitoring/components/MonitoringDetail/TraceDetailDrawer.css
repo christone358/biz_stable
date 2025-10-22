@@ -1,0 +1,68 @@
+/* Trace详情抽屉样式 */
+.trace-detail-drawer .ant-drawer-body {
+  padding: 16px;
+}
+
+/* 瀑布图视图 */
+.waterfall-view {
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.waterfall-view .ant-table {
+  font-size: 12px;
+}
+
+.waterfall-view .ant-table-tbody > tr > td {
+  padding: 4px 8px !important;
+}
+
+.waterfall-view .ant-table-thead > tr > th {
+  padding: 6px 8px !important;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.waterfall-view .error-row {
+  background-color: #fff2f0;
+}
+
+.waterfall-view .error-row:hover {
+  background-color: #ffe7e7 !important;
+}
+
+/* 展开图标样式 */
+.waterfall-view .ant-table-row-expand-icon {
+  color: #1890ff;
+  cursor: pointer;
+}
+
+.waterfall-view .ant-table-row-expand-icon:hover {
+  color: #40a9ff;
+}
+
+/* 日志视图 */
+.logs-view {
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+/* 详情视图 */
+.details-view {
+  padding: 16px;
+}
+
+.details-view .ant-descriptions-item-label {
+  font-weight: 500;
+}
+
+/* 响应式布局 */
+@media (max-width: 1200px) {
+  .waterfall-view,
+  .logs-view,
+  .details-view {
+    padding: 12px;
+  }
+}

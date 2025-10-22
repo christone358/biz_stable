@@ -1,21 +1,66 @@
 .performance-charts-card {
-  margin-bottom: 24px;
+  background: #fff;
+  border-radius: 4px;
+}
+
+.performance-charts-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.asset-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.asset-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #262626;
+}
+
+.asset-type {
+  font-size: 13px;
+  color: #8c8c8c;
 }
 
 .chart-wrapper {
   background: #fafafa;
   border-radius: 4px;
-  padding: 16px;
-  border: 1px solid #f0f0f0;
+  padding: 12px;
+  height: 324px;
+}
+
+.performance-charts-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: #fff;
+  border-radius: 4px;
 }
 
 /* 响应式设计 */
-@media (max-width: 768px) {
-  .performance-charts-card {
-    margin-bottom: 16px;
+@media (max-width: 991px) {
+  .performance-charts-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .asset-info {
+    margin-left: 0;
   }
 
   .chart-wrapper {
-    padding: 12px;
+    height: 280px;
   }
 }

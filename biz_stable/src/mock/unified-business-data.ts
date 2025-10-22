@@ -112,29 +112,30 @@ export const getUnifiedBusinessData = (systemId: string): UnifiedBusinessData | 
 
       // 生成KPI指标 - 基于系统实际指标计算健康分
       // 健康分计算公式：基础分100分，根据各项指标扣分
+      // 调整扣分规则，确保所有系统健康分在80-100之间
       let healthScore = 100
 
-      // 错误率扣分：每0.5%扣2分，最多扣20分
-      healthScore -= Math.min(20, (system.errorRate / 0.5) * 2)
+      // 错误率扣分：每0.5%扣2分，最多扣8分（最多1.5%错误率，扣6分）
+      healthScore -= Math.min(8, (system.errorRate / 0.5) * 2)
 
-      // 响应时间扣分：超过200ms开始扣分，每100ms扣5分，最多扣20分
-      if (system.responseTime > 200) {
-        healthScore -= Math.min(20, ((system.responseTime - 200) / 100) * 5)
+      // 响应时间扣分：超过150ms开始扣分，每50ms扣1分，最多扣5分
+      if (system.responseTime > 150) {
+        healthScore -= Math.min(5, ((system.responseTime - 150) / 50) * 1)
       }
 
-      // 可用性扣分：低于99%开始扣分，每降低1%扣10分
+      // 可用性扣分：低于99%开始扣分，每降低0.5%扣2分（最低98.5%，扣2分）
       if (system.availability < 99) {
-        healthScore -= (99 - system.availability) * 10
+        healthScore -= (99 - system.availability) * 4
       }
 
-      // 告警扣分：每个告警扣2分，最多扣10分
-      healthScore -= Math.min(10, system.alertCount * 2)
+      // 告警扣分：每个告警扣0.8分，最多扣4分（最多5个告警，扣4分）
+      healthScore -= Math.min(4, system.alertCount * 0.8)
 
-      // 脆弱性扣分：每个脆弱性扣3分，最多扣15分
-      healthScore -= Math.min(15, system.vulnerabilityCount * 3)
+      // 脆弱性扣分：每个脆弱性扣1分，最多扣4分（最多4个脆弱性，扣4分）
+      healthScore -= Math.min(4, system.vulnerabilityCount * 1)
 
-      // 确保健康分在0-100之间
-      healthScore = Math.max(0, Math.min(100, Math.round(healthScore)))
+      // 确保健康分在80-100之间
+      healthScore = Math.max(80, Math.min(100, Math.round(healthScore)))
 
       // 生成告警数据（数量与system.alertCount一致）
       const alerts = []

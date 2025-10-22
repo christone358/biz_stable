@@ -103,11 +103,27 @@ function App() {
                   <Route path="/business-management" element={<Navigate to="/management/business-management" replace />} />
                   <Route path="/asset-management" element={<Navigate to="/management/asset-management" replace />} />
                   <Route path="/management/asset-panorama" element={<Navigate to="/management/asset-management" replace />} />
+
+                  {/* 在开发环境下，也允许访问协同系统路由 */}
+                  <Route element={<CollaborationLayout />}>
+                    {/* 业务运行保障 */}
+                    <Route path="/collaboration/asset-monitoring" element={<AssetMonitoring />} />
+                    <Route path="/collaboration/runtime-alerts" element={<RuntimeAlerts />} />
+                    <Route path="/collaboration/vulnerability" element={<VulnerabilityDisposal />} />
+
+                    {/* 协同任务 */}
+                    <Route path="/collaboration/task-center" element={<TaskCenter />} />
+                    <Route path="/collaboration/task-records" element={<TaskRecords />} />
+
+                    {/* 资产管理 */}
+                    <Route path="/collaboration/asset-info" element={<AssetInfo />} />
+                    <Route path="/collaboration/asset-issues" element={<AssetIssues />} />
+                  </Route>
                 </>
               ) : (
                 <>
                   {/* 系统二：业务协同管理系统路由 */}
-                  <Route path="/" element={<Navigate to="/collaboration/task-center" replace />} />
+                  <Route path="/" element={<Navigate to="/collaboration/asset-monitoring" replace />} />
 
                   <Route element={<CollaborationLayout />}>
                     {/* 业务运行保障 */}
@@ -122,6 +138,26 @@ function App() {
                     {/* 资产管理 */}
                     <Route path="/collaboration/asset-info" element={<AssetInfo />} />
                     <Route path="/collaboration/asset-issues" element={<AssetIssues />} />
+                  </Route>
+
+                  {/* 在开发环境下，也允许访问管理系统路由 */}
+                  <Route element={<ManagementLayout />}>
+                    {/* 业务全景 */}
+                    <Route path="/management/business-panorama" element={<BusinessPanorama />} />
+                    <Route path="/management/business-monitoring" element={<BusinessMonitoring />} />
+
+                    {/* 业务资产管理 */}
+                    <Route path="/management/business-management" element={<BusinessManagement />} />
+                    <Route path="/management/asset-management" element={<AssetManagement />} />
+
+                    {/* 业务保障管理 */}
+                    <Route path="/management/alert-monitoring" element={<AlertMonitoring />} />
+                    <Route path="/management/asset-operations" element={<AssetOperations />} />
+                    <Route path="/management/vulnerability" element={<VulnerabilityManagement />} />
+
+                    {/* 协同工作中心 */}
+                    <Route path="/management/task-management" element={<div>协同任务管理（待开发）</div>} />
+                    <Route path="/management/task-records" element={<div>任务执行记录（待开发）</div>} />
                   </Route>
                 </>
               )}

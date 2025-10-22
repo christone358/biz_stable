@@ -18,6 +18,10 @@ const CORE_SYSTEM_IDS = [
 
 /**
  * 根据分数获取健康状态
+ * 健康度阈值：
+ * - 90-100分：正常（绿色）
+ * - 75-89分：告警（黄色）
+ * - 0-74分：异常（红色）
  */
 function getHealthStatus(score: number): {
   status: 'healthy' | 'warning' | 'critical'
@@ -26,11 +30,23 @@ function getHealthStatus(score: number): {
 } {
   if (score >= 90) {
     return { status: 'healthy', label: '正常', color: '#52c41a' }
-  } else if (score >= 70) {
+  } else if (score >= 75) {
     return { status: 'warning', label: '告警', color: '#faad14' }
   } else {
     return { status: 'critical', label: '异常', color: '#ff4d4f' }
   }
+}
+
+/**
+ * 根据健康分数计算运行指标状态
+ * 与健康度保持一致的判断标准
+ */
+function getMetricsStatus(score: number, errorRate: number): 'normal' | 'abnormal' {
+  // 健康分<90 或者 错误率>1% 都认为异常
+  if (score < 90 || errorRate > 1) {
+    return 'abnormal'
+  }
+  return 'normal'
 }
 
 /**
@@ -79,7 +95,7 @@ export function generateSystemsOverview(): SystemOverview[] {
       healthStatus: healthStatus.status,
       healthLabel: healthStatus.label,
       healthColor: healthStatus.color,
-      metricsStatus: unifiedData.monitoring.kpis.errorRate > 1 ? 'abnormal' : 'normal',
+      metricsStatus: getMetricsStatus(unifiedData.monitoring.kpis.healthScore, unifiedData.monitoring.kpis.errorRate),
       alertCount: unifiedData.monitoring.alerts.length,
       vulnerabilityCount: unifiedData.monitoring.vulnerabilities.length,
       assetCount: unifiedData.system.assetCount,

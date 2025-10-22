@@ -1,0 +1,143 @@
+/* 异常日志Tab容器 */
+.abnormal-log-tab-container {
+  padding: 24px;
+  background: #f5f5f5;
+}
+
+/* 统计概览区域 */
+.log-summary-section .stat-card {
+  height: 100%;
+  transition: all 0.3s;
+}
+
+.log-summary-section .stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* TOP资产列表 */
+.top-assets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.top-asset-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: #fafafa;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.top-asset-item:hover {
+  background: #e6f7ff;
+  border-left: 3px solid #1890ff;
+}
+
+.top-asset-item .rank {
+  font-weight: 600;
+  color: #ff4d4f;
+  margin-right: 12px;
+  min-width: 24px;
+}
+
+.top-asset-item .asset-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.top-asset-item .last-time {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-left: 12px;
+}
+
+/* 调用链关联提示卡片 */
+.callchain-hint-card {
+  background: linear-gradient(90deg, #e6f7ff 0%, #ffffff 100%);
+  border-left: 4px solid #1890ff;
+}
+
+.callchain-hint-card .hint-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.callchain-hint-card .hint-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* 筛选工具栏 */
+.filter-toolbar {
+  background: #fff;
+}
+
+.filter-toolbar .ant-card-body {
+  padding: 12px 16px;
+}
+
+/* 日志表格 */
+.log-table-card {
+  background: #fff;
+}
+
+.log-table-card .ant-table-wrapper {
+  font-size: 13px;
+}
+
+.log-table-card .ant-table-cell {
+  padding: 8px 12px;
+}
+
+/* 日志详情抽屉 */
+.log-detail-content {
+  padding-bottom: 24px;
+}
+
+.log-detail-content .ant-card {
+  margin-bottom: 16px;
+}
+
+.log-detail-content .ant-card:last-child {
+  margin-bottom: 0;
+}
+
+/* 响应式布局 */
+@media (max-width: 1200px) {
+  .abnormal-log-tab-container {
+    padding: 16px;
+  }
+
+  .top-asset-item .last-time {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .abnormal-log-tab-container {
+    padding: 12px;
+  }
+
+  .log-summary-section .ant-col {
+    margin-bottom: 12px;
+  }
+
+  .filter-toolbar .ant-space {
+    width: 100%;
+  }
+
+  .filter-toolbar .ant-input,
+  .filter-toolbar .ant-select {
+    width: 100% !important;
+  }
+
+  .callchain-hint-card .hint-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -6,8 +6,10 @@ import BusinessInfoCard from './components/BusinessInfoCard'
 import KPICards from './components/KPICards'
 import AnomalyPanel from './components/AnomalyPanel'
 import AssetTopology from './components/AssetTopology'
-import PerformanceCharts from './components/PerformanceCharts'
+import AssetPerformancePanel from './components/AssetPerformancePanel'
+import AssetComposition from './components/AssetComposition'
 import { mockApplicationMonitoringData, generateMonitoringDataForAsset } from '../../../mock/business-monitoring-data'
+import { generateAssetsForSystem } from '../../../mock/asset-performance-data'
 import { ApplicationMonitoringData, TimeRange } from './types'
 import './index.css'
 
@@ -114,19 +116,27 @@ const BusinessMonitoring: React.FC = () => {
   // Tab 2: 性能监控
   const performanceTab = (
     <div className="performance-tab-content">
-      {/* 性能趋势图表 */}
-      <PerformanceCharts metrics={data.performance} />
+      {/* 资产性能监控面板（左侧树 + 右侧图表） */}
+      <AssetPerformancePanel
+        systemId={data.appInfo.id}
+        systemName={data.appInfo.name}
+        assets={generateAssetsForSystem(data.appInfo.id, data.appInfo.name)}
+        timeRange={timeRange}
+      />
     </div>
   )
 
   // Tab 3: 资产组成
   const assetCompositionTab = (
     <div className="asset-composition-tab-content">
-      <Card bordered={false}>
-        <div style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
-          资产组成视图开发中...
-        </div>
-      </Card>
+      <AssetComposition
+        systemId={data.appInfo.id}
+        systemName={data.appInfo.name}
+        onSwitchToPerformance={(assetId) => {
+          setActiveTab('performance')
+          // TODO: 切换到性能监控标签页并选中指定资产
+        }}
+      />
     </div>
   )
 

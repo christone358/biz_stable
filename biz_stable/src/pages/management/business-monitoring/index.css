@@ -33,7 +33,7 @@
 }
 
 .business-monitoring-tabs .ant-tabs-content-holder {
-  padding: var(--space-lg);
+  /* 移除全局padding，由各个tab内容自己控制 */
 }
 
 /*运行概览Tab内容 */
@@ -42,6 +42,7 @@
   flex-direction: column;
   gap: var(--space-lg);
   height: 100%;
+  padding: var(--space-lg);
 }
 
 .kpi-section {
@@ -83,11 +84,13 @@
 /* 性能监控Tab内容 */
 .performance-tab-content {
   min-height: 500px;
+  padding: var(--space-lg);
 }
 
 /* 资产组成Tab内容 */
 .asset-composition-tab-content {
   min-height: 500px;
+  /* 不添加padding和背景色，由组件内部控制 */
 }
 
 /* 响应式设计 */

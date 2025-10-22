@@ -1,86 +1,37 @@
 import React, { useMemo } from 'react'
-import { Card, Row, Col, Tabs } from 'antd'
+import { Card, Row, Col, Spin, Tag } from 'antd'
 import ReactECharts from 'echarts-for-react'
 import dayjs from 'dayjs'
-import { PerformanceMetrics } from '../types'
+import {
+  AssetPerformanceData,
+  TimeSeriesData
+} from '../../../../mock/asset-performance-data'
+import { AssetLayerType } from './AssetTree/types'
 import './PerformanceCharts.css'
 
 interface PerformanceChartsProps {
-  metrics: PerformanceMetrics
+  performanceData: AssetPerformanceData | null
+  loading?: boolean
 }
 
-const PerformanceCharts: React.FC<PerformanceChartsProps> = ({ metrics }) => {
-  // CPU使用率图表配置
-  const cpuChartOption = useMemo(() => {
-    return {
-      title: {
-        text: 'CPU使用率',
-        left: 'center',
-        textStyle: { fontSize: 14, fontWeight: 500 }
-      },
-      tooltip: {
-        trigger: 'axis',
-        formatter: (params: any) => {
-          const time = dayjs(params[0].name).format('MM-DD HH:mm')
-          return `${time}<br/>CPU: ${params[0].value.toFixed(2)}%`
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        top: '15%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: metrics.cpu.map(d => d.timestamp),
-        axisLabel: {
-          formatter: (value: string) => dayjs(value).format('HH:mm')
-        }
-      },
-      yAxis: {
-        type: 'value',
-        name: 'CPU(%)',
-        max: 100,
-        axisLabel: {
-          formatter: '{value}%'
-        }
-      },
-      series: [
-        {
-          name: 'CPU使用率',
-          type: 'line',
-          smooth: true,
-          data: metrics.cpu.map(d => d.value),
-          areaStyle: {
-            color: {
-              type: 'linear',
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              colorStops: [
-                { offset: 0, color: 'rgba(24, 144, 255, 0.3)' },
-                { offset: 1, color: 'rgba(24, 144, 255, 0.05)' }
-              ]
-            }
-          },
-          lineStyle: { color: '#1890FF', width: 2 },
-          markLine: {
-            data: [{ type: 'average', name: '平均值' }],
-            lineStyle: { color: '#FAAD14', type: 'dashed' }
-          }
-        }
-      ]
+const PerformanceCharts: React.FC<PerformanceChartsProps> = ({ performanceData, loading = false }) => {
+  // 通用图表配置生成函数
+  const createChartOption = (
+    title: string,
+    data: TimeSeriesData[] | undefined,
+    yAxisName: string,
+    unit: string,
+    color: string,
+    chartType: 'line' | 'bar' = 'line',
+    max?: number
+  ) => {
+    if (!data || data.length === 0) {
+      return null
     }
-  }, [metrics.cpu])
 
-  // 内存使用率图表配置
-  const memoryChartOption = useMemo(() => {
     return {
       title: {
-        text: '内存使用率',
+        text: title,
         left: 'center',
         textStyle: { fontSize: 14, fontWeight: 500 }
       },
@@ -88,7 +39,7 @@ const PerformanceCharts: React.FC<PerformanceChartsProps> = ({ metrics }) => {
         trigger: 'axis',
         formatter: (params: any) => {
           const time = dayjs(params[0].name).format('MM-DD HH:mm')
-          return `${time}<br/>内存: ${params[0].value.toFixed(2)}%`
+          return `${time}<br/>${title}: ${params[0].value.toFixed(2)}${unit}`
         }
       },
       grid: {
@@ -100,315 +51,149 @@ const PerformanceCharts: React.FC<PerformanceChartsProps> = ({ metrics }) => {
       },
       xAxis: {
         type: 'category',
-        data: metrics.memory.map(d => d.timestamp),
+        data: data.map(d => d.timestamp),
         axisLabel: {
           formatter: (value: string) => dayjs(value).format('HH:mm')
         }
       },
       yAxis: {
         type: 'value',
-        name: '内存(%)',
-        max: 100,
+        name: yAxisName,
+        max: max,
         axisLabel: {
-          formatter: '{value}%'
+          formatter: `{value}${unit}`
         }
       },
       series: [
         {
-          name: '内存使用率',
-          type: 'line',
-          smooth: true,
-          data: metrics.memory.map(d => d.value),
-          areaStyle: {
-            color: {
-              type: 'linear',
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              colorStops: [
-                { offset: 0, color: 'rgba(82, 196, 26, 0.3)' },
-                { offset: 1, color: 'rgba(82, 196, 26, 0.05)' }
-              ]
+          name: title,
+          type: chartType,
+          smooth: chartType === 'line',
+          data: data.map(d => d.value),
+          ...(chartType === 'line' ? {
+            areaStyle: {
+              color: {
+                type: 'linear',
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                  { offset: 0, color: `${color}40` },
+                  { offset: 1, color: `${color}08` }
+                ]
+              }
+            },
+            lineStyle: { color, width: 2 },
+            markLine: {
+              data: [{ type: 'average', name: '平均值' }],
+              lineStyle: { color: '#FAAD14', type: 'dashed' }
             }
-          },
-          lineStyle: { color: '#52C41A', width: 2 },
-          markLine: {
-            data: [{ type: 'average', name: '平均值' }],
-            lineStyle: { color: '#FAAD14', type: 'dashed' }
-          }
+          } : {
+            itemStyle: { color }
+          })
         }
       ]
     }
-  }, [metrics.memory])
+  }
 
-  // 响应时间图表配置
-  const responseTimeChartOption = useMemo(() => {
-    return {
-      title: {
-        text: '响应时间',
-        left: 'center',
-        textStyle: { fontSize: 14, fontWeight: 500 }
-      },
-      tooltip: {
-        trigger: 'axis',
-        formatter: (params: any) => {
-          const time = dayjs(params[0].name).format('MM-DD HH:mm')
-          return `${time}<br/>响应时间: ${params[0].value.toFixed(0)}ms`
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        top: '15%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: metrics.responseTime.map(d => d.timestamp),
-        axisLabel: {
-          formatter: (value: string) => dayjs(value).format('HH:mm')
-        }
-      },
-      yAxis: {
-        type: 'value',
-        name: '响应时间(ms)',
-        axisLabel: {
-          formatter: '{value}ms'
-        }
-      },
-      series: [
-        {
-          name: '响应时间',
-          type: 'line',
-          smooth: true,
-          data: metrics.responseTime.map(d => d.value),
-          areaStyle: {
-            color: {
-              type: 'linear',
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              colorStops: [
-                { offset: 0, color: 'rgba(250, 173, 20, 0.3)' },
-                { offset: 1, color: 'rgba(250, 173, 20, 0.05)' }
-              ]
-            }
-          },
-          lineStyle: { color: '#FAAD14', width: 2 },
-          markLine: {
-            data: [
-              { type: 'average', name: '平均值' },
-              { yAxis: 500, name: '阈值', lineStyle: { color: '#FF4D4F', type: 'solid' } }
-            ],
-            lineStyle: { type: 'dashed' }
-          }
-        }
-      ]
-    }
-  }, [metrics.responseTime])
+  // 根据资产层级生成不同的图表配置
+  const charts = useMemo(() => {
+    if (!performanceData) return []
 
-  // 错误率图表配置
-  const errorRateChartOption = useMemo(() => {
-    return {
-      title: {
-        text: '错误率',
-        left: 'center',
-        textStyle: { fontSize: 14, fontWeight: 500 }
-      },
-      tooltip: {
-        trigger: 'axis',
-        formatter: (params: any) => {
-          const time = dayjs(params[0].name).format('MM-DD HH:mm')
-          return `${time}<br/>错误率: ${params[0].value.toFixed(3)}%`
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        top: '15%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: metrics.errorRate.map(d => d.timestamp),
-        axisLabel: {
-          formatter: (value: string) => dayjs(value).format('HH:mm')
-        }
-      },
-      yAxis: {
-        type: 'value',
-        name: '错误率(%)',
-        axisLabel: {
-          formatter: '{value}%'
-        }
-      },
-      series: [
-        {
-          name: '错误率',
-          type: 'bar',
-          data: metrics.errorRate.map(d => d.value),
-          itemStyle: {
-            color: (params: any) => {
-              return params.value > 1 ? '#FF4D4F' : params.value > 0.5 ? '#FAAD14' : '#52C41A'
-            }
-          },
-          markLine: {
-            data: [
-              { yAxis: 1, name: '告警阈值', lineStyle: { color: '#FF4D4F', type: 'solid' } }
-            ]
-          }
-        }
-      ]
-    }
-  }, [metrics.errorRate])
+    const { layer, metrics } = performanceData
 
-  // 吞吐量图表配置
-  const throughputChartOption = useMemo(() => {
-    return {
-      title: {
-        text: '吞吐量',
-        left: 'center',
-        textStyle: { fontSize: 14, fontWeight: 500 }
-      },
-      tooltip: {
-        trigger: 'axis',
-        formatter: (params: any) => {
-          const time = dayjs(params[0].name).format('MM-DD HH:mm')
-          return `${time}<br/>吞吐量: ${params[0].value.toFixed(0)} req/s`
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        top: '15%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: metrics.throughput.map(d => d.timestamp),
-        axisLabel: {
-          formatter: (value: string) => dayjs(value).format('HH:mm')
-        }
-      },
-      yAxis: {
-        type: 'value',
-        name: '吞吐量(req/s)',
-        axisLabel: {
-          formatter: '{value}'
-        }
-      },
-      series: [
-        {
-          name: '吞吐量',
-          type: 'line',
-          smooth: true,
-          data: metrics.throughput.map(d => d.value),
-          areaStyle: {
-            color: {
-              type: 'linear',
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              colorStops: [
-                { offset: 0, color: 'rgba(135, 67, 224, 0.3)' },
-                { offset: 1, color: 'rgba(135, 67, 224, 0.05)' }
-              ]
-            }
-          },
-          lineStyle: { color: '#8743E0', width: 2 }
-        }
-      ]
+    if (layer === AssetLayerType.COMPUTE) {
+      // 计算资源：CPU、内存、磁盘IO、网络流量、响应时间、吞吐量
+      return [
+        createChartOption('CPU使用率', metrics.cpu, 'CPU(%)', '%', '#1890FF', 'line', 100),
+        createChartOption('内存使用率', metrics.memory, '内存(%)', '%', '#52C41A', 'line', 100),
+        createChartOption('磁盘IO', metrics.diskIO, '磁盘IO(MB/s)', 'MB/s', '#722ED1', 'line'),
+        createChartOption('网络流量', metrics.networkTraffic, '流量(MB/s)', 'MB/s', '#13C2C2', 'line'),
+        createChartOption('响应时间', metrics.responseTime, '响应时间(ms)', 'ms', '#FAAD14', 'line'),
+        createChartOption('吞吐量', metrics.throughput, '吞吐量(req/s)', 'req/s', '#8543E0', 'line')
+      ].filter(Boolean)
+    } else if (layer === AssetLayerType.STORAGE) {
+      // 存储资源：CPU、内存、QPS、连接数、响应时间、错误率
+      return [
+        createChartOption('CPU使用率', metrics.cpu, 'CPU(%)', '%', '#1890FF', 'line', 100),
+        createChartOption('内存使用率', metrics.memory, '内存(%)', '%', '#52C41A', 'line', 100),
+        createChartOption('QPS', metrics.qps, 'QPS(次/秒)', '次/s', '#722ED1', 'line'),
+        createChartOption('连接数', metrics.connections, '连接数', '个', '#13C2C2', 'line'),
+        createChartOption('响应时间', metrics.responseTime, '响应时间(ms)', 'ms', '#FAAD14', 'line'),
+        createChartOption('错误率', metrics.errorRate, '错误率(%)', '%', '#FF4D4F', 'bar')
+      ].filter(Boolean)
+    } else if (layer === AssetLayerType.NETWORK) {
+      // 网络资源：吞吐量、连接数、错误率、响应时间、网络流量、请求数
+      return [
+        createChartOption('吞吐量', metrics.throughput, '吞吐量(req/s)', 'req/s', '#8543E0', 'line'),
+        createChartOption('连接数', metrics.connections, '连接数', '个', '#13C2C2', 'line'),
+        createChartOption('错误率', metrics.errorRate, '错误率(%)', '%', '#FF4D4F', 'bar'),
+        createChartOption('响应时间', metrics.responseTime, '响应时间(ms)', 'ms', '#FAAD14', 'line'),
+        createChartOption('网络流量', metrics.networkTraffic, '流量(MB/s)', 'MB/s', '#1890FF', 'line'),
+        createChartOption('请求数', metrics.requestCount, '请求数', '次', '#52C41A', 'bar')
+      ].filter(Boolean)
     }
-  }, [metrics.throughput])
 
-  // 请求数图表配置
-  const requestCountChartOption = useMemo(() => {
-    return {
-      title: {
-        text: '请求数',
-        left: 'center',
-        textStyle: { fontSize: 14, fontWeight: 500 }
-      },
-      tooltip: {
-        trigger: 'axis',
-        formatter: (params: any) => {
-          const time = dayjs(params[0].name).format('MM-DD HH:mm')
-          return `${time}<br/>请求数: ${params[0].value.toFixed(0)}`
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        top: '15%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: metrics.requestCount.map(d => d.timestamp),
-        axisLabel: {
-          formatter: (value: string) => dayjs(value).format('HH:mm')
-        }
-      },
-      yAxis: {
-        type: 'value',
-        name: '请求数',
-        axisLabel: {
-          formatter: '{value}'
-        }
-      },
-      series: [
-        {
-          name: '请求数',
-          type: 'bar',
-          data: metrics.requestCount.map(d => d.value),
-          itemStyle: {
-            color: '#13C2C2'
-          }
-        }
-      ]
+    return []
+  }, [performanceData])
+
+  if (loading) {
+    return (
+      <div className="performance-charts-loading">
+        <Spin size="large" tip="加载性能数据..." />
+      </div>
+    )
+  }
+
+  if (!performanceData) {
+    return (
+      <Card bordered={false} className="performance-charts-card">
+        <div style={{ textAlign: 'center', padding: '60px 0', color: '#8c8c8c' }}>
+          请从左侧选择资产查看性能监控数据
+        </div>
+      </Card>
+    )
+  }
+
+  const getLayerName = (layer: AssetLayerType) => {
+    const names = {
+      [AssetLayerType.COMPUTE]: '计算资源',
+      [AssetLayerType.STORAGE]: '存储资源',
+      [AssetLayerType.NETWORK]: '网络资源'
     }
-  }, [metrics.requestCount])
+    return names[layer]
+  }
 
   return (
-    <Card title="性能监控分析" className="performance-charts-card">
+    <Card
+      title={
+        <div className="performance-charts-header">
+          <span className="chart-title">📊 当前监控资产</span>
+          <div className="asset-info">
+            <span className="asset-name">{performanceData.assetName}</span>
+            <Tag color="blue">{getLayerName(performanceData.layer)}</Tag>
+            <span className="asset-type">{performanceData.assetType}</span>
+          </div>
+        </div>
+      }
+      bordered={false}
+      className="performance-charts-card"
+    >
       <Row gutter={[24, 24]}>
-        <Col xs={24} lg={12}>
-          <div className="chart-wrapper">
-            <ReactECharts option={cpuChartOption} style={{ height: '300px' }} />
-          </div>
-        </Col>
-        <Col xs={24} lg={12}>
-          <div className="chart-wrapper">
-            <ReactECharts option={memoryChartOption} style={{ height: '300px' }} />
-          </div>
-        </Col>
-        <Col xs={24} lg={12}>
-          <div className="chart-wrapper">
-            <ReactECharts option={responseTimeChartOption} style={{ height: '300px' }} />
-          </div>
-        </Col>
-        <Col xs={24} lg={12}>
-          <div className="chart-wrapper">
-            <ReactECharts option={errorRateChartOption} style={{ height: '300px' }} />
-          </div>
-        </Col>
-        <Col xs={24} lg={12}>
-          <div className="chart-wrapper">
-            <ReactECharts option={throughputChartOption} style={{ height: '300px' }} />
-          </div>
-        </Col>
-        <Col xs={24} lg={12}>
-          <div className="chart-wrapper">
-            <ReactECharts option={requestCountChartOption} style={{ height: '300px' }} />
-          </div>
-        </Col>
+        {charts.map((chartOption, index) => (
+          <Col xs={24} lg={12} key={index}>
+            <div className="chart-wrapper">
+              {chartOption && (
+                <ReactECharts
+                  option={chartOption}
+                  style={{ height: '300px' }}
+                  opts={{ renderer: 'canvas' }}
+                />
+              )}
+            </div>
+          </Col>
+        ))}
       </Row>
     </Card>
   )

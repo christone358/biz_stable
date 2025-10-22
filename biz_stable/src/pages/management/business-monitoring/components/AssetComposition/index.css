@@ -1,0 +1,24 @@
+.asset-composition-container {
+  padding: 24px;
+  background: transparent; /* 移除灰色背景 */
+  min-height: 600px;
+}
+
+.stat-cards-section {
+  margin-bottom: 24px;
+}
+
+.asset-table-section {
+  /* 表格区域样式已在AssetCompositionTable中定义 */
+}
+
+/* 响应式 */
+@media (max-width: 767px) {
+  .asset-composition-container {
+    padding: 16px;
+  }
+
+  .stat-cards-section {
+    margin-bottom: 16px;
+  }
+}

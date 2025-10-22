@@ -1,0 +1,86 @@
+.asset-detail-drawer .drawer-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drawer-title-icon {
+  font-size: 20px;
+}
+
+.drawer-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.detail-section {
+  margin-bottom: 24px;
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.metric-warning {
+  color: #ff4d4f;
+  font-weight: 600;
+}
+
+.operation-log-item {
+  padding-bottom: 8px;
+}
+
+.log-time {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+.log-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.log-action strong {
+  color: #262626;
+  font-size: 14px;
+}
+
+.log-operator {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.log-description {
+  font-size: 13px;
+  color: #595959;
+  padding-left: 12px;
+  border-left: 2px solid #d9d9d9;
+}
+
+/* 响应式 */
+@media (max-width: 767px) {
+  .asset-detail-drawer .ant-drawer-body {
+    padding: 16px;
+  }
+
+  .detail-section {
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: 15px;
+  }
+}

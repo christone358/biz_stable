@@ -3,12 +3,18 @@ import SystemOverview from './components/SystemOverview'
 import MonitoringDetail from './components/MonitoringDetail'
 import type { SystemOverview as SystemOverviewType, SystemMonitoringData } from './types'
 import { generateSystemsOverview, generateSystemMonitoringData } from './mock/monitoring-data'
+import { clearUnifiedDataCache } from '../../../mock/unified-business-data'
 import './index.css'
 
 /**
  * 资产监测主页面
  */
 const AssetMonitoring: React.FC = () => {
+  // 清除缓存，确保使用最新的计算逻辑
+  useEffect(() => {
+    clearUnifiedDataCache()
+  }, [])
+
   // 系统列表
   const [systems] = useState<SystemOverviewType[]>(() => generateSystemsOverview())
 

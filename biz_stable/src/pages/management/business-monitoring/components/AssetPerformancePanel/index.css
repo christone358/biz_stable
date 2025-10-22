@@ -1,0 +1,73 @@
+.asset-performance-panel {
+  display: flex;
+  gap: 24px;
+  height: 100%;
+  min-height: 600px;
+}
+
+.asset-performance-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #f0f0f0;
+  overflow: hidden;
+}
+
+.asset-performance-main {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.asset-performance-main.loading {
+  opacity: 0.6;
+}
+
+.asset-performance-panel-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #f0f0f0;
+}
+
+.empty-content {
+  text-align: center;
+}
+
+.empty-content p {
+  margin: 8px 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 1199px) {
+  .asset-performance-sidebar {
+    width: 240px;
+  }
+}
+
+@media (max-width: 991px) {
+  .asset-performance-panel {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .asset-performance-sidebar {
+    width: 100%;
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 767px) {
+  .asset-performance-panel {
+    min-height: auto;
+  }
+
+  .asset-performance-sidebar {
+    max-height: 250px;
+  }
+}

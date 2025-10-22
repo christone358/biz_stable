@@ -1,0 +1,47 @@
+/* 调用链Tab容器 */
+.call-chain-tab {
+  min-height: 600px;
+}
+
+.call-chain-tab .ant-card {
+  background: #fff;
+  transition: all 0.3s;
+}
+
+.call-chain-tab .ant-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 统计卡片 */
+.call-chain-tab .ant-statistic {
+  text-align: center;
+}
+
+.call-chain-tab .ant-statistic-title {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.call-chain-tab .ant-statistic-content {
+  font-weight: 600;
+}
+
+/* 系统节点卡片 */
+.call-chain-tab .ant-card-small .ant-card-body {
+  padding: 12px;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .call-chain-tab {
+    padding: 12px !important;
+  }
+
+  .call-chain-tab .ant-statistic-title {
+    font-size: 12px;
+  }
+
+  .call-chain-tab .ant-statistic-content {
+    font-size: 18px !important;
+  }
+}

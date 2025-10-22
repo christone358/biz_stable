@@ -39,8 +39,8 @@ const generateAssetsForSystem = (systemId: string, systemName: string, departmen
       errorRate: ((seed + 30) % 500) / 100, // 0-5%
       responseTime: ((seed + 40) % 1000) + 10, // 10-1009ms
       availability: 95 + ((seed + 50) % 500) / 100, // 95-100%
-      alertCount: (seed + 60) % 3, // 0-2个告警
-      vulnerabilityCount: (seed + 70) % 2, // 0-1个漏洞
+      alertCount: 1 + ((seed + 60) % 3), // 1-3个告警（确保不为0）
+      vulnerabilityCount: 1 + ((seed + 70) % 2), // 1-2个漏洞（确保不为0）
       lastCheck: new Date(Date.now() - ((seed + 80) % 3600000)).toISOString(),
       createdAt: new Date(Date.now() - ((seed + 90) % (365 * 24 * 3600000))).toISOString(),
       updatedAt: new Date(Date.now() - ((seed + 100) % (24 * 3600000))).toISOString(),
@@ -559,11 +559,11 @@ export const generateBusinessDomainSystems = (domainId: string = 'BIZ_ROOT'): Bu
         importance,
         healthStatus,
         assetCount,
-        vulnerabilityCount: (systemHash % 5),  // 0-4个漏洞，基于哈希确保稳定
-        alertCount: (systemHash % 10),          // 0-9个告警，基于哈希确保稳定
-        errorRate: ((systemHash % 50) / 10),    // 0-5%错误率，基于哈希确保稳定
-        responseTime: 50 + (systemHash % 500),  // 50-549ms响应时间，基于哈希确保稳定
-        availability: 95 + ((systemHash % 500) / 100),  // 95-100%可用性，基于哈希确保稳定
+        vulnerabilityCount: 1 + (systemHash % 4),  // 1-4个漏洞（减少数量）
+        alertCount: 1 + (systemHash % 5),          // 1-5个告警（减少数量）
+        errorRate: ((systemHash % 15) / 10),        // 0-1.5%错误率（优化范围）
+        responseTime: 50 + (systemHash % 150),      // 50-199ms响应时间（优化范围）
+        availability: 98.5 + ((systemHash % 150) / 100),  // 98.5-100%可用性（提高下限）
         assets,
         lastCheck: new Date(Date.now() - ((systemHash % 3600000))).toISOString(),
         createdAt: new Date(Date.now() - ((systemHash % (365 * 24 * 3600000)))).toISOString(),
