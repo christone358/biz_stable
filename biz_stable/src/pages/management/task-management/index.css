@@ -1,0 +1,88 @@
+/* 任务管理页面样式 */
+
+.task-management-page {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100vh;
+}
+
+/* 页面标题栏 */
+.task-management-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.department-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 28px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  line-height: 1.4;
+}
+
+.page-subtitle {
+  margin-left: 12px;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.page-description {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.45);
+  line-height: 1.6;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .task-management-page {
+    padding: 16px;
+  }
+
+  .task-management-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .page-subtitle {
+    display: block;
+    margin-left: 0;
+    margin-top: 4px;
+  }
+
+  .department-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+}

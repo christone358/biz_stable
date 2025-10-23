@@ -1,0 +1,24 @@
+.alert-detail-basic-info {
+  padding: 8px 0;
+}
+
+.alert-detail-basic-info .ant-descriptions-item-label {
+  font-weight: 500;
+  color: #666;
+}
+
+.alert-detail-basic-info .ant-descriptions-item-content {
+  color: #333;
+}
+
+.alert-detail-history {
+  padding: 8px 0;
+}
+
+.alert-detail-history .ant-timeline {
+  margin-top: 16px;
+}
+
+.alert-detail-related {
+  padding: 8px 0;
+}

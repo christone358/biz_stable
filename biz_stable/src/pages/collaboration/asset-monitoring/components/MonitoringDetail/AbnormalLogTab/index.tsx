@@ -327,29 +327,6 @@ const AbnormalLogTab: React.FC<AbnormalLogTabProps> = ({
           </Col>
         </Row>
 
-        {/* TOP异常资产 */}
-        {summary.topAffectedAssets.length > 0 && (
-          <Card className="top-assets-card" size="small" title="异常TOP5资产" style={{ marginTop: 16 }}>
-            <div className="top-assets-list">
-              {summary.topAffectedAssets.map((asset, index) => (
-                <div
-                  key={asset.assetId}
-                  className="top-asset-item"
-                  onClick={() => setSelectedAsset(asset.assetId)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <span className="rank">#{index + 1}</span>
-                  <span className="asset-name">{asset.assetName}</span>
-                  <Tag color="red">{asset.abnormalCount}条</Tag>
-                  <span className="last-time">
-                    <ClockCircleOutlined /> {dayjs(asset.lastAbnormalTime).fromNow()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </Card>
-        )}
-
         {/* 调用链关联提示 */}
         {summary.relatedSystemsStats && summary.relatedSystemsStats.length > 0 && (
           <Card className="callchain-hint-card" size="small" style={{ marginTop: 16 }}>

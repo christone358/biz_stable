@@ -21,6 +21,7 @@ import TaskCenter from './pages/collaboration/task-center'
 import TaskRecords from './pages/collaboration/task-records'
 import AssetInfo from './pages/collaboration/asset-info'
 import AssetIssues from './pages/collaboration/asset-issues'
+import TaskManagement from './pages/management/task-management'
 import MockConfig from './pages/mock-config'
 import Test from './pages/test'
 import './App.css'
@@ -92,7 +93,7 @@ function App() {
                     <Route path="/management/vulnerability" element={<VulnerabilityManagement />} />
 
                     {/* 协同工作中心 */}
-                    <Route path="/management/task-management" element={<div>协同任务管理（待开发）</div>} />
+                    <Route path="/management/task-management" element={<TaskManagement />} />
                     <Route path="/management/task-records" element={<div>任务执行记录（待开发）</div>} />
                   </Route>
 
@@ -156,7 +157,7 @@ function App() {
                     <Route path="/management/vulnerability" element={<VulnerabilityManagement />} />
 
                     {/* 协同工作中心 */}
-                    <Route path="/management/task-management" element={<div>协同任务管理（待开发）</div>} />
+                    <Route path="/management/task-management" element={<TaskManagement />} />
                     <Route path="/management/task-records" element={<div>任务执行记录（待开发）</div>} />
                   </Route>
                 </>

@@ -101,25 +101,41 @@ const TraceTab: React.FC<TraceTabProps> = ({
     })
   }, [traces, searchTraceId, selectedCallRole, selectedStatus, showErrorOnly])
 
-  // 统计数据
+  // 统计数据 - 基于Google SRE四大黄金信号
   const statistics = useMemo(() => {
     const total = filteredTraces.length
     const successCount = filteredTraces.filter(t => t.status === 'success').length
     const errorCount = filteredTraces.filter(t => t.status === 'error').length
-    const avgDuration = filteredTraces.length > 0
-      ? filteredTraces.reduce((sum, t) => sum + t.duration, 0) / filteredTraces.length
-      : 0
+    const timeoutCount = filteredTraces.filter(t => t.status === 'timeout').length
+
+    // 错误率（包含超时）
+    const errorRate = total > 0 ? (((errorCount + timeoutCount) / total) * 100).toFixed(2) : '0.00'
+
+    // 慢查询数量（>500ms）
+    const slowTraceCount = filteredTraces.filter(t => t.duration > 500).length
+
+    // P95响应时间
     const p95Duration = filteredTraces.length > 0
       ? filteredTraces.map(t => t.duration).sort((a, b) => a - b)[Math.floor(filteredTraces.length * 0.95)]
       : 0
+
+    // 吞吐量（QPS） - 基于时间跨度计算
+    let qps = 0
+    if (filteredTraces.length > 1) {
+      const startTimes = filteredTraces.map(t => new Date(t.startTime).getTime())
+      const timeSpanSeconds = (Math.max(...startTimes) - Math.min(...startTimes)) / 1000
+      qps = timeSpanSeconds > 0 ? (filteredTraces.length / timeSpanSeconds) : 0
+    }
 
     return {
       total,
       successCount,
       errorCount,
-      successRate: total > 0 ? ((successCount / total) * 100).toFixed(2) : '0.00',
-      avgDuration: avgDuration.toFixed(2),
-      p95Duration: p95Duration.toFixed(2)
+      timeoutCount,
+      errorRate,
+      slowTraceCount,
+      p95Duration: p95Duration.toFixed(2),
+      qps: qps.toFixed(2)
     }
   }, [filteredTraces])
 
@@ -280,59 +296,61 @@ const TraceTab: React.FC<TraceTabProps> = ({
 
   return (
     <div className="trace-tab-container">
-      {/* 统计概览 */}
+      {/* 统计概览 - 基于Google SRE四大黄金信号 */}
       <Row gutter={16} style={{ marginBottom: 16 }}>
         <Col xs={24} sm={12} md={6}>
-          <Card size="small">
+          <Card size="small" style={{ height: '100%' }}>
             <Statistic
-              title="总Trace数"
-              value={statistics.total}
-              suffix="条"
+              title="错误率"
+              value={statistics.errorRate}
+              suffix="%"
+              prefix={<CloseCircleOutlined />}
+              valueStyle={{
+                fontSize: 22,
+                color: parseFloat(statistics.errorRate) < 1 ? '#52c41a' :
+                       parseFloat(statistics.errorRate) < 5 ? '#faad14' : '#ff4d4f'
+              }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card size="small" style={{ height: '100%' }}>
+            <Statistic
+              title="吞吐量 (QPS)"
+              value={statistics.qps}
+              suffix="req/s"
               prefix={<ThunderboltOutlined />}
               valueStyle={{ fontSize: 22, color: '#1890ff' }}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <Card size="small">
-            <Statistic
-              title="成功率"
-              value={statistics.successRate}
-              suffix="%"
-              prefix={<CheckCircleOutlined />}
-              valueStyle={{
-                fontSize: 22,
-                color: parseFloat(statistics.successRate) >= 95 ? '#52c41a' : '#ff4d4f'
-              }}
-            />
-            <div style={{ fontSize: 12, color: '#8c8c8c', marginTop: 4 }}>
-              成功 {statistics.successCount} / 失败 {statistics.errorCount}
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card size="small">
-            <Statistic
-              title="平均响应时间"
-              value={statistics.avgDuration}
-              suffix="ms"
-              prefix={<ClockCircleOutlined />}
-              valueStyle={{
-                fontSize: 22,
-                color: parseFloat(statistics.avgDuration) < 100 ? '#52c41a' :
-                       parseFloat(statistics.avgDuration) < 500 ? '#faad14' : '#ff4d4f'
-              }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card size="small">
+          <Card size="small" style={{ height: '100%' }}>
             <Statistic
               title="P95响应时间"
               value={statistics.p95Duration}
               suffix="ms"
               prefix={<ClockCircleOutlined />}
-              valueStyle={{ fontSize: 22, color: '#fa8c16' }}
+              valueStyle={{
+                fontSize: 22,
+                color: parseFloat(statistics.p95Duration) < 200 ? '#52c41a' :
+                       parseFloat(statistics.p95Duration) < 1000 ? '#faad14' : '#ff4d4f'
+              }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card size="small" style={{ height: '100%' }}>
+            <Statistic
+              title="慢查询 (>500ms)"
+              value={statistics.slowTraceCount}
+              suffix={`/ ${statistics.total}`}
+              prefix={<ExclamationCircleOutlined />}
+              valueStyle={{
+                fontSize: 22,
+                color: statistics.slowTraceCount === 0 ? '#52c41a' :
+                       statistics.slowTraceCount < statistics.total * 0.1 ? '#faad14' : '#ff4d4f'
+              }}
             />
           </Card>
         </Col>

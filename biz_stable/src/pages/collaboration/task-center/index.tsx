@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import { Card, Row, Col, Statistic, Space, message } from 'antd'
 import { BugOutlined, DatabaseOutlined, AlertOutlined } from '@ant-design/icons'
-import type { TaskStatisticsData, TodayStatistics } from './types'
+import type { TaskStatisticsData, TodayStatistics, Alert, Asset, Vulnerability } from './types'
 import { generateTaskStatistics, generateTodayStatistics, generateVulnerabilities, generateAssets, generateAlerts } from './mock/task-data'
 import VulnerabilityCard from './components/VulnerabilityCard'
 import AssetClaimCard from './components/AssetClaimCard'
 import AlertHandleCard from './components/AlertHandleCard'
+import AlertTaskDetailDrawer from './components/AlertTaskDetailDrawer'
+import AssetTaskDetailDrawer from './components/AssetTaskDetailDrawer'
+import VulnerabilityTaskDetailDrawer from './components/VulnerabilityTaskDetailDrawer'
 import './index.css'
 
 type TaskType = 'alert' | 'asset' | 'vulnerability'
@@ -32,6 +35,16 @@ const TaskCenter: React.FC = () => {
   const [assets] = useState(generateAssets())
   const [alerts] = useState(generateAlerts())
 
+  // 详情抽屉状态
+  const [alertDetailVisible, setAlertDetailVisible] = useState(false)
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null)
+
+  const [assetDetailVisible, setAssetDetailVisible] = useState(false)
+  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null)
+
+  const [vulnerabilityDetailVisible, setVulnerabilityDetailVisible] = useState(false)
+  const [selectedVulnerability, setSelectedVulnerability] = useState<Vulnerability | null>(null)
+
   // 处理脆弱性任务
   const handleVulnerability = (id: string) => {
     message.info(`处理脆弱性任务: ${id}`)
@@ -40,8 +53,11 @@ const TaskCenter: React.FC = () => {
 
   // 查看脆弱性详情
   const viewVulnerability = (id: string) => {
-    message.info(`查看脆弱性详情: ${id}`)
-    // TODO: 打开详情模态框
+    const vulnerability = vulnerabilities.find(v => v.id === id)
+    if (vulnerability) {
+      setSelectedVulnerability(vulnerability)
+      setVulnerabilityDetailVisible(true)
+    }
   }
 
   // 认领资产
@@ -58,8 +74,11 @@ const TaskCenter: React.FC = () => {
 
   // 查看资产详情
   const viewAsset = (id: string) => {
-    message.info(`查看资产详情: ${id}`)
-    // TODO: 打开资产详情模态框
+    const asset = assets.find(a => a.id === id)
+    if (asset) {
+      setSelectedAsset(asset)
+      setAssetDetailVisible(true)
+    }
   }
 
   // 处理告警
@@ -76,8 +95,11 @@ const TaskCenter: React.FC = () => {
 
   // 查看告警详情
   const viewAlert = (id: string) => {
-    message.info(`查看告警详情: ${id}`)
-    // TODO: 打开告警详情模态框
+    const alert = alerts.find(a => a.id === id)
+    if (alert) {
+      setSelectedAlert(alert)
+      setAlertDetailVisible(true)
+    }
   }
 
   return (
@@ -195,6 +217,30 @@ const TaskCenter: React.FC = () => {
           />
         )}
       </div>
+
+      {/* 告警任务详情抽屉 */}
+      <AlertTaskDetailDrawer
+        visible={alertDetailVisible}
+        alert={selectedAlert}
+        onClose={() => setAlertDetailVisible(false)}
+        onHandle={handleAlert}
+      />
+
+      {/* 资产任务详情抽屉 */}
+      <AssetTaskDetailDrawer
+        visible={assetDetailVisible}
+        asset={selectedAsset}
+        onClose={() => setAssetDetailVisible(false)}
+        onClaim={handleAssetClaim}
+      />
+
+      {/* 脆弱性任务详情抽屉 */}
+      <VulnerabilityTaskDetailDrawer
+        visible={vulnerabilityDetailVisible}
+        vulnerability={selectedVulnerability}
+        onClose={() => setVulnerabilityDetailVisible(false)}
+        onHandle={handleVulnerability}
+      />
     </div>
   )
 }
