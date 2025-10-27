@@ -59,7 +59,8 @@ const CollaborationLayout: React.FC = () => {
     if (key === 'switch') {
       // 切换到业务保障管理系统
       const managementConfig = SYSTEM_CONFIGS[SystemType.MANAGEMENT]
-      const targetUrl = `http://localhost:${managementConfig.port}${managementConfig.routePrefix}/asset-panorama`
+      // 使用当前协议和主机名，只修改端口号
+      const targetUrl = `${window.location.protocol}//${window.location.hostname}:${managementConfig.port}${managementConfig.routePrefix}/asset-panorama`
       window.location.href = targetUrl
     } else if (key === 'logout') {
       // 退出登录，跳转到根路径

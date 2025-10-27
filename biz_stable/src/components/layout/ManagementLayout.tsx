@@ -59,7 +59,8 @@ const ManagementLayout: React.FC = () => {
     if (key === 'switch') {
       // 切换到业务协同管理系统
       const collaborationConfig = SYSTEM_CONFIGS[SystemType.COLLABORATION]
-      const targetUrl = `http://localhost:${collaborationConfig.port}${collaborationConfig.routePrefix}/task-center`
+      // 使用当前协议和主机名，只修改端口号
+      const targetUrl = `${window.location.protocol}//${window.location.hostname}:${collaborationConfig.port}${collaborationConfig.routePrefix}/task-center`
       window.location.href = targetUrl
     } else if (key === 'logout') {
       // 退出登录，跳转到根路径
