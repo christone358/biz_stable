@@ -30,6 +30,32 @@ export const managementMenuItems: MenuItem[] = [
         key: '/management/asset-management',
         label: '业务资产管理',
       },
+      {
+        key: 'terminal-asset-management',
+        label: '终端资产管理',
+        children: [
+          {
+            key: '/management/terminal-assets/overview',
+            label: '终端资产概览',
+          },
+          {
+            key: '/management/terminal-assets/cloud-hosts',
+            label: '云主机管理',
+          },
+          {
+            key: '/management/terminal-assets/office-terminals',
+            label: '办公终端管理',
+          },
+          {
+            key: '/management/terminal-assets/integrations',
+            label: '资产集成配置',
+          },
+          {
+            key: '/management/terminal-assets/analytics',
+            label: '资产统计分析',
+          },
+        ],
+      },
     ],
   },
   {

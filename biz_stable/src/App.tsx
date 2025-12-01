@@ -24,6 +24,8 @@ import AssetIssues from './pages/collaboration/asset-issues'
 import TaskManagement from './pages/management/task-management'
 import MockConfig from './pages/mock-config'
 import Test from './pages/test'
+import CloudHostList from './pages/management/terminal-assets/cloud-hosts/List'
+import CloudHostDetail from './pages/management/terminal-assets/cloud-hosts/Detail'
 import './App.css'
 
 function App() {
@@ -91,6 +93,10 @@ function App() {
                     <Route path="/management/alert-monitoring" element={<AlertMonitoring />} />
                     <Route path="/management/asset-operations" element={<AssetOperations />} />
                     <Route path="/management/vulnerability" element={<VulnerabilityManagement />} />
+
+                    {/* 终端资产管理 / 云主机管理 */}
+                    <Route path="/management/terminal-assets/cloud-hosts" element={<CloudHostList />} />
+                    <Route path="/management/terminal-assets/cloud-hosts/:id" element={<CloudHostDetail />} />
 
                     {/* 协同工作中心 */}
                     <Route path="/management/task-management" element={<TaskManagement />} />

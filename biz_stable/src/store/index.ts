@@ -4,6 +4,7 @@ import mockConfigReducer from './slices/mockConfigSlice'
 import assetManagementReducer from './slices/assetManagementSlice'
 import businessManagementReducer from './slices/businessManagementSlice'
 import systemConfigReducer from './slices/systemConfigSlice'
+import cloudHostsReducer from './slices/cloudHostSlice'
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     assetManagement: assetManagementReducer,
     businessManagement: businessManagementReducer,
     systemConfig: systemConfigReducer,
+    cloudHosts: cloudHostsReducer,
   },
 })
 
