@@ -499,6 +499,32 @@
   margin-bottom: 10px;
 }
 
+.panelTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0a1d41;
+}
+
+.vulnPanelHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.vulnPanelHeader :global(.ant-btn-link) {
+  padding: 0;
+  font-size: 13px;
+}
+
+.vulnContentRow {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
 .alertStatsRow {
   display: flex;
   gap: 12px;
@@ -626,6 +652,88 @@
   margin-left: auto;
   font-size: 14px;
   color: #0c1f4a;
+}
+
+.severityBoard {
+  flex: 1;
+  min-width: 220px;
+  border: 1px dashed rgba(42, 69, 128, 0.25);
+  border-radius: 16px;
+  padding: 16px;
+  background: linear-gradient(145deg, rgba(92, 125, 255, 0.08), rgba(64, 214, 255, 0.05));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.severityTitle {
+  font-size: 13px;
+  color: rgba(10, 29, 65, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.severityTotal {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: rgba(8, 20, 58, 0.75);
+}
+
+.severityTotal strong {
+  font-size: 30px;
+  color: #0a1d45;
+}
+
+.severityList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.severityItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(10, 29, 65, 0.08);
+  font-size: 13px;
+  color: rgba(8, 21, 52, 0.75);
+}
+
+.severityValue {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.severityValue strong {
+  font-size: 20px;
+  color: #0a1d45;
+}
+
+.severityValue small {
+  font-size: 11px;
+  color: rgba(8, 21, 52, 0.6);
+}
+
+.severityhigh {
+  background: rgba(239, 91, 119, 0.08);
+  color: #b12c48;
+}
+
+.severitymedium {
+  background: rgba(246, 168, 84, 0.12);
+  color: #a66415;
+}
+
+.severitylow {
+  background: rgba(53, 163, 255, 0.08);
+  color: #0d5c9d;
 }
 
 @media (max-width: 768px) {

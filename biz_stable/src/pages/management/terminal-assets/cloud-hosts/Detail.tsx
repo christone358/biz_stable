@@ -2,12 +2,12 @@ import React from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import type { RootState } from '../../../../store'
-import { Alert, Button, Card, Collapse, Progress, Typography } from 'antd'
+import { Alert, Button, Card, Collapse, Typography } from 'antd'
 import { ClusterOutlined, DatabaseOutlined, DesktopOutlined, HddOutlined } from '@ant-design/icons'
 import type { CloudHost } from '../../../../types/cloud-host'
 import styles from './Detail.module.less'
 
-const { Title, Text } = Typography
+const { Title } = Typography
 
 type VulnSegment = { key: string; label: string; value: number; color: string; displayValue?: number }
 
@@ -203,6 +203,35 @@ const CloudHostDetail: React.FC = () => {
   })
   const vulnPieStyle = { background: `conic-gradient(${vulnPieStops.join(', ')})` }
 
+  const severityLoop = ['high', 'medium', 'low'] as const
+  const severityCounts: Record<typeof severityLoop[number], number> = {
+    high: 0,
+    medium: 0,
+    low: 0
+  }
+  if (hasVulnerability) {
+    for (let i = 0; i < item.vulnerabilities; i++) {
+      const bucket = severityLoop[(hostSeed + i) % severityLoop.length]
+      severityCounts[bucket] += 1
+    }
+  }
+  const vulnSeverityStats = severityLoop.map(level => ({
+    key: level,
+    label: level === 'high' ? '高危' : level === 'medium' ? '中危' : '低危',
+    value: severityCounts[level],
+    accent: level === 'high' ? '#ef5b77' : level === 'medium' ? '#f6a854' : '#35a3ff'
+  }))
+
+  const handleViewVulnerabilityList = () => {
+    const params = new URLSearchParams({
+      view: 'management',
+      hostId: item.id,
+      hostName: item.hostName,
+      hostIp: item.ipAddress
+    })
+    navigate(`/management/vulnerability?${params.toString()}`)
+  }
+
   return (
     <div className={styles.pageBackground}>
       <div className={styles.detailPage}>
@@ -385,23 +414,49 @@ const CloudHostDetail: React.FC = () => {
                     </div>
                   </div>
                   <div className={styles.vulnPanel}>
-                    <div className={styles.sectionLabel}>脆弱性分布</div>
-                    <div className={styles.pieWrapper}>
-                      <div className={styles.pieChart} style={vulnPieStyle}>
-                        <div className={styles.pieInner}>
-                          <strong>{hasVulnerability ? item.vulnerabilities : 0}</strong>
-                          <span>条</span>
-                        </div>
+                    <div className={styles.vulnPanelHeader}>
+                      <div>
+                        <div className={styles.sectionLabel}>脆弱性分布</div>
+                        <div className={styles.panelTitle}>类型 · 未修复统计</div>
                       </div>
-                      <ul className={styles.pieLegend}>
-                        {vulnSegments.map(segment => (
-                          <li key={segment.key}>
-                            <i style={{ background: segment.color }} />
-                            <span>{segment.label}</span>
-                            <strong>{segment.displayValue ?? segment.value}</strong>
-                          </li>
-                        ))}
-                      </ul>
+                      <Button type="link" size="small" onClick={handleViewVulnerabilityList}>查看详情</Button>
+                    </div>
+                    <div className={styles.vulnContentRow}>
+                      <div className={styles.pieWrapper}>
+                        <div className={styles.pieChart} style={vulnPieStyle}>
+                          <div className={styles.pieInner}>
+                            <strong>{hasVulnerability ? item.vulnerabilities : 0}</strong>
+                            <span>条</span>
+                          </div>
+                        </div>
+                        <ul className={styles.pieLegend}>
+                          {vulnSegments.map(segment => (
+                            <li key={segment.key}>
+                              <i style={{ background: segment.color }} />
+                              <span>{segment.label}</span>
+                              <strong>{segment.displayValue ?? segment.value}</strong>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className={styles.severityBoard}>
+                        <div className={styles.severityTitle}>未修复脆弱性</div>
+                        <div className={styles.severityTotal}>
+                          <strong>{item.vulnerabilities}</strong>
+                          <span>条未修复</span>
+                        </div>
+                        <ul className={styles.severityList}>
+                          {vulnSeverityStats.map(stat => (
+                            <li key={stat.key} className={`${styles.severityItem} ${styles[`severity${stat.key}`]}`}>
+                              <span>{stat.label}</span>
+                              <div className={styles.severityValue}>
+                                <strong>{stat.value}</strong>
+                                <small>条</small>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
