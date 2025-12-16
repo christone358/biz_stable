@@ -26,6 +26,7 @@ import MockConfig from './pages/mock-config'
 import Test from './pages/test'
 import CloudHostList from './pages/management/terminal-assets/cloud-hosts/List'
 import CloudHostDetail from './pages/management/terminal-assets/cloud-hosts/Detail'
+import OfficeTerminalList from './pages/management/terminal-assets/office-terminals/List'
 import './App.css'
 
 function App() {
@@ -97,6 +98,7 @@ function App() {
                     {/* 终端资产管理 / 云主机管理 */}
                     <Route path="/management/terminal-assets/cloud-hosts" element={<CloudHostList />} />
                     <Route path="/management/terminal-assets/cloud-hosts/:id" element={<CloudHostDetail />} />
+                    <Route path="/management/terminal-assets/office-terminals" element={<OfficeTerminalList />} />
 
                     {/* 协同工作中心 */}
                     <Route path="/management/task-management" element={<TaskManagement />} />
@@ -165,6 +167,7 @@ function App() {
                     {/* 协同工作中心 */}
                     <Route path="/management/task-management" element={<TaskManagement />} />
                     <Route path="/management/task-records" element={<div>任务执行记录（待开发）</div>} />
+                    <Route path="/management/terminal-assets/office-terminals" element={<OfficeTerminalList />} />
                   </Route>
                 </>
               )}

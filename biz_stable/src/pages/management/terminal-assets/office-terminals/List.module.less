@@ -1,0 +1,451 @@
+.page {
+  min-height: 100vh;
+  padding: 24px 32px 48px;
+  background: #f5f7fb;
+}
+
+.statsShowcase {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px 24px;
+  box-shadow: 0 10px 30px rgba(15, 44, 102, 0.08);
+  margin-bottom: 24px;
+}
+
+.statsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.statsHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #101828;
+}
+
+.statsHeader p {
+  margin: 4px 0 0;
+  color: #475467;
+  font-size: 13px;
+}
+
+.statsActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.statsRow {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.statCard {
+  flex: 1;
+  min-width: 220px;
+  background: linear-gradient(180deg, #f8f9ff 0%, #ffffff 100%);
+  border: 1px solid rgba(87, 111, 255, 0.18);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.statIconPrimary { color: #3150ff; font-size: 28px; }
+.statIconNeutral { color: #25314d; font-size: 28px; }
+.statIconSuccess { color: #12b76a; font-size: 28px; }
+
+.statLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #475467;
+}
+
+.statValue {
+  font-size: 26px;
+  font-weight: 600;
+  color: #101828;
+  line-height: 1.2;
+}
+
+.statSplit {
+  color: #667085;
+  font-size: 13px;
+}
+
+.statRiskRow {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  color: #475467;
+}
+
+.riskLegend {
+  display: inline-flex;
+  width: 10px;
+  height: 10px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+
+.contentArea {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+}
+
+.sidebar {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e4e7ec;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(100vh - 200px);
+  position: sticky;
+  top: 20px;
+}
+
+.sidebarSection {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sidebarHeader {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d2939;
+  margin-bottom: 8px;
+}
+
+.orgSearch {
+  margin-bottom: 8px;
+}
+
+.orgTree {
+  max-height: 220px;
+  overflow: auto;
+}
+
+.orgTree :global(.ant-tree-treenode) {
+  margin-bottom: 4px;
+}
+
+.orgTree :global(.ant-tree-node-content-wrapper) {
+  padding: 4px 8px;
+  border-radius: 10px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.orgTree :global(.ant-tree-node-content-wrapper:hover) {
+  background: rgba(78, 107, 255, 0.12);
+}
+
+.orgTree :global(.ant-tree-node-content-wrapper.ant-tree-node-selected) {
+  background: linear-gradient(120deg, rgba(78, 107, 255, 0.18), rgba(59, 130, 246, 0.25));
+  color: #1d4ed8;
+}
+
+
+.clearOrgBtn {
+  padding: 0;
+}
+
+.listArea {
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid #e4e7ec;
+  padding: 20px 24px 32px;
+  min-height: 640px;
+}
+
+.listHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.listHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #111c3c;
+}
+
+.listHeader span { color: #475467; font-size: 13px; }
+
+.listHeaderTools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.listSearch { width: 260px; }
+
+.filterStatsRow {
+  margin-top: 8px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #f8f9ff;
+  border: 1px solid #e4e7ec;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  font-size: 12px;
+  color: #475467;
+}
+
+.filterToolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: #f8f9ff;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.filterActions {
+  text-align: right;
+}
+
+.filterActions :global(.ant-btn) {
+  padding: 0;
+}
+
+.inlineFilters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.inlineFilterGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #475467;
+}
+
+.inlineChips {
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.inlineChips :global(.ant-tag) {
+  margin: 0;
+  border-radius: 12px;
+  padding: 2px 10px;
+}
+
+.cardList :global(.ant-list-pagination) {
+  margin-top: 16px;
+}
+
+.cardListItem {
+  padding: 0 !important;
+  border: none !important;
+}
+
+.terminalCard {
+  border: 1px solid #e4e7ec;
+  border-radius: 18px;
+  padding: 18px 20px;
+  min-height: 160px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.terminalCard:hover {
+  border-color: #98a2ff;
+  box-shadow: 0 12px 30px rgba(83, 110, 255, 0.16);
+}
+
+
+.cardHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.statusTag {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.cardTag {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(79, 70, 229, 0.1);
+  color: #5145cd;
+}
+
+.cardMetaRow {
+  margin-top: 4px;
+  color: #475467;
+  font-size: 13px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.metaText { color: #475467; }
+.metaTextThin { color: #667085; font-size: 12px; }
+
+.cardStatusGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.statusDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.statusDotRun { background: #16a34a; }
+.statusDotStop { background: #ea580c; }
+.statusDotUnknown { background: #94a3b8; }
+
+.stateIcon { font-size: 20px; }
+.iconProtSafe { color: #16a34a; }
+.iconProtWarn { color: #f59e0b; }
+.iconProtDanger { color: #ef4444; }
+.iconRegApproved { color: #16a34a; }
+.iconRegReview { color: #fbbf24; }
+.iconRegPending { color: #6366f1; }
+.iconRegRejected { color: #f87171; }
+.iconRegDeregistered { color: #a855f7; }
+
+.riskMeter {
+  display: inline-flex;
+  gap: 4px;
+}
+
+
+.riskCell {
+  width: 10px;
+  height: 16px;
+  border-radius: 6px;
+  background: #e4e7ec;
+}
+
+.riskCellHigh { background: #f87171; }
+.riskCellMed { background: #fbbf24; }
+.riskCellOk { background: #34d399; }
+.riskCellNeutral { background: #e4e7ec; }
+.riskCellNeutral { background: #e4e7ec; }
+
+.cardInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px, 1fr));
+  gap: 12px 16px;
+  margin-top: 16px;
+  align-items: start;
+}
+
+.infoLabel {
+  font-size: 12px;
+  color: #98a2b3;
+  margin-bottom: 4px;
+}
+
+.infoValue {
+  font-size: 14px;
+  color: #1d2939;
+  line-height: 1.4;
+}
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.cardActions :global(.ant-btn-link) {
+  padding: 0;
+}
+
+.statusFooter {
+  width: 100%;
+  font-size: 12px;
+  color: #98a2b3;
+  text-align: right;
+}
+
+.tooltipSoftWrapper :global(.ant-tooltip-inner) {
+  min-width: 220px;
+}
+
+.tooltipSoftTitle {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #1d2939;
+}
+
+.tooltipSoftList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tooltipSoftRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #475467;
+}
+
+.tooltipSoftName {
+  font-weight: 500;
+}
+
+.tooltipSoftMeta {
+  color: #98a2b3;
+  margin-left: 4px;
+}
+
+.tooltipSoftEmpty {
+  font-size: 12px;
+  color: #98a2b3;
+}
+
+@media (max-width: 1200px) {
+  .contentArea {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: relative;
+    max-height: none;
+  }
+}

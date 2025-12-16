@@ -3,11 +3,27 @@ export type CloudHostStatus = 'RUNNING' | 'STOPPED' | 'UNKNOWN'
 export type ProtectionStatus = 'PROTECTED' | 'UNPROTECTED' | 'UNASSIGNED'
 export type AdmissionStatus = 'ALLOWED' | 'DENIED' | 'UNKNOWN'
 
+export type TrustedCategory = 'TRUSTED_CREATION' | 'DOMESTIC' | 'STANDARD'
+
+export interface CloudHostStorage {
+  type: 'SSD' | 'HDD' | 'NVME' | string
+  sizeGB: number
+  model?: string
+}
+
+export interface CloudHostOwner {
+  name: string
+  phone?: string
+  email?: string
+  organization?: string
+}
+
 export interface CloudHost {
   id: string
   hostName: string
   label?: string
   ipAddress: string
+  ipAddresses?: string[]
   status: CloudHostStatus
   protectionStatus: ProtectionStatus
   cpu: number
@@ -17,6 +33,15 @@ export interface CloudHost {
   osVersion?: string
   type: 'STANDARD' | 'TRUSTED_CREATION'
   department: string
+  macAddresses?: string[]
+  serialNumber?: string
+  manufactureDate?: string
+  trustedCategory?: TrustedCategory
+  description?: string
+  cpuModel?: string
+  memoryType?: string
+  storage?: CloudHostStorage[]
+  gpu?: { model: string; count: number }
 
   // Business links
   businessBlock: string
@@ -30,6 +55,7 @@ export interface CloudHost {
   requester?: string
   requestedAt?: string
   deliveredAt?: string
+  owner?: CloudHostOwner
 
   // Security (EDR & access)
   edrInstalled: boolean
@@ -37,6 +63,7 @@ export interface CloudHost {
   edrAgentVersion?: string
   edrVirusDbVersion?: string
   edrLastHeartbeat?: string
+  edrBrand?: string
   blocked: boolean
   blockedReason?: string
   blockedAt?: string
@@ -47,9 +74,16 @@ export interface CloudHost {
   // Sync metadata
   dataSource: {
     source: 'CLOUD_PLATFORM' | 'MANUAL'
+    provider?: string
     lastSyncTime?: string
     syncStatus?: 'SUCCESS' | 'FAILED' | 'PENDING'
   }
+
+  // Deployment / exposure
+  networkSegment?: string
+  datacenter?: string
+  nodeRoom?: string
+  platformDetail?: string
 
   // Misc
   region?: string

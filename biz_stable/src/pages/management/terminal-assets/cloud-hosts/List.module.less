@@ -11,88 +11,49 @@
   color: #0b1221;
 }
 
-.pageHeading {
+/* 顶部页面标题与副标题取消 */
+
+.statsShowcase {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid rgba(64, 99, 214, 0.12);
+  padding: 12px 16px;
+  box-shadow: 0 8px 24px rgba(61, 102, 188, 0.12);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 28px;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.pageHeading h2 {
+.statsHeaderBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.statsHeaderBar h4 {
   margin: 0;
-  font-size: clamp(28px, 4vw, 36px);
-  font-weight: 600;
+  font-size: 16px;
   color: #0b1221;
 }
 
-.pageHeading span {
-  color: rgba(11, 18, 33, 0.55);
-}
+.statsActions { display: flex; gap: 8px; }
+.statsActions :global(.ant-btn) { height: 26px; }
 
-.statsShowcase {
-  background: linear-gradient(135deg, rgba(73, 120, 255, 0.12), rgba(23, 181, 255, 0.12));
-  border-radius: 32px;
-  border: 1px solid rgba(64, 99, 214, 0.25);
-  padding: clamp(20px, 4vw, 36px);
-  box-shadow: 0 18px 50px rgba(61, 102, 188, 0.18);
+.statsRow {
   display: flex;
-  gap: 32px;
+  gap: 8px;
   flex-wrap: wrap;
-  align-items: center;
 }
 
-.statsIntro {
-  flex: 1;
-  min-width: 240px;
-}
+.statItem { display: inline-flex; align-items: center; gap: 10px; background: #f9fbff; border: 1px solid rgba(56,112,255,0.12); border-radius: 12px; padding: 8px 10px; flex: 0 0 auto; }
+.statIconPrimary { color: #3150ff; font-size: 18px; }
+.statIconSuccess { color: #059669; font-size: 18px; }
+.statIconNeutral { color: #334155; font-size: 18px; }
 
-.statsIntroTag {
-  display: inline-flex;
-  padding: 4px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(16, 24, 63, 0.12);
-  background: rgba(255, 255, 255, 0.3);
-  font-size: 12px;
-  color: #1a2f68;
-  margin-bottom: 12px;
-}
+/* hover 效果弱化，保持紧凑 */
 
-.statsIntro h3 {
-  margin: 0 0 8px;
-  font-size: clamp(26px, 4vw, 36px);
-  color: #08153a;
-}
-
-.statsIntro p {
-  margin: 0;
-  color: rgba(7, 19, 54, 0.65);
-  line-height: 1.6;
-}
-
-.statsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  flex: 1.2;
-  min-width: 320px;
-}
-
-.statCard {
-  background: linear-gradient(145deg, #fefefe, #f2f7ff);
-  border-radius: 20px;
-  padding: 16px;
-  border: 1px solid rgba(56, 112, 255, 0.18);
-  box-shadow: 0 12px 35px rgba(92, 131, 206, 0.18);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.statCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 18px 40px rgba(92, 131, 206, 0.3);
-}
-
+.statCol { display: flex; flex-direction: column; gap: 4px; }
 .statLabel {
   font-size: 12px;
   letter-spacing: 0.08em;
@@ -100,16 +61,57 @@
   color: rgba(17, 30, 73, 0.6);
 }
 
-.statValue {
-  font-size: 32px;
-  font-weight: 600;
-  color: #111c3c;
-  margin: 8px 0 4px;
-}
+.statValueSm { font-size: 20px; font-weight: 600; color: #111c3c; margin-top: 2px; }
 
 .statTrend {
-  font-size: 13px;
+  font-size: 12px;
   color: #4f7cff;
+}
+
+.statRiskInline { display: flex; align-items: center; gap: 12px; }
+.statKpiRow { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.statSplit { display: inline-flex; gap: 8px; font-size: 12px; color: rgba(17,30,73,0.75); white-space: nowrap; }
+.statRightNote { font-size: 12px; color: rgba(17,30,73,0.75); white-space: nowrap; }
+.riskLegend { display: flex; align-items: center; gap: 6px; }
+.riskText { font-size: 12px; color: rgba(17,30,73,0.75); }
+
+.listHeaderTools { display: flex; align-items: center; gap: 12px; justify-content: flex-end; flex-wrap: nowrap; }
+.listSearch { width: 260px; }
+.listSearch :global(.ant-input) { height: 32px; }
+
+.inlineFilters { display: flex; align-items: center; gap: 16px; flex-wrap: nowrap; }
+.inlineFilterGroup { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.inlineFilterLabel { font-size: 12px; color: rgba(10,23,58,0.7); line-height: 1; }
+.inlineChips { display: inline-flex; gap: 6px; align-items: center; flex-wrap: nowrap; white-space: nowrap; }
+.inlineChips :global(.ant-tag-checkable) { user-select: none; }
+.inlineChips :global(.ant-tag) { margin: 0; }
+
+/* Improve contrast for unselected/selected CheckableTags */
+.inlineChips :global(.ant-tag-checkable) {
+  padding: 2px 10px;
+  border-radius: 12px;
+  line-height: 20px;
+  font-size: 12px;
+  color: #1c2b5c;
+  background: rgba(87, 121, 255, 0.08);
+  border: 1px solid rgba(71, 111, 255, 0.35);
+  transition: all 0.15s ease;
+}
+
+.inlineChips :global(.ant-tag-checkable:hover) {
+  background: rgba(87, 121, 255, 0.14);
+  border-color: rgba(71, 111, 255, 0.5);
+}
+
+.inlineChips :global(.ant-tag-checkable-checked) {
+  color: #fff;
+  background: #4e6bff;
+  border-color: #4e6bff;
+}
+
+.inlineChips :global(.ant-tag-checkable:focus-visible) {
+  outline: 2px solid rgba(78, 107, 255, 0.6);
+  outline-offset: 1px;
 }
 
 
@@ -155,35 +157,29 @@
   box-shadow: none;
 }
 
-.filterGroup {
+.filterSearchRow {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.filterGroup :global(.ant-select),
-.filterGroup :global(.ant-input-search) {
-  width: clamp(180px, 22vw, 260px);
+.filterSearchRow span {
+  color: rgba(11, 25, 60, 0.55);
+  font-size: 12px;
 }
 
-.filterGroup :global(.ant-select-selector),
-.filterGroup :global(.ant-input-search .ant-input) {
-  background: rgba(247, 249, 255, 0.9) !important;
-  border-radius: 14px !important;
-  border: 1px solid rgba(74, 107, 246, 0.25) !important;
-  color: #0b1221;
-}
-
-.filterGroup :global(.ant-select-selection-placeholder),
-.filterGroup :global(.ant-input::placeholder) {
-  color: rgba(12, 26, 57, 0.5) !important;
+.filterSearchRow :global(.ant-input-search .ant-input) {
+  background: rgba(247, 249, 255, 0.9);
+  border: 1px solid rgba(74, 107, 246, 0.25);
+  border-radius: 16px;
+  font-size: 15px;
 }
 
 .quickFilters {
-  margin-top: 16px;
   display: flex;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .quickTag {
@@ -237,8 +233,8 @@
 
 .hostCardsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .hostCard {
@@ -246,16 +242,16 @@
   background: #fff;
   border-radius: 24px;
   border: 1px solid rgba(87, 121, 255, 0.18);
-  padding: 20px;
+  padding: 16px;
   box-shadow: 0 18px 40px rgba(79, 109, 177, 0.18);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
   cursor: pointer;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-  min-height: 240px;
+  min-height: 160px;
   outline: none;
-}
+  }
 
 .hostCard:hover,
 .hostCard:focus-visible {
@@ -264,10 +260,12 @@
   border-color: rgba(58, 96, 255, 0.4);
 }
 
+/* 管控逻辑已取消，不再使用 hostCardControlled */
+
 .hostCardMain {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -283,160 +281,140 @@
 }
 
 .hostName {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
   color: #091639;
-}
-
-.blockedBadge {
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(255, 105, 105, 0.15);
-  color: #a01927;
-  font-size: 12px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hostIp {
   display: block;
   color: rgba(9, 22, 57, 0.6);
-  margin-top: 4px;
+  margin-top: 2px;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+.hostIpRow { display: flex; align-items: center; gap: 6px; }
 
 .hostStatusGroup {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 6px;
-  align-items: flex-end;
-  min-width: 120px;
-}
-
-.hostSpecsStrip {
-  display: flex;
-  gap: 12px;
-  font-size: 12px;
-  color: rgba(7, 19, 54, 0.65);
-  border-top: 1px dashed rgba(59, 84, 153, 0.2);
-  padding-top: 10px;
-}
-
-.hostSpecsStrip span {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(88, 122, 255, 0.08);
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .hostMeta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-  font-size: 13px;
-  flex: 1;
-}
-
-.hostMeta label {
-  display: block;
-  color: rgba(10, 23, 58, 0.5);
-  font-size: 12px;
-  margin-bottom: 2px;
-}
-
-.hostMeta span {
-  color: #101b3f;
-  font-weight: 500;
-}
-
-.previewPopover {
-  position: fixed;
-  background: linear-gradient(140deg, #fffaf0 0%, #f2f6ff 100%);
-  border-radius: 28px;
-  padding: 22px 26px 24px;
-  border: 1px solid rgba(255, 182, 108, 0.5);
-  box-shadow: 0 30px 70px rgba(146, 102, 37, 0.25), 0 15px 30px rgba(73, 100, 200, 0.18);
-  color: #0e1b3f;
-  z-index: 20;
-  width: 360px;
-  pointer-events: auto;
-  backdrop-filter: blur(6px);
-  --arrow-offset: 50%;
-}
-
-.previewPopover::after {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  background: inherit;
-  border: 1px solid rgba(255, 182, 108, 0.45);
-  transform: rotate(45deg);
-  box-shadow: 0 18px 40px rgba(146, 102, 37, 0.18);
-  z-index: -1;
-}
-
-.previewPopoverBelow::after {
-  top: -8px;
-  left: var(--arrow-offset);
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.previewPopoverAbove::after {
-  bottom: -8px;
-  left: var(--arrow-offset);
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.previewHeader {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
   flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
 }
 
-.previewHeader h5 {
-  margin: 0;
-  font-size: 20px;
-  color: #081538;
-}
-
-.previewHeader span {
-  color: rgba(8, 21, 56, 0.65);
-}
-
-.previewStatus {
+.hostInfoLine {
   display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(10, 23, 58, 0.7);
+  min-height: 20px;
 }
 
-.previewGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 16px;
+.sourceText {
+  white-space: nowrap;
+  max-width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.previewGrid label {
-  display: block;
+.dotDivider { color: rgba(10, 23, 58, 0.35); }
+
+.specText { white-space: nowrap; }
+
+.hostTags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  margin-top: auto; /* push tags row to bottom; ensure bottom padding equals top padding */
+}
+
+.tagChip {
+  padding: 2px 8px;
   font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(13, 25, 63, 0.6);
-  margin-bottom: 4px;
+  border-radius: 999px;
+  background: rgba(88, 122, 255, 0.1);
+  color: #0d1c3f;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.previewGrid strong {
-  font-size: 15px;
-  color: #0e1b3f;
+.controlBadge {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(255, 166, 61, 0.18);
+  color: #a45700;
+  font-size: 13px;
+  font-weight: 600;
 }
+
 
 .statusChip {
   display: inline-flex;
   align-items: center;
-  padding: 4px 12px;
+  gap: 4px;
+  padding: 3px 8px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
 }
+
+.chipText { line-height: 1; }
+
+.stateIcon { font-size: 14px; line-height: 1; }
+.iconRiskHigh { color: #a21a1a; }
+.iconRiskMed { color: #a66b00; }
+.iconRiskOk { color: #16a34a; }
+.iconProtSafe { color: #027e6e; }
+.iconProtWarn { color: #a46400; }
+.iconProtDanger { color: #a7263c; }
+
+.runDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.runDotOk { background: #16a34a; }
+.runDotStop { background: #9ca3af; }
+.runDotUnknown { background: #d97706; }
+
+.riskMeter {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+}
+.riskCell {
+  width: 6px;
+  height: 10px;
+  border-radius: 2px;
+}
+.riskCellNeutral { background: rgba(10, 23, 58, 0.2); }
+.riskCellOk { background: #16a34a; }
+.riskCellMed { background: #f59e0b; }
+.riskCellHigh { background: #dc2626; }
 
 .statusChipRunning {
   background: rgba(87, 207, 138, 0.2);
@@ -466,4 +444,19 @@
 .protectionChipDanger {
   background: rgba(255, 138, 138, 0.28);
   color: #a7263c;
+}
+
+.riskChipHigh {
+  background: rgba(255, 120, 120, 0.25);
+  color: #a21a1a;
+}
+
+.riskChipMed {
+  background: rgba(255, 196, 88, 0.25);
+  color: #a66b00;
+}
+
+.riskChipLow {
+  background: rgba(93, 117, 255, 0.18);
+  color: #2e3ea3;
 }

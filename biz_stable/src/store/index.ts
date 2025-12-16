@@ -5,6 +5,7 @@ import assetManagementReducer from './slices/assetManagementSlice'
 import businessManagementReducer from './slices/businessManagementSlice'
 import systemConfigReducer from './slices/systemConfigSlice'
 import cloudHostsReducer from './slices/cloudHostSlice'
+import officeTerminalsReducer from './slices/officeTerminalSlice'
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     businessManagement: businessManagementReducer,
     systemConfig: systemConfigReducer,
     cloudHosts: cloudHostsReducer,
+    officeTerminals: officeTerminalsReducer,
   },
 })
 

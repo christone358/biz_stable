@@ -225,7 +225,7 @@
 
 .mainContent {
   display: grid;
-  grid-template-columns: 1.1fr 1.25fr 0.9fr;
+  grid-template-columns: 1.2fr 1fr;
   gap: 20px;
 }
 
@@ -240,8 +240,7 @@
 }
 
 .infoColumn,
-.securityColumn,
-.insightColumn {
+.securityColumn {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -275,7 +274,7 @@
 
 .infoPairRow {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
 }
 
@@ -453,18 +452,27 @@
 }
 
 .controlMeasures {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin-top: 12px;
 }
+
 
 .measureCard {
   padding: 10px 12px;
   border-radius: 12px;
   background: rgba(189, 73, 88, 0.08);
   border: 1px solid rgba(192, 49, 66, 0.18);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  width: 100%;
 }
+
+.measureCard:hover { background: rgba(189, 73, 88, 0.12); }
+
 
 .measureCard strong {
   display: block;
@@ -472,12 +480,11 @@
   color: #8a1f2d;
 }
 
-.measureCard span {
-  display: block;
-  font-size: 12px;
-  color: rgba(114, 33, 45, 0.75);
-  margin-top: 2px;
-}
+.measureIcon { display: inline-flex; width: 18px; height: 18px; align-items: center; justify-content: center; }
+.measureDetailHeader { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.measureDetailIcon { display: inline-flex; }
+.measureDetailList { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.measureDetailList li { display: flex; justify-content: space-between; font-size: 13px; }
 
 .trendPanel,
 .vulnPanel {
@@ -505,7 +512,7 @@
   color: #0a1d41;
 }
 
-.vulnPanelHeader {
+.panelHeader {
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -513,9 +520,25 @@
   margin-bottom: 16px;
 }
 
-.vulnPanelHeader :global(.ant-btn-link) {
+.panelHeader :global(.ant-btn-link) {
   padding: 0;
   font-size: 13px;
+}
+
+.configGroup {
+  margin-bottom: 20px;
+}
+
+.configGroupTitle {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #0b1f40;
+}
+
+.configOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .vulnContentRow {
@@ -744,100 +767,4 @@
   .specCluster {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
-}
-
-
-
-.insightList,
-.operationList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 13px;
-  color: rgba(17, 30, 70, 0.75);
-}
-
-.activityCard {
-  padding-bottom: 0;
-}
-
-.activityCollapse :global(.ant-collapse-item) {
-  border-bottom: none;
-}
-
-.activityCollapse :global(.ant-collapse-header) {
-  font-weight: 600;
-  color: #0c1f45;
-}
-
-.activityCollapse :global(.ant-collapse-content-box) {
-  padding-top: 0;
-}
-
-.metaCard {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.metaSection {
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(12, 29, 70, 0.08);
-}
-
-.metaSection:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.metaTitle { margin-bottom: 10px; }
-
-.activityHeader {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 13px;
-  color: #0b1d3e;
-}
-
-.activityHeader span {
-  font-size: 12px;
-  color: rgba(9, 25, 66, 0.6);
-}
-
-.activityDetail {
-  margin: 6px 0 0;
-  font-size: 12px;
-  color: rgba(9, 25, 66, 0.65);
-}
-
-.healthSummary {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: rgba(17, 30, 70, 0.6);
-}
-
-.healthSummary strong {
-  display: block;
-  color: #11204a;
-}
-
-.insightCollapse :global(.ant-collapse-header) {
-  font-weight: 600;
-  font-size: 13px;
-}
-
-.sectionCard :global(.ant-btn-link) {
-  color: #3a73ff;
-}
-
-
-@keyframes floatPulse {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-4px); }
-  100% { transform: translateY(0px); }
 }

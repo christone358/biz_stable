@@ -1,15 +1,18 @@
-import React from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import React, { useEffect, useMemo, useState } from 'react'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import type { RootState } from '../../../../store'
-import { Alert, Button, Card, Collapse, Typography } from 'antd'
-import { ClusterOutlined, DatabaseOutlined, DesktopOutlined, HddOutlined } from '@ant-design/icons'
-import type { CloudHost } from '../../../../types/cloud-host'
+import { Alert, Button, Card, Checkbox, Drawer, Modal, Typography } from 'antd'
+import { ClusterOutlined, DatabaseOutlined, DesktopOutlined, HddOutlined, StopOutlined, ThunderboltOutlined, DisconnectOutlined, SafetyCertificateOutlined, SecurityScanOutlined, LockOutlined, RollbackOutlined } from '@ant-design/icons'
+import type { CloudHost, ProtectionStatus } from '../../../../types/cloud-host'
 import styles from './Detail.module.less'
 
 const { Title } = Typography
 
 type VulnSegment = { key: string; label: string; value: number; color: string; displayValue?: number }
+type FieldGroupKey = 'basic' | 'specs' | 'owner' | 'deployment' | 'business'
+type InfoFieldDef = { key: string; label: string; render: (host: CloudHost) => React.ReactNode }
+type SpecFieldDef = { key: string; label: string; icon: React.ReactNode; render: (host: CloudHost) => React.ReactNode }
 
 const CONTROL_MEASURES = [
   { key: 'networkIsolation', label: '网络隔离', description: '通过安全组 / ACL 管控进出流量' },
@@ -21,7 +24,20 @@ const CONTROL_MEASURES = [
   { key: 'snapshotRollback', label: '快照回滚', description: '回退至最新安全快照' }
 ]
 
+const MEASURE_ICONS: Record<string, React.ReactNode> = {
+  networkIsolation: <DisconnectOutlined />,
+  portBlock: <StopOutlined />,
+  trafficThrottle: <ThunderboltOutlined />,
+  edrQuarantine: <SecurityScanOutlined />,
+  vpcFirewall: <SafetyCertificateOutlined />,
+  credentialFreeze: <LockOutlined />,
+  snapshotRollback: <RollbackOutlined />
+}
+
+const FIELD_CONFIG_STORAGE_KEY = 'cloudHostFieldConfig'
+
 const formatDateTime = (value?: string) => (value ? value.slice(0, 19).replace('T', ' ') : '-')
+const formatDate = (value?: string) => (value ? value.slice(0, 10) : '—')
 const formatDuration = (start?: string) => {
   if (!start) return '-'
   const diffMs = Date.now() - new Date(start).getTime()
@@ -34,10 +50,25 @@ const formatDuration = (start?: string) => {
   return `${days} 天`
 }
 
+const formatList = (values?: string[]) => (values && values.length ? values.join(' / ') : '—')
+const formatTrustedCategory = (value?: CloudHost['trustedCategory']) => {
+  if (value === 'TRUSTED_CREATION') return '信创'
+  if (value === 'DOMESTIC') return '国产'
+  return '标准'
+}
+
+const formatProtectionStatus = (status: ProtectionStatus) => {
+  if (status === 'PROTECTED') return '已纳入安全防护'
+  if (status === 'UNASSIGNED') return '未分配安全域'
+  return '未纳入防护'
+}
+
 const CloudHostDetail: React.FC = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const item = useSelector<RootState, CloudHost | undefined>((s) => s.cloudHosts.items.find(h => h.id === id))
+  const [configVisible, setConfigVisible] = useState(false)
+  const [measureDetail, setMeasureDetail] = useState<{ key: string; label: string; description: string; start?: string; end?: string } | null>(null)
 
   if (!item) {
     return <Alert type="error" message="未找到云主机" showIcon />
@@ -62,17 +93,6 @@ const CloudHostDetail: React.FC = () => {
     { key: 'coverage', label: '安全防护', value: item.edrInstalled ? (item.edrOnline ? 'EDR在线' : 'EDR未运行') : '未安装', desc: protectionDescription, tone: item.edrInstalled && item.edrOnline ? 'good' : item.edrInstalled ? 'warn' : 'danger' }
   ]
 
-  const identityRows = [
-    [
-      { label: '主机名称', value: item.hostName },
-      { label: 'IP地址', value: item.ipAddress }
-    ],
-    [
-      { label: '类型', value: item.type === 'TRUSTED_CREATION' ? '信创' : '非信创' },
-      { label: '来源', value: item.vendor ?? item.dataSource.source }
-    ]
-  ]
-
   const admissionRows = [
     [
       { label: '准入状态', value: item.admissionStatus === 'ALLOWED' ? '允许' : item.admissionStatus === 'DENIED' ? '拒绝' : '受限' },
@@ -87,74 +107,98 @@ const CloudHostDetail: React.FC = () => {
     ]
   ]
 
-  const specMetrics = [
-    { key: 'cpu', label: 'CPU', value: `${item.cpu} 核`, icon: <ClusterOutlined /> },
-    { key: 'memory', label: '内存', value: `${item.memory} GB`, icon: <DatabaseOutlined /> },
-    { key: 'disk', label: '磁盘', value: `${item.disk} GB`, icon: <HddOutlined /> },
-    { key: 'os', label: '操作系统', value: `${item.osType} ${item.osVersion ?? ''}`.trim(), icon: <DesktopOutlined /> }
-  ]
+  const basicFields = useMemo<InfoFieldDef[]>(() => ([
+    { key: 'hostName', label: '主机名称', render: host => host.hostName },
+    { key: 'ipAddresses', label: 'IP地址', render: host => (host.ipAddresses ?? [host.ipAddress]).join(' / ') },
+    { key: 'macAddresses', label: 'MAC地址', render: host => formatList(host.macAddresses) },
+    { key: 'serialNumber', label: '序列号', render: host => host.serialNumber ?? '—' },
+    { key: 'vendor', label: '供应商', render: host => host.vendor ?? host.dataSource.source },
+    { key: 'manufactureDate', label: '出厂时间', render: host => formatDate(host.manufactureDate) },
+    { key: 'trustedCategory', label: '信创/国产', render: host => formatTrustedCategory(host.trustedCategory) },
+    { key: 'description', label: '描述', render: host => host.description ?? '—' },
+    { key: 'source', label: '信息来源', render: host => host.dataSource.provider ?? host.platformDetail ?? (host.dataSource.source === 'MANUAL' ? '人工维护' : '云管平台') }
+  ]), [])
 
-  const businessHighlights = [
-    { label: '一级系统', value: item.businessBlock },
-    { label: '二级系统', value: item.businessSystem }
-  ]
+  const ownerFields = useMemo<InfoFieldDef[]>(() => ([
+    { key: 'ownerName', label: '责任人', render: host => host.owner?.name ?? host.systemOwner ?? '未设置' },
+    { key: 'ownerPhone', label: '联系电话', render: host => host.owner?.phone ?? '—' },
+    { key: 'ownerEmail', label: '邮箱', render: host => host.owner?.email ?? '—' },
+    { key: 'ownerOrg', label: '所属单位', render: host => host.owner?.organization ?? host.department }
+  ]), [])
 
-  const responsibilitySummary = [
-    { label: '责任人', value: item.systemOwner ?? '未设置' },
-    { label: '责任单位', value: item.department },
-    { label: '申请人', value: item.requester ?? '—' },
-    { label: '交付时间', value: item.deliveredAt ? formatDateTime(item.deliveredAt) : '—' }
-  ]
+  const deploymentFields = useMemo<InfoFieldDef[]>(() => ([
+    { key: 'networkSegment', label: '网络/网段', render: host => host.networkSegment ?? '—' },
+    { key: 'datacenter', label: '所属机房', render: host => host.datacenter ?? host.region ?? '—' },
+    { key: 'nodeRoom', label: '机柜/节点', render: host => host.nodeRoom ?? '—' },
+    { key: 'platformDetail', label: '云平台详情', render: host => host.platformDetail ?? host.vendor ?? '—' }
+  ]), [])
 
-  const toRows = (fields: { label: React.ReactNode; value: React.ReactNode }[], size = 2) => {
+  const businessFields = useMemo<InfoFieldDef[]>(() => ([
+    { key: 'businessBlock', label: '一级系统', render: host => host.businessBlock },
+    {
+      key: 'businessSystem',
+      label: '二级系统',
+      render: host => (host.businessSystem
+        ? <Link to={`/management/business/${host.businessSystemId ?? ''}`}>{host.businessSystem}</Link>
+        : '—')
+    },
+    { key: 'businessAssetName', label: '关联业务资产', render: host => host.businessAssetName ?? '—' }
+  ]), [])
+
+  const specFields = useMemo<SpecFieldDef[]>(() => ([
+    { key: 'cpu', label: 'CPU', icon: <ClusterOutlined />, render: host => `${host.cpuModel ?? 'CPU'} · ${host.cpu} 核` },
+    { key: 'memory', label: '内存', icon: <DatabaseOutlined />, render: host => `${host.memory} GB${host.memoryType ? ` · ${host.memoryType}` : ''}` },
+    { key: 'storage', label: '存储', icon: <HddOutlined />, render: host => host.storage?.map(d => `${d.type} ${d.sizeGB}GB`).join(' / ') ?? `${host.disk} GB` },
+    { key: 'os', label: '操作系统', icon: <DesktopOutlined />, render: host => `${host.osType} ${host.osVersion ?? ''}`.trim() },
+    { key: 'gpu', label: 'GPU', icon: <ClusterOutlined />, render: host => (host.gpu ? `${host.gpu.model} × ${host.gpu.count}` : '—') }
+  ]), [])
+
+  const defaultFieldConfig = useMemo<Record<FieldGroupKey, string[]>>(() => ({
+    basic: basicFields.map(field => field.key),
+    specs: specFields.map(field => field.key),
+    owner: ownerFields.map(field => field.key),
+    deployment: deploymentFields.map(field => field.key),
+    business: businessFields.map(field => field.key)
+  }), [basicFields, specFields, ownerFields, deploymentFields, businessFields])
+
+  const [fieldConfig, setFieldConfig] = useState<Record<FieldGroupKey, string[]>>(() => {
+    if (typeof window === 'undefined') return defaultFieldConfig
+    try {
+      const stored = window.localStorage.getItem(FIELD_CONFIG_STORAGE_KEY)
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        return { ...defaultFieldConfig, ...parsed }
+      }
+    } catch {
+      // ignore parse errors
+    }
+    return defaultFieldConfig
+  })
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem(FIELD_CONFIG_STORAGE_KEY, JSON.stringify(fieldConfig))
+  }, [fieldConfig])
+
+  const buildInfoRows = (fields: InfoFieldDef[], group: FieldGroupKey, columns = 3) => {
+    const visibleKeys = (fieldConfig[group] ?? []).filter(key => fields.some(field => field.key === key))
+    const visibleFields = fields.filter(field => visibleKeys.includes(field.key))
     const rows: { label: React.ReactNode; value: React.ReactNode }[][] = []
-    for (let i = 0; i < fields.length; i += size) rows.push(fields.slice(i, i + size))
+    for (let i = 0; i < visibleFields.length; i += columns) {
+      rows.push(visibleFields.slice(i, i + columns).map(field => ({
+        label: field.label,
+        value: field.render(item)
+      })))
+    }
     return rows
   }
 
-  const businessRows = toRows(businessHighlights)
-  const responsibilitySummaryRows = toRows(responsibilitySummary)
-
-  const activityGroups = [
-    {
-      key: 'provision',
-      label: '主机申请',
-      events: [
-        { time: item.requestedAt ? formatDateTime(item.requestedAt) : '—', content: `${item.requester ?? '责任人'} 提交云主机申请` },
-        { time: item.deliveredAt ? formatDateTime(item.deliveredAt) : '—', content: '审批通过，完成交付并纳管' }
-      ]
-    },
-    {
-      key: 'security',
-      label: '策略与安全',
-      events: [
-        item.blocked
-          ? { time: item.blockedAt ? formatDateTime(item.blockedAt) : '—', content: '触发安全管控措施' }
-          : { time: formatDateTime(item.dataSource.lastSyncTime), content: '未触发安全管控，持续监测' },
-        { time: formatDateTime(item.dataSource.lastSyncTime), content: '安全策略同步 / 准入校验完成' }
-      ]
-    }
-  ]
-
-  const activityEntries = activityGroups.flatMap(group =>
-    group.events.map((event, index) => ({
-      key: `${group.key}-${index}`,
-      title: event.content,
-      time: event.time,
-      detail: `${group.label} · ${event.content}。当前状态：${item.status === 'RUNNING' ? '运行中' : '已停止'}。`
-    }))
-  )
-
-  const activityPanels = activityEntries.map(entry => ({
-    key: entry.key,
-    label: (
-      <div className={styles.activityHeader}>
-        <strong>{entry.title}</strong>
-        <span>{entry.time}</span>
-      </div>
-    ),
-    children: <p className={styles.activityDetail}>{entry.detail}</p>
-  }))
+  const basicRows = buildInfoRows(basicFields, 'basic')
+  const ownerRows = buildInfoRows(ownerFields, 'owner')
+  const deploymentRows = buildInfoRows(deploymentFields, 'deployment')
+  const businessRows = buildInfoRows(businessFields, 'business')
+  const specVisibleKeys = (fieldConfig.specs ?? []).filter(key => specFields.some(field => field.key === key))
+  const visibleSpecFields = specFields.filter(field => specVisibleKeys.includes(field.key))
 
   const hostSeed = Number(item.id.replace(/\D/g, '')) || 1
   const controlMeasures = item.blocked
@@ -232,15 +276,38 @@ const CloudHostDetail: React.FC = () => {
     navigate(`/management/vulnerability?${params.toString()}`)
   }
 
+  const handleViewAlertList = () => {
+    const params = new URLSearchParams({
+      hostId: item.id,
+      hostIp: item.ipAddress,
+      hostName: item.hostName
+    })
+    navigate(`/management/alert-monitoring?${params.toString()}`)
+  }
+
+  const handleFieldConfigChange = (group: FieldGroupKey, values: string[]) => {
+    setFieldConfig(prev => ({ ...prev, [group]: values }))
+  }
+
+  const configGroups: { key: FieldGroupKey; title: string; fields: (InfoFieldDef | SpecFieldDef)[] }[] = [
+    { key: 'basic', title: '基础信息', fields: basicFields },
+    { key: 'specs', title: '规格信息', fields: specFields },
+    { key: 'owner', title: '责任主体', fields: ownerFields },
+    { key: 'deployment', title: '部署位置', fields: deploymentFields },
+    { key: 'business', title: '业务关联', fields: businessFields }
+  ]
+
+  const dataSourceLabel = item.dataSource.provider ?? item.platformDetail ?? (item.dataSource.source === 'MANUAL' ? '人工维护' : '云管平台')
+
   return (
     <div className={styles.pageBackground}>
       <div className={styles.detailPage}>
         <div className={styles.toolbar}>
           <div className={styles.toolbarActions}>
-            <div className={styles.ghostButton}><Button onClick={() => navigate('/management/terminal-assets/cloud-hosts')}>返回列表</Button></div>
-            <div className={styles.ghostButton}><Button>导出</Button></div>
+            <Button type="link" onClick={() => navigate('/management/terminal-assets/cloud-hosts')}>← 返回云主机列表</Button>
           </div>
           <div className={styles.toolbarActions}>
+            <div className={styles.ghostButton}><Button onClick={() => setConfigVisible(true)}>字段配置</Button></div>
             <div className={styles.ghostButton}><Button>同步</Button></div>
             <div className={styles.primaryGlow}><Button type="primary">编辑</Button></div>
           </div>
@@ -257,11 +324,12 @@ const CloudHostDetail: React.FC = () => {
               </span>
             </Title>
             <div className={styles.heroTags}>
-              <span>{item.type === 'TRUSTED_CREATION' ? '信创' : '非信创'}</span>
+              <span>{formatTrustedCategory(item.trustedCategory)}</span>
               <span>{item.vendor ?? item.dataSource.source}</span>
               {item.businessSystem && <span>{item.businessSystem}</span>}
             </div>
             <div className={styles.heroMetaLight}>
+              <span>来源：{dataSourceLabel}</span>
               <span>最后更新：{formatDateTime(item.dataSource.lastSyncTime)}</span>
             </div>
           </div>
@@ -279,35 +347,97 @@ const CloudHostDetail: React.FC = () => {
         <div className={styles.mainPanel}>
           <div className={styles.mainContent}>
             <div className={`${styles.infoColumn} ${styles.columnWithDivider}`}>
-              <Card className={styles.groupCard}>
-                <div className={styles.groupTitle}>基本信息</div>
-                <div className={styles.infoPairs}>
-                  {identityRows.map((row, rowIndex) => (
-                    <div key={`identity-row-${rowIndex}`} className={styles.infoPairRow}>
-                      {row.map(field => (
-                        <div key={field.label} className={styles.infoField}>
-                          <span>{field.label}</span>
-                          <strong>{field.value}</strong>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-                <div className={styles.clusterDivider} />
-                <div className={styles.groupTitle}>规格信息</div>
-                <div className={styles.specCluster}>
-                  {specMetrics.map(metric => (
-                    <div key={metric.key} className={styles.specCard}>
-                      <div className={styles.specIconBadge}>{metric.icon}</div>
-                      <div>
-                        <div className={styles.specLabel}>{metric.label}</div>
-                        <div className={styles.specValue}>{metric.value}</div>
+              {basicRows.length > 0 && (
+                <Card className={styles.groupCard}>
+                  <div className={styles.groupTitle}>基础信息</div>
+                  <div className={styles.infoPairs}>
+                    {basicRows.map((row, rowIndex) => (
+                      <div key={`basic-row-${rowIndex}`} className={styles.infoPairRow}>
+                        {row.map(field => (
+                          <div key={`basic-field-${field.label}`} className={styles.infoField}>
+                            <span>{field.label}</span>
+                            <strong>{field.value}</strong>
+                          </div>
+                        ))}
                       </div>
-                    </div>
-                  ))}
-                </div>
-                <div className={styles.clusterDivider} />
-                <div className={styles.groupTitle}>准入信息</div>
+                    ))}
+                  </div>
+                </Card>
+              )}
+
+              {visibleSpecFields.length > 0 && (
+                <Card className={styles.groupCard}>
+                  <div className={styles.groupTitle}>规格信息</div>
+                  <div className={styles.specCluster}>
+                    {visibleSpecFields.map(metric => (
+                      <div key={metric.key} className={styles.specCard}>
+                        <div className={styles.specIconBadge}>{metric.icon}</div>
+                        <div>
+                          <div className={styles.specLabel}>{metric.label}</div>
+                          <div className={styles.specValue}>{metric.render(item)}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
+
+              {ownerRows.length > 0 && (
+                <Card className={styles.groupCard}>
+                  <div className={styles.groupTitle}>责任主体</div>
+                  <div className={styles.infoPairs}>
+                    {ownerRows.map((row, rowIndex) => (
+                      <div key={`owner-row-${rowIndex}`} className={styles.infoPairRow}>
+                        {row.map(field => (
+                          <div key={`owner-field-${field.label}`} className={styles.infoField}>
+                            <span>{field.label}</span>
+                            <strong>{field.value}</strong>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
+
+              {deploymentRows.length > 0 && (
+                <Card className={styles.groupCard}>
+                  <div className={styles.groupTitle}>部署位置</div>
+                  <div className={styles.infoPairs}>
+                    {deploymentRows.map((row, rowIndex) => (
+                      <div key={`deploy-row-${rowIndex}`} className={styles.infoPairRow}>
+                        {row.map(field => (
+                          <div key={`deploy-field-${field.label}`} className={styles.infoField}>
+                            <span>{field.label}</span>
+                            <strong>{field.value}</strong>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
+
+              {businessRows.length > 0 && (
+                <Card className={styles.groupCard}>
+                  <div className={styles.groupTitle}>业务关联</div>
+                  <div className={styles.infoPairs}>
+                    {businessRows.map((row, rowIndex) => (
+                      <div key={`biz-summary-${rowIndex}`} className={styles.infoPairRow}>
+                        {row.map(field => (
+                          <div key={`biz-field-${field.label}`} className={styles.infoField}>
+                            <span>{field.label}</span>
+                            <strong>{field.value}</strong>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
+
+              <Card className={styles.groupCard}>
+                <div className={styles.groupTitle}>准入认证</div>
                 <div className={styles.infoPairs}>
                   {admissionRows.map((row, rowIndex) => (
                     <div key={`admission-row-${rowIndex}`} className={styles.infoPairRow}>
@@ -321,64 +451,76 @@ const CloudHostDetail: React.FC = () => {
                   ))}
                 </div>
               </Card>
+
             </div>
 
             <div className={`${styles.securityColumn} ${styles.columnWithDivider}`}>
               <Card className={styles.securityStatusCard} title={<div className={styles.securityTitle}><span className={styles.securityIcon}>🛡️</span>安全防护与状态</div>}>
-                <div className={styles.securitySection}>
-                  <div className={styles.sectionHeadline}>安全防护</div>
-                  <div className={styles.guardGrid}>
-                    <div className={`${styles.guardCard} ${item.edrInstalled ? styles.guardCardSafe : styles.guardCardAlert}`}>
-                      <div className={styles.guardCardHeader}>
-                        <div>
-                          <div className={styles.guardLabel}>EDR代理</div>
-                          <div className={styles.guardSub}>{item.edrInstalled ? `客户端版本：${item.edrAgentVersion ?? '未知'}` : '未纳入EDR防护'}</div>
-                        </div>
-                        <span className={`${styles.guardStatus} ${item.edrInstalled ? (item.edrOnline ? styles.statusOnline : styles.statusOffline) : styles.statusOffline}`}>
-                          {item.edrInstalled ? (item.edrOnline ? '在线' : '离线') : '未安装'}
-                        </span>
+                <div className={styles.guardGrid}>
+                  <div className={`${styles.guardCard} ${item.edrInstalled ? styles.guardCardSafe : styles.guardCardAlert}`}>
+                    <div className={styles.guardCardHeader}>
+                      <div>
+                        <div className={styles.guardLabel}>EDR代理</div>
+                        <div className={styles.guardSub}>{item.edrInstalled ? `品牌：${item.edrBrand ?? '—'}` : '未纳入EDR防护'}</div>
                       </div>
-                      {item.edrInstalled ? (
-                        <ul>
-                          <li><span>病毒库</span><strong>{item.edrVirusDbVersion ?? '未知'}</strong></li>
-                          <li><span>最近同步</span><strong>{formatDateTime(item.dataSource.lastSyncTime)}</strong></li>
-                        </ul>
-                      ) : (
-                        <p className={styles.guardAlert}>未安装EDR防护措施，建议尽快纳入</p>
-                      )}
+                      <span className={`${styles.guardStatus} ${item.edrInstalled ? (item.edrOnline ? styles.statusOnline : styles.statusOffline) : styles.statusOffline}`}>
+                        {item.edrInstalled ? (item.edrOnline ? '在线' : '离线') : '未安装'}
+                      </span>
                     </div>
-                    <div className={`${styles.guardCard} ${item.blocked ? styles.guardCardAlert : styles.guardCardSafe}`}>
-                      <div className={styles.guardCardHeader}>
-                        <div>
-                          <div className={styles.guardLabel}>安全管控</div>
-                          <div className={styles.guardSub}>{item.blocked ? `管控原因：${item.blockedReason ?? '未知'}` : '当前未触发安全管控'}</div>
-                        </div>
-                        <span className={`${styles.guardStatus} ${item.blocked ? styles.statusBlocked : styles.statusOnline}`}>
-                          {item.blocked ? '已管控' : '正常'}
-                        </span>
+                    {item.edrInstalled ? (
+                      <ul>
+                        <li><span>代理版本</span><strong>{item.edrAgentVersion ?? '未知'}</strong></li>
+                        <li><span>病毒库</span><strong>{item.edrVirusDbVersion ?? '未知'}</strong></li>
+                        <li><span>最近心跳</span><strong>{item.edrLastHeartbeat ? formatDateTime(item.edrLastHeartbeat) : '—'}</strong></li>
+                      </ul>
+                    ) : (
+                      <p className={styles.guardAlert}>未安装EDR防护措施，建议尽快纳入</p>
+                    )}
+                  </div>
+                  <div className={`${styles.guardCard} ${item.blocked ? styles.guardCardAlert : styles.guardCardSafe}`}>
+                    <div className={styles.guardCardHeader}>
+                      <div>
+                        <div className={styles.guardLabel}>安全管控</div>
+                        <div className={styles.guardSub}>{item.blocked ? `管控原因：${item.blockedReason ?? '未知'}` : '当前未触发安全管控'}</div>
                       </div>
-                      {item.blocked ? (
-                        <>
-                          <div className={styles.stateMeta}>管控生效 {formatDateTime(item.blockedAt)}</div>
-                          <div className={styles.controlMeasures}>
-                            {controlMeasures.map(measure => (
-                              <div key={measure.key} className={styles.measureCard}>
-                                <strong>{measure.label}</strong>
-                                <span>{measure.description}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      ) : (
-                        <p className={styles.guardSafeMessage}>未采取安全管控措施，保持绿色通行</p>
-                      )}
+                      <span className={`${styles.guardStatus} ${item.blocked ? styles.statusBlocked : styles.statusOnline}`}>
+                        {item.blocked ? '已管控' : '正常'}
+                      </span>
                     </div>
+                    {item.blocked ? (
+                      <>
+                        {/* 管控生效时间在弹窗中展示 */}
+                        <div className={styles.controlMeasures}>
+                          {controlMeasures.map(measure => (
+                            <div
+                              key={measure.key}
+                              className={styles.measureCard}
+                              onClick={() => setMeasureDetail({
+                                ...measure,
+                                start: item.blockedAt ?? item.dataSource.lastSyncTime,
+                                end: undefined
+                              })}
+                              role="button"
+                            >
+                              <span className={styles.measureIcon}>{MEASURE_ICONS[measure.key] ?? <SecurityScanOutlined />}</span>
+                              <strong>{measure.label}</strong>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    ) : (
+                      <p className={styles.guardSafeMessage}>未采取安全管控措施，保持绿色通行</p>
+                    )}
+                    
                   </div>
                 </div>
                 <div className={styles.securitySection}>
                   <div className={styles.sectionHeadline}>安全风险</div>
                   <div className={styles.trendPanel}>
-                    <div className={styles.sectionLabel}>24小时告警趋势</div>
+                    <div className={styles.panelHeader}>
+                      <div className={styles.sectionLabel}>24小时告警趋势</div>
+                      <Button type="link" size="small" onClick={handleViewAlertList}>查看详情</Button>
+                    </div>
                     <div className={styles.alertChart}>
                       {alertTrendPoints.map(point => {
                         const total = point.high + point.medium + point.low
@@ -414,7 +556,7 @@ const CloudHostDetail: React.FC = () => {
                     </div>
                   </div>
                   <div className={styles.vulnPanel}>
-                    <div className={styles.vulnPanelHeader}>
+                    <div className={styles.panelHeader}>
                       <div>
                         <div className={styles.sectionLabel}>脆弱性分布</div>
                         <div className={styles.panelTitle}>类型 · 未修复统计</div>
@@ -461,56 +603,54 @@ const CloudHostDetail: React.FC = () => {
                   </div>
                 </div>
               </Card>
+
             </div>
 
-            <div className={styles.insightColumn}>
-              <Card className={`${styles.insightCard} ${styles.metaCard}`}>
-                <div className={styles.metaSection}>
-                  <div className={styles.metaTitle}>关联业务</div>
-                  <div className={styles.infoPairs}>
-                    {businessRows.map((row, rowIndex) => (
-                      <div key={`biz-summary-${rowIndex}`} className={styles.infoPairRow}>
-                        {row.map(field => (
-                          <div key={`biz-field-${field.label}`} className={styles.infoField}>
-                            <span>{field.label}</span>
-                            <strong>
-                              {field.label === '二级系统' && item.businessSystem
-                                ? (
-                                    <Button type="link" size="small" onClick={() => navigate(`/management/business/${item.businessSystemId ?? ''}`)}>
-                                      {field.value}
-                                    </Button>
-                                  )
-                                : field.value}
-                            </strong>
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className={styles.metaSection}>
-                  <div className={styles.metaTitle}>责任主体</div>
-                  <div className={styles.infoPairs}>
-                    {responsibilitySummaryRows.map((row, rowIndex) => (
-                      <div key={`resp-summary-${rowIndex}`} className={styles.infoPairRow}>
-                        {row.map(field => (
-                          <div key={`resp-field-${field.label}`} className={styles.infoField}>
-                            <span>{field.label}</span>
-                            <strong>{field.value}</strong>
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className={styles.metaSection}>
-                  <div className={styles.metaTitle}>动态信息</div>
-                  <Collapse items={activityPanels} bordered={false} defaultActiveKey={activityPanels.map(panel => panel.key)} className={styles.activityCollapse} />
-                </div>
-              </Card>
-            </div>
           </div>
         </div>
+
+        <Drawer
+          title="字段展示配置"
+          placement="right"
+          width={360}
+          open={configVisible}
+          onClose={() => setConfigVisible(false)}
+        >
+          {configGroups.map(group => {
+            const optionKeys = group.fields.map(field => field.key)
+            const groupValue = (fieldConfig[group.key] ?? []).filter(key => optionKeys.includes(key))
+            return (
+              <div key={group.key} className={styles.configGroup}>
+                <div className={styles.configGroupTitle}>{group.title}</div>
+                <Checkbox.Group
+                  value={groupValue}
+                  onChange={values => handleFieldConfigChange(group.key, values as string[])}
+                >
+                  <div className={styles.configOptions}>
+                    {group.fields.map(field => (
+                      <Checkbox key={field.key} value={field.key}>{field.label}</Checkbox>
+                    ))}
+                  </div>
+                </Checkbox.Group>
+              </div>
+            )
+          })}
+        </Drawer>
+        <Modal open={!!measureDetail} title="管控措施详情" onCancel={() => setMeasureDetail(null)} footer={null}>
+          {measureDetail && (
+            <div className={styles.measureDetail}>
+              <div className={styles.measureDetailHeader}>
+                <span className={styles.measureDetailIcon}>{MEASURE_ICONS[measureDetail.key] ?? <SecurityScanOutlined />}</span>
+                <strong>{measureDetail.label}</strong>
+              </div>
+              <ul className={styles.measureDetailList}>
+                <li><span>措施说明</span><strong>{measureDetail.description}</strong></li>
+                <li><span>开始时间</span><strong>{formatDateTime(measureDetail.start)}</strong></li>
+                <li><span>结束时间</span><strong>{measureDetail.end ? formatDateTime(measureDetail.end) : '—'}</strong></li>
+              </ul>
+            </div>
+          )}
+        </Modal>
       </div>
     </div>
   )
