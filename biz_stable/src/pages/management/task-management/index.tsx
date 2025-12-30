@@ -9,7 +9,6 @@ import {
 import dayjs from 'dayjs'
 import TaskStatisticsCards from './components/TaskStatisticsCards'
 import TaskList from './components/TaskList'
-import TaskDetailDrawer from './components/TaskDetailDrawer'
 import { generateCollaborationTasks, generateTaskStatistics } from './mock/task-data'
 import type {
   CollaborationTask,
@@ -20,6 +19,8 @@ import type {
   TaskFilters
 } from './types'
 import './index.css'
+import { useNavigate } from 'react-router-dom'
+import type { TicketDetailData } from '../../ticket-detail/types'
 
 const { RangePicker } = DatePicker
 
@@ -41,12 +42,10 @@ const TaskManagement: React.FC = () => {
     dateRange: undefined
   })
 
+  const navigate = useNavigate()
+
   // 选中的任务类型Tab
   const [selectedType, setSelectedType] = useState<TaskType | 'all'>('all')
-
-  // 详情抽屉状态
-  const [detailVisible, setDetailVisible] = useState(false)
-  const [selectedTask, setSelectedTask] = useState<CollaborationTask | null>(null)
 
   // 筛选任务
   const filteredTasks = useMemo(() => {
@@ -107,6 +106,39 @@ const TaskManagement: React.FC = () => {
     }
   }, [allTasks])
 
+  const mapTaskToTicketOverrides = (task: CollaborationTask): Partial<TicketDetailData> => {
+    const priorityMap: Record<TaskPriority, 'P0' | 'P1' | 'P2' | 'P3'> = {
+      urgent: 'P0',
+      high: 'P1',
+      medium: 'P2',
+      low: 'P3',
+    }
+    const statusMap: Record<TaskStatus, TicketDetailData['status']> = {
+      pending: 'processing',
+      processing: 'processing',
+      completed: 'resolved',
+      overdue: 'returned',
+      ignored: 'canceled',
+    }
+    return {
+      id: task.id,
+      title: task.title,
+      ticketNo: task.taskNo,
+      status: statusMap[task.status],
+      priority: priorityMap[task.priority],
+      createdAt: dayjs(task.createdAt).format('YYYY-MM-DD HH:mm'),
+      creator: task.responsibleUnit,
+      businessSystem: {
+        level1: task.affectedBusiness,
+        level2: task.responsibleUnit,
+      },
+      summary: [
+        { label: '责任单位', value: task.responsibleUnit },
+        { label: '影响业务', value: task.affectedBusiness },
+      ],
+    }
+  }
+
   // 处理卡片点击 - 按状态筛选
   const handleStatCardClick = (status: string) => {
     setFilters(prev => ({
@@ -117,8 +149,12 @@ const TaskManagement: React.FC = () => {
 
   // 查看任务详情
   const handleViewDetail = (task: CollaborationTask) => {
-    setSelectedTask(task)
-    setDetailVisible(true)
+    navigate(`/management/tickets/${task.id}`, {
+      state: {
+        ticketKind: 'security-hardening',
+        ticketOverrides: mapTaskToTicketOverrides(task),
+      },
+    })
   }
 
   // 催办任务
@@ -292,18 +328,6 @@ const TaskManagement: React.FC = () => {
         onEscalate={handleEscalate}
       />
 
-      {/* 任务详情抽屉 */}
-      <TaskDetailDrawer
-        visible={detailVisible}
-        task={selectedTask}
-        onClose={() => setDetailVisible(false)}
-        onRemind={(taskId) => {
-          const task = allTasks.find(t => t.id === taskId)
-          if (task) {
-            handleRemind(task)
-          }
-        }}
-      />
     </div>
   )
 }

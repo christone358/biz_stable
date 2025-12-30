@@ -6,10 +6,9 @@ import { generateTaskStatistics, generateTodayStatistics, generateVulnerabilitie
 import VulnerabilityCard from './components/VulnerabilityCard'
 import AssetClaimCard from './components/AssetClaimCard'
 import AlertHandleCard from './components/AlertHandleCard'
-import AlertTaskDetailDrawer from './components/AlertTaskDetailDrawer'
-import AssetTaskDetailDrawer from './components/AssetTaskDetailDrawer'
-import VulnerabilityTaskDetailDrawer from './components/VulnerabilityTaskDetailDrawer'
 import './index.css'
+import { useNavigate } from 'react-router-dom'
+import type { TicketDetailData, TicketKind } from '../../ticket-detail/types'
 
 type TaskType = 'alert' | 'asset' | 'vulnerability'
 
@@ -23,6 +22,7 @@ type TaskType = 'alert' | 'asset' | 'vulnerability'
  * - 告警处置
  */
 const TaskCenter: React.FC = () => {
+  const navigate = useNavigate()
   // 当前选中的任务类型（默认为告警）
   const [selectedTask, setSelectedTask] = useState<TaskType>('alert')
 
@@ -35,15 +35,20 @@ const TaskCenter: React.FC = () => {
   const [assets] = useState(generateAssets())
   const [alerts] = useState(generateAlerts())
 
-  // 详情抽屉状态
-  const [alertDetailVisible, setAlertDetailVisible] = useState(false)
-  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null)
+  const navigateToTicket = (kind: TicketKind, overrides: Partial<TicketDetailData>) => {
+    navigate(`/collaboration/tickets/${overrides.id}`, {
+      state: {
+        ticketKind: kind,
+        ticketOverrides: overrides,
+      },
+    })
+  }
 
-  const [assetDetailVisible, setAssetDetailVisible] = useState(false)
-  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null)
-
-  const [vulnerabilityDetailVisible, setVulnerabilityDetailVisible] = useState(false)
-  const [selectedVulnerability, setSelectedVulnerability] = useState<Vulnerability | null>(null)
+  const severityToPriority = (level: string) => {
+    if (level === 'critical') return 'P0'
+    if (level === 'important') return 'P1'
+    return 'P2'
+  }
 
   // 处理脆弱性任务
   const handleVulnerability = (id: string) => {
@@ -55,8 +60,19 @@ const TaskCenter: React.FC = () => {
   const viewVulnerability = (id: string) => {
     const vulnerability = vulnerabilities.find(v => v.id === id)
     if (vulnerability) {
-      setSelectedVulnerability(vulnerability)
-      setVulnerabilityDetailVisible(true)
+      navigateToTicket('inspection', {
+        id: vulnerability.id,
+        title: vulnerability.name,
+        ticketNo: vulnerability.id.toUpperCase(),
+        status: vulnerability.status === 'completed' ? 'resolved' : 'processing',
+        priority: vulnerability.riskLevel === 'high' ? 'P0' : vulnerability.riskLevel === 'medium' ? 'P1' : 'P2',
+        creator: '安全运营中心',
+        businessSystem: { level1: vulnerability.affectedBusiness, level2: '脆弱性管理' },
+        summary: [
+          { label: '影响资产', value: vulnerability.affectedAsset.name },
+          { label: 'IP', value: vulnerability.affectedAsset.ipAddress },
+        ],
+      })
     }
   }
 
@@ -76,8 +92,15 @@ const TaskCenter: React.FC = () => {
   const viewAsset = (id: string) => {
     const asset = assets.find(a => a.id === id)
     if (asset) {
-      setSelectedAsset(asset)
-      setAssetDetailVisible(true)
+      navigateToTicket('resource-recycle', {
+        id: asset.id,
+        title: asset.name,
+        ticketNo: asset.id.toUpperCase(),
+        status: asset.status === 'claimed' ? 'resolved' : 'processing',
+        priority: asset.status === 'unclaimed' ? 'P1' : 'P2',
+        creator: '资产运营自动派发',
+        businessSystem: { level1: asset.affectedBusiness, level2: asset.type },
+      })
     }
   }
 
@@ -97,8 +120,15 @@ const TaskCenter: React.FC = () => {
   const viewAlert = (id: string) => {
     const alert = alerts.find(a => a.id === id)
     if (alert) {
-      setSelectedAlert(alert)
-      setAlertDetailVisible(true)
+      navigateToTicket('emergency', {
+        id: alert.id,
+        title: alert.name,
+        ticketNo: alert.id.toUpperCase(),
+        status: alert.status === 'resolved' ? 'resolved' : 'processing',
+        priority: severityToPriority(alert.level),
+        creator: '告警系统',
+        businessSystem: { level1: alert.affectedBusiness, level2: alert.relatedAsset.name },
+      })
     }
   }
 
@@ -218,29 +248,6 @@ const TaskCenter: React.FC = () => {
         )}
       </div>
 
-      {/* 告警任务详情抽屉 */}
-      <AlertTaskDetailDrawer
-        visible={alertDetailVisible}
-        alert={selectedAlert}
-        onClose={() => setAlertDetailVisible(false)}
-        onHandle={handleAlert}
-      />
-
-      {/* 资产任务详情抽屉 */}
-      <AssetTaskDetailDrawer
-        visible={assetDetailVisible}
-        asset={selectedAsset}
-        onClose={() => setAssetDetailVisible(false)}
-        onClaim={handleAssetClaim}
-      />
-
-      {/* 脆弱性任务详情抽屉 */}
-      <VulnerabilityTaskDetailDrawer
-        visible={vulnerabilityDetailVisible}
-        vulnerability={selectedVulnerability}
-        onClose={() => setVulnerabilityDetailVisible(false)}
-        onHandle={handleVulnerability}
-      />
     </div>
   )
 }

@@ -27,6 +27,7 @@ import Test from './pages/test'
 import CloudHostList from './pages/management/terminal-assets/cloud-hosts/List'
 import CloudHostDetail from './pages/management/terminal-assets/cloud-hosts/Detail'
 import OfficeTerminalList from './pages/management/terminal-assets/office-terminals/List'
+import TicketDetailPage from './pages/ticket-detail/TicketDetailPage'
 import './App.css'
 
 function App() {
@@ -99,6 +100,7 @@ function App() {
                     <Route path="/management/terminal-assets/cloud-hosts" element={<CloudHostList />} />
                     <Route path="/management/terminal-assets/cloud-hosts/:id" element={<CloudHostDetail />} />
                     <Route path="/management/terminal-assets/office-terminals" element={<OfficeTerminalList />} />
+                    <Route path="/management/tickets/:id" element={<TicketDetailPage />} />
 
                     {/* 协同工作中心 */}
                     <Route path="/management/task-management" element={<TaskManagement />} />
@@ -127,6 +129,7 @@ function App() {
                     {/* 资产管理 */}
                     <Route path="/collaboration/asset-info" element={<AssetInfo />} />
                     <Route path="/collaboration/asset-issues" element={<AssetIssues />} />
+                    <Route path="/collaboration/tickets/:id" element={<TicketDetailPage />} />
                   </Route>
                 </>
               ) : (
@@ -147,6 +150,7 @@ function App() {
                     {/* 资产管理 */}
                     <Route path="/collaboration/asset-info" element={<AssetInfo />} />
                     <Route path="/collaboration/asset-issues" element={<AssetIssues />} />
+                    <Route path="/collaboration/tickets/:id" element={<TicketDetailPage />} />
                   </Route>
 
                   {/* 在开发环境下，也允许访问管理系统路由 */}
@@ -168,6 +172,7 @@ function App() {
                     <Route path="/management/task-management" element={<TaskManagement />} />
                     <Route path="/management/task-records" element={<div>任务执行记录（待开发）</div>} />
                     <Route path="/management/terminal-assets/office-terminals" element={<OfficeTerminalList />} />
+                    <Route path="/management/tickets/:id" element={<TicketDetailPage />} />
                   </Route>
                 </>
               )}
