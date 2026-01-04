@@ -8,13 +8,41 @@ import type {
   TaskPriority,
   ResponsibleUnit
 } from '../types'
+import { TASK_CENTER_CURRENT_USER } from '../constants'
 
 /**
  * 生成确定性随机数
  */
 function seededRandom(seed: number): number {
-  const x = Math.sin(seed++) * 10000
-  return x - Math.floor(x)
+const x = Math.sin(seed++) * 10000
+return x - Math.floor(x)
+}
+
+const INITIATOR_POOL = ['张敏', '李倩', '王磊', '赵婷', '刘畅', '黄蕾', '陈晨']
+const APPROVER_POOL = ['周勇', '钱莉', '孙浩', '吴楠', '郑凯']
+const PROCESSOR_POOL = ['陈晨', '赵凯', '王超', '李佳', '刘峰', '苏颖']
+
+const SUB_CATEGORY_POOL: Record<TaskType, string[]> = {
+  alert: ['系统性能', '资源使用', '网络异常', '安全威胁'],
+  vulnerability: ['漏洞修复', '弱口令', '配置风险', '补丁更新'],
+  asset: ['资产认领', '责任确认', '资源回收', '生命周期管理'],
+}
+
+const pickFromPool = (pool: string[], seed: number): string => {
+  const index = Math.floor(seededRandom(seed) * pool.length)
+  return pool[index]
+}
+
+const getSubCategory = (type: TaskType, seed: number) => {
+  const pool = SUB_CATEGORY_POOL[type]
+  return pool[Math.floor(seededRandom(seed) * pool.length)]
+}
+
+const getProcessor = (seed: number) => {
+  if (seed % 3 === 0) {
+    return TASK_CENTER_CURRENT_USER
+  }
+  return pickFromPool(PROCESSOR_POOL, seed + 13)
 }
 
 /**
@@ -130,11 +158,16 @@ export function generateCollaborationTasks(): CollaborationTask[] {
   alertTasks.forEach((task, index) => {
     const createdAt = dayjs().subtract(seededRandom(index) * 72, 'hour').toISOString()
     const deadline = dayjs(createdAt).add(task.priority === 'urgent' ? 24 : task.priority === 'high' ? 48 : 72, 'hour').toISOString()
+    const seed = index + 1
 
     tasks.push({
       id: `task-alert-${index + 1}`,
       taskNo: generateTaskNo('alert', index + 1),
       type: 'alert',
+      subCategory: getSubCategory('alert', seed),
+      initiator: pickFromPool(INITIATOR_POOL, seed),
+      previousApprover: pickFromPool(APPROVER_POOL, seed + 5),
+      currentProcessor: seed % 3 === 0 ? TASK_CENTER_CURRENT_USER : (task.responsiblePerson ?? getProcessor(seed + 8)),
       createdAt,
       deadline,
       startedAt: task.status !== 'pending' ? dayjs(createdAt).add(seededRandom(index + 100) * 2, 'hour').toISOString() : undefined,
@@ -228,11 +261,16 @@ export function generateCollaborationTasks(): CollaborationTask[] {
       task.vulnerabilityInfo?.riskLevel === 'medium' ? 72 : 168,
       'hour'
     ).toISOString()
+    const seed = index + 101
 
     tasks.push({
       id: `task-vuln-${index + 1}`,
       taskNo: generateTaskNo('vulnerability', index + 1),
       type: 'vulnerability',
+      subCategory: getSubCategory('vulnerability', seed),
+      initiator: pickFromPool(INITIATOR_POOL, seed),
+      previousApprover: pickFromPool(APPROVER_POOL, seed + 7),
+      currentProcessor: seed % 4 === 0 ? TASK_CENTER_CURRENT_USER : (task.responsiblePerson ?? getProcessor(seed + 11)),
       createdAt,
       deadline,
       startedAt: task.status !== 'pending' ? dayjs(createdAt).add(seededRandom(index + 150) * 4, 'hour').toISOString() : undefined,
@@ -310,11 +348,16 @@ export function generateCollaborationTasks(): CollaborationTask[] {
   assetTasks.forEach((task, index) => {
     const createdAt = dayjs().subtract(seededRandom(index + 80) * 48, 'hour').toISOString()
     const deadline = dayjs(createdAt).add(task.priority === 'high' ? 48 : task.priority === 'medium' ? 120 : 240, 'hour').toISOString()
+    const seed = index + 201
 
     tasks.push({
       id: `task-asset-${index + 1}`,
       taskNo: generateTaskNo('asset', index + 1),
       type: 'asset',
+      subCategory: getSubCategory('asset', seed),
+      initiator: pickFromPool(INITIATOR_POOL, seed),
+      previousApprover: pickFromPool(APPROVER_POOL, seed + 9),
+      currentProcessor: seed % 5 === 0 ? TASK_CENTER_CURRENT_USER : (task.responsiblePerson ?? getProcessor(seed + 15)),
       createdAt,
       deadline,
       startedAt: task.status !== 'pending' ? dayjs(createdAt).add(seededRandom(index + 180) * 6, 'hour').toISOString() : undefined,
@@ -332,11 +375,10 @@ export function generateCollaborationTasks(): CollaborationTask[] {
 export function generateTaskStatistics(tasks: CollaborationTask[]): TaskStatistics {
   const stats: TaskStatistics = {
     total: tasks.length,
-    pending: 0,
-    processing: 0,
+    inProgress: 0,
     completed: 0,
+    voided: 0,
     overdue: 0,
-    ignored: 0,
     byType: {
       alert: 0,
       vulnerability: 0,
@@ -348,27 +390,27 @@ export function generateTaskStatistics(tasks: CollaborationTask[]): TaskStatisti
       '网络管理部': 0,
       '系统管理部': 0,
       '数据管理部': 0
-    },
-    byPriority: {
-      urgent: 0,
-      high: 0,
-      medium: 0,
-      low: 0
     }
   }
 
   tasks.forEach(task => {
-    // 按状态统计
-    stats[task.status]++
+    if (task.status === 'completed') {
+      stats.completed++
+    } else if (task.status === 'ignored') {
+      stats.voided++
+    } else {
+      stats.inProgress++
+    }
+
+    if (task.status === 'overdue') {
+      stats.overdue++
+    }
 
     // 按类型统计
     stats.byType[task.type]++
 
     // 按责任单位统计
     stats.byUnit[task.responsibleUnit]++
-
-    // 按优先级统计
-    stats.byPriority[task.priority]++
   })
 
   return stats

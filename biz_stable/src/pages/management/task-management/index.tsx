@@ -10,17 +10,13 @@ import dayjs from 'dayjs'
 import TaskStatisticsCards from './components/TaskStatisticsCards'
 import TaskList from './components/TaskList'
 import { generateCollaborationTasks, generateTaskStatistics } from './mock/task-data'
-import type {
-  CollaborationTask,
-  TaskType,
-  TaskStatus,
-  TaskPriority,
-  ResponsibleUnit,
-  TaskFilters
-} from './types'
+import type { CollaborationTask, TaskType, TaskFilters } from './types'
+import { filterTasks, buildSubCategoryOptions, buildInitiatorOptions } from './filter-utils'
+import { getStatusViewOptions } from './status-utils'
+import { TASK_TYPE_LABELS } from './constants'
+import { mapTaskToTicketOverrides } from './mappers'
 import './index.css'
 import { useNavigate } from 'react-router-dom'
-import type { TicketDetailData } from '../../ticket-detail/types'
 
 const { RangePicker } = DatePicker
 
@@ -34,10 +30,10 @@ const TaskManagement: React.FC = () => {
 
   // 筛选条件
   const [filters, setFilters] = useState<TaskFilters>({
-    type: 'all',
     status: 'all',
-    priority: 'all',
     responsibleUnit: 'all',
+    initiator: 'all',
+    subCategory: 'all',
     searchText: '',
     dateRange: undefined
   })
@@ -49,47 +45,7 @@ const TaskManagement: React.FC = () => {
 
   // 筛选任务
   const filteredTasks = useMemo(() => {
-    return allTasks.filter(task => {
-      // 类型筛选
-      if (selectedType !== 'all' && task.type !== selectedType) {
-        return false
-      }
-
-      // 状态筛选
-      if (filters.status !== 'all' && task.status !== filters.status) {
-        return false
-      }
-
-      // 优先级筛选
-      if (filters.priority !== 'all' && task.priority !== filters.priority) {
-        return false
-      }
-
-      // 责任单位筛选
-      if (filters.responsibleUnit !== 'all' && task.responsibleUnit !== filters.responsibleUnit) {
-        return false
-      }
-
-      // 搜索文本筛选
-      if (filters.searchText) {
-        const searchText = filters.searchText.toLowerCase()
-        return (
-          task.title.toLowerCase().includes(searchText) ||
-          task.taskNo.toLowerCase().includes(searchText) ||
-          task.description.toLowerCase().includes(searchText) ||
-          task.affectedBusiness.toLowerCase().includes(searchText)
-        )
-      }
-
-      // 日期范围筛选
-      if (filters.dateRange && filters.dateRange[0] && filters.dateRange[1]) {
-        const createdAt = dayjs(task.createdAt)
-        return createdAt.isAfter(dayjs(filters.dateRange[0])) &&
-               createdAt.isBefore(dayjs(filters.dateRange[1]))
-      }
-
-      return true
-    })
+    return filterTasks(allTasks, selectedType, filters)
   }, [allTasks, selectedType, filters])
 
   // 统计数据
@@ -106,44 +62,18 @@ const TaskManagement: React.FC = () => {
     }
   }, [allTasks])
 
-  const mapTaskToTicketOverrides = (task: CollaborationTask): Partial<TicketDetailData> => {
-    const priorityMap: Record<TaskPriority, 'P0' | 'P1' | 'P2' | 'P3'> = {
-      urgent: 'P0',
-      high: 'P1',
-      medium: 'P2',
-      low: 'P3',
-    }
-    const statusMap: Record<TaskStatus, TicketDetailData['status']> = {
-      pending: 'processing',
-      processing: 'processing',
-      completed: 'resolved',
-      overdue: 'returned',
-      ignored: 'canceled',
-    }
-    return {
-      id: task.id,
-      title: task.title,
-      ticketNo: task.taskNo,
-      status: statusMap[task.status],
-      priority: priorityMap[task.priority],
-      createdAt: dayjs(task.createdAt).format('YYYY-MM-DD HH:mm'),
-      creator: task.responsibleUnit,
-      businessSystem: {
-        level1: task.affectedBusiness,
-        level2: task.responsibleUnit,
-      },
-      summary: [
-        { label: '责任单位', value: task.responsibleUnit },
-        { label: '影响业务', value: task.affectedBusiness },
-      ],
-    }
-  }
+  const initiatorOptions = useMemo(() => buildInitiatorOptions(allTasks), [allTasks])
+  const subCategoryOptions = useMemo(
+    () => buildSubCategoryOptions(allTasks, selectedType),
+    [allTasks, selectedType],
+  )
+  const statusOptions = useMemo(() => getStatusViewOptions(), [])
 
   // 处理卡片点击 - 按状态筛选
-  const handleStatCardClick = (status: string) => {
+  const handleStatCardClick = (status: TaskFilters['status']) => {
     setFilters(prev => ({
       ...prev,
-      status: status === 'all' ? 'all' : status as TaskStatus
+      status
     }))
   }
 
@@ -170,15 +100,15 @@ const TaskManagement: React.FC = () => {
   // 重置筛选
   const handleReset = () => {
     setFilters({
-      type: 'all',
       status: 'all',
-      priority: 'all',
       responsibleUnit: 'all',
+      initiator: 'all',
+      subCategory: 'all',
       searchText: '',
       dateRange: undefined
     })
     setSelectedType('all')
-    message.info('已重置筛选条件')
+    message.info('筛选条件已恢复默认')
   }
 
   // Tab切换
@@ -187,18 +117,10 @@ const TaskManagement: React.FC = () => {
       key: 'all',
       label: `全部任务 (${allTasks.length})`
     },
-    {
-      key: 'alert',
-      label: `运行告警处置 (${taskCountByType.alert})`
-    },
-    {
-      key: 'vulnerability',
-      label: `脆弱性处置 (${taskCountByType.vulnerability})`
-    },
-    {
-      key: 'asset',
-      label: `资产运营 (${taskCountByType.asset})`
-    }
+    ...(['alert', 'vulnerability', 'asset'] as TaskType[]).map(type => ({
+      key: type,
+      label: `${TASK_TYPE_LABELS[type]} (${taskCountByType[type]})`
+    }))
   ]
 
   return (
@@ -231,16 +153,6 @@ const TaskManagement: React.FC = () => {
           activeKey={selectedType}
           onChange={(key) => setSelectedType(key as TaskType | 'all')}
           items={tabItems}
-          tabBarExtraContent={
-            <Space>
-              <Button
-                icon={<ReloadOutlined />}
-                onClick={handleReset}
-              >
-                重置
-              </Button>
-            </Space>
-          }
         />
       </Card>
 
@@ -262,25 +174,42 @@ const TaskManagement: React.FC = () => {
             style={{ width: 140 }}
             suffixIcon={<FilterOutlined />}
           >
-            <Select.Option value="all">全部状态</Select.Option>
-            <Select.Option value="pending">待处理</Select.Option>
-            <Select.Option value="processing">处理中</Select.Option>
-            <Select.Option value="completed">已完成</Select.Option>
-            <Select.Option value="overdue">已逾期</Select.Option>
-            <Select.Option value="ignored">已忽略</Select.Option>
+            {statusOptions.map(option => (
+              <Select.Option key={option.value} value={option.value}>
+                {option.label}
+              </Select.Option>
+            ))}
           </Select>
 
           <Select
-            value={filters.priority}
-            onChange={(value) => setFilters(prev => ({ ...prev, priority: value }))}
-            style={{ width: 120 }}
+            value={filters.subCategory}
+            onChange={(value) => setFilters(prev => ({ ...prev, subCategory: value }))}
+            style={{ width: 200 }}
+            placeholder="二级分类"
+            suffixIcon={<FilterOutlined />}
+            disabled={!subCategoryOptions.length}
+          >
+            <Select.Option value="all">全部二级分类</Select.Option>
+            {subCategoryOptions.map(category => (
+              <Select.Option key={category} value={category}>
+                {category}
+              </Select.Option>
+            ))}
+          </Select>
+
+          <Select
+            value={filters.initiator}
+            onChange={value => setFilters(prev => ({ ...prev, initiator: value }))}
+            style={{ width: 160 }}
+            placeholder="流程发起人"
             suffixIcon={<FilterOutlined />}
           >
-            <Select.Option value="all">全部优先级</Select.Option>
-            <Select.Option value="urgent">紧急</Select.Option>
-            <Select.Option value="high">重要</Select.Option>
-            <Select.Option value="medium">一般</Select.Option>
-            <Select.Option value="low">低</Select.Option>
+            <Select.Option value="all">全部发起人</Select.Option>
+            {initiatorOptions.map(name => (
+              <Select.Option key={name} value={name}>
+                {name}
+              </Select.Option>
+            ))}
           </Select>
 
           <Select
@@ -310,13 +239,24 @@ const TaskManagement: React.FC = () => {
           />
         </Space>
 
-        <div style={{ marginTop: 12, fontSize: 13, color: '#8c8c8c' }}>
-          共筛选出 <span style={{ color: '#1890ff', fontWeight: 600 }}>{filteredTasks.length}</span> 个任务
+        <div className="task-filter-summary">
+          共筛选出 <span className="task-highlight">{filteredTasks.length}</span> 个任务
+          <span className="task-inline-stat">处置中 {statistics.inProgress}</span>
+          <span className="task-inline-stat">已完成 {statistics.completed}</span>
+          <span className="task-inline-stat">已作废 {statistics.voided}</span>
           {statistics.overdue > 0 && (
-            <span style={{ marginLeft: 16, color: '#ff4d4f', fontWeight: 600 }}>
-              其中逾期任务 {statistics.overdue} 个
+            <span className="task-inline-alert">
+              包含 {statistics.overdue} 个逾期任务
             </span>
           )}
+          <Button
+            type="link"
+            size="small"
+            icon={<ReloadOutlined />}
+            onClick={handleReset}
+          >
+            重置筛选
+          </Button>
         </div>
       </Card>
 

@@ -58,6 +58,115 @@
   line-height: 1.6;
 }
 
+.task-filter-summary {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #8c8c8c;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.task-filter-summary .task-highlight {
+  color: var(--ant-color-primary);
+  font-weight: 600;
+}
+
+.task-filter-summary .task-inline-stat {
+  color: var(--ant-color-text);
+}
+
+.task-filter-summary .task-inline-alert {
+  color: var(--ant-color-error);
+  font-weight: 600;
+}
+
+.task-item-wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.task-item-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.task-item-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.task-item-title {
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--ant-color-text);
+}
+
+.task-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 12px;
+  color: var(--ant-color-text-secondary);
+}
+
+.task-meta-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ant-color-text-secondary);
+  font-size: 12px;
+}
+
+.task-meta-divider {
+  border-inline-start-color: var(--ant-border-color-split) !important;
+  height: 16px;
+  margin: 0 !important;
+}
+
+.task-item-side {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-left: auto;
+  justify-content: flex-end;
+  min-width: 220px;
+  flex-shrink: 0;
+}
+
+.task-status-column,
+.task-action-column {
+  display: flex;
+  justify-content: flex-end;
+  flex: 0 0 110px;
+}
+
+.task-status-column {
+  align-items: flex-start;
+}
+
+.task-action-column {
+  align-items: flex-start;
+}
+
+.task-action-buttons {
+  display: inline-flex;
+}
+
+.task-action-buttons .ant-btn {
+  padding: 0;
+  height: auto;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .task-management-page {
@@ -84,5 +193,28 @@
     width: 48px;
     height: 48px;
     font-size: 24px;
+  }
+
+  .task-item-wrapper {
+    flex-direction: column;
+  }
+
+  .task-item-side {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-left: 0;
+    padding-top: 12px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .task-status-column {
+    justify-content: flex-start;
+  }
+
+  .task-action-column {
+    width: 100%;
+    justify-content: flex-start;
   }
 }

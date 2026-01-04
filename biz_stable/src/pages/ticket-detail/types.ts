@@ -2,15 +2,7 @@ import type { UploadFile } from 'antd'
 
 export type TicketStatus = 'draft' | 'processing' | 'returned' | 'on_hold' | 'resolved' | 'closed' | 'canceled'
 export type TicketPriority = 'P0' | 'P1' | 'P2' | 'P3'
-export type TicketKind =
-  | 'internet'
-  | 'govnet'
-  | 'inspection'
-  | 'assessment'
-  | 'system-online'
-  | 'resource-recycle'
-  | 'security-hardening'
-  | 'emergency'
+export type TicketKind = 'internet' | 'govnet'
 
 export interface BusinessSystemInfo {
   level1: string
@@ -36,6 +28,8 @@ export interface TicketHistoryRecord {
 
 export type HandleFieldType = 'text' | 'textarea' | 'select' | 'number'
 
+export type TicketActionType = 'handle' | 'return' | 'handover'
+
 export interface HandleFieldSchema {
   key: string
   label: string
@@ -58,6 +52,29 @@ export interface HandleModuleSchema {
   }>
 }
 
+export type DetailModuleType = 'formGrid' | 'dataTable'
+
+export interface DetailModuleField {
+  key: string
+  label: string
+  value?: string
+}
+
+export interface DetailModuleSchema {
+  id: string
+  title: string
+  type: DetailModuleType
+  fields?: DetailModuleField[]
+  columns?: Array<{
+    key: string
+    title: string
+  }>
+  rows?: Array<{
+    id?: string
+    [key: string]: string | undefined
+  }>
+}
+
 export interface TicketDetailData {
   id: string
   title: string
@@ -68,9 +85,11 @@ export interface TicketDetailData {
   creator: string
   businessSystem: BusinessSystemInfo
   summary?: { label: string; value: string }[]
+  detailModules?: DetailModuleSchema[]
   attachments: TicketAttachment[]
   handleModules: HandleModuleSchema[]
   history: TicketHistoryRecord[]
+  currentActionType?: TicketActionType
 }
 
 export interface TicketNavigationState {

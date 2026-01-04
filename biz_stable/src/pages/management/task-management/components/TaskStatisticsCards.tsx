@@ -1,18 +1,11 @@
 import React from 'react'
 import { Row, Col, Card, Statistic, Badge } from 'antd'
-import {
-  FileTextOutlined,
-  ClockCircleOutlined,
-  SyncOutlined,
-  CheckCircleOutlined,
-  ExclamationCircleOutlined,
-  CloseCircleOutlined
-} from '@ant-design/icons'
-import type { TaskStatistics } from '../types'
+import { FileTextOutlined, SyncOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
+import type { TaskStatistics, TaskFilters } from '../types'
 
 interface TaskStatisticsCardsProps {
   statistics: TaskStatistics
-  onCardClick?: (status: string) => void
+  onCardClick?: (status: TaskFilters['status']) => void
 }
 
 /**
@@ -24,9 +17,9 @@ const TaskStatisticsCards: React.FC<TaskStatisticsCardsProps> = ({
   onCardClick
 }) => {
   return (
-    <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+    <Row gutter={[16, 16]} style={{ marginBottom: 24 }} wrap>
       {/* 全部任务 */}
-      <Col xs={24} sm={12} md={6} lg={4}>
+      <Col flex="1 1 240px">
         <Card
           hoverable
           onClick={() => onCardClick?.('all')}
@@ -41,32 +34,16 @@ const TaskStatisticsCards: React.FC<TaskStatisticsCardsProps> = ({
         </Card>
       </Col>
 
-      {/* 待处理 */}
-      <Col xs={24} sm={12} md={6} lg={4}>
+      {/* 处置中 */}
+      <Col flex="1 1 240px">
         <Card
           hoverable
-          onClick={() => onCardClick?.('pending')}
+          onClick={() => onCardClick?.('inProgress')}
           style={{ cursor: 'pointer' }}
         >
           <Statistic
-            title="待处理"
-            value={statistics.pending}
-            prefix={<ClockCircleOutlined />}
-            valueStyle={{ color: '#faad14' }}
-          />
-        </Card>
-      </Col>
-
-      {/* 处理中 */}
-      <Col xs={24} sm={12} md={6} lg={4}>
-        <Card
-          hoverable
-          onClick={() => onCardClick?.('processing')}
-          style={{ cursor: 'pointer' }}
-        >
-          <Statistic
-            title="处理中"
-            value={statistics.processing}
+            title={<span>处置中{statistics.overdue > 0 && <Badge count={statistics.overdue} style={{ backgroundColor: '#ff4d4f', marginLeft: 8 }} />}</span>}
+            value={statistics.inProgress}
             prefix={<SyncOutlined spin />}
             valueStyle={{ color: '#1890ff' }}
           />
@@ -74,7 +51,7 @@ const TaskStatisticsCards: React.FC<TaskStatisticsCardsProps> = ({
       </Col>
 
       {/* 已完成 */}
-      <Col xs={24} sm={12} md={6} lg={4}>
+      <Col flex="1 1 240px">
         <Card
           hoverable
           onClick={() => onCardClick?.('completed')}
@@ -89,48 +66,16 @@ const TaskStatisticsCards: React.FC<TaskStatisticsCardsProps> = ({
         </Card>
       </Col>
 
-      {/* 已逾期 */}
-      <Col xs={24} sm={12} md={6} lg={4}>
+      {/* 已作废 */}
+      <Col flex="1 1 240px">
         <Card
           hoverable
-          onClick={() => onCardClick?.('overdue')}
-          style={{
-            cursor: 'pointer',
-            borderColor: statistics.overdue > 0 ? '#ff4d4f' : undefined
-          }}
-        >
-          <Statistic
-            title={
-              <span>
-                已逾期
-                {statistics.overdue > 0 && (
-                  <Badge
-                    count={statistics.overdue}
-                    style={{
-                      backgroundColor: '#ff4d4f',
-                      marginLeft: 8
-                    }}
-                  />
-                )}
-              </span>
-            }
-            value={statistics.overdue}
-            prefix={<ExclamationCircleOutlined />}
-            valueStyle={{ color: '#ff4d4f' }}
-          />
-        </Card>
-      </Col>
-
-      {/* 已忽略 */}
-      <Col xs={24} sm={12} md={6} lg={4}>
-        <Card
-          hoverable
-          onClick={() => onCardClick?.('ignored')}
+          onClick={() => onCardClick?.('voided')}
           style={{ cursor: 'pointer' }}
         >
           <Statistic
-            title="已忽略"
-            value={statistics.ignored}
+            title="已作废"
+            value={statistics.voided}
             prefix={<CloseCircleOutlined />}
             valueStyle={{ color: '#8c8c8c' }}
           />

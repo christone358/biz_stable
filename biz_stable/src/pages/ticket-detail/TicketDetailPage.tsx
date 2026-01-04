@@ -1,10 +1,18 @@
 import { useMemo, useState, useEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { Card, Descriptions, Tag, Space, Typography, Tabs, Timeline, List, Form, Input, Select, Button, message, Upload, Radio } from 'antd'
-import type { UploadProps, RadioChangeEvent } from 'antd'
+import { Card, Descriptions, Tag, Space, Typography, Tabs, Timeline, List, Form, Input, Select, Button, message, Upload, Table } from 'antd'
+import type { UploadProps } from 'antd'
 import { FileTextOutlined, InboxOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
-import type { TicketDetailData, TicketNavigationState, TicketKind, HandleModuleSchema, TicketAttachment } from './types'
+import type {
+  TicketDetailData,
+  TicketNavigationState,
+  TicketKind,
+  HandleModuleSchema,
+  TicketAttachment,
+  DetailModuleSchema,
+  TicketActionType,
+} from './types'
 import { buildTicketTemplate } from './ticketDetailMock'
 import './ticket-detail.css'
 
@@ -27,23 +35,11 @@ const PRIORITY_COLOR: Record<string, string> = {
   P3: 'default',
 }
 
-type Mode = 'handle' | 'return' | 'handover'
-
-const modeOptions = [
-  { label: '办理', value: 'handle' },
-  { label: '退回', value: 'return' },
-  { label: '移交', value: 'handover' },
-]
+type HandleFieldConfig = NonNullable<HandleModuleSchema['fields']>[number]
 
 const kindSelectOptions: { label: string; value: TicketKind }[] = [
   { label: '互联网准入', value: 'internet' },
   { label: '政务外网准入', value: 'govnet' },
-  { label: '专项检查', value: 'inspection' },
-  { label: '测评支持', value: 'assessment' },
-  { label: '系统上线', value: 'system-online' },
-  { label: '资源回收', value: 'resource-recycle' },
-  { label: '安全加固', value: 'security-hardening' },
-  { label: '应急处置', value: 'emergency' },
 ]
 
 const TicketDetailPage = () => {
@@ -70,12 +66,12 @@ const TicketDetailPage = () => {
   )
 
   const [activeTab, setActiveTab] = useState<'details' | 'history'>('details')
-  const [mode, setMode] = useState<Mode>('handle')
   const [attachments, setAttachments] = useState<TicketAttachment[]>(ticketData.attachments)
 
   const [handleForm] = Form.useForm()
   const [returnForm] = Form.useForm()
   const [handoverForm] = Form.useForm()
+  const actionType: TicketActionType = ticketData.currentActionType ?? 'handle'
 
   const uploadProps: UploadProps = {
     multiple: true,
@@ -126,7 +122,131 @@ const TicketDetailPage = () => {
     handoverForm.resetFields()
   }, [ticketData, handleForm, returnForm, handoverForm])
 
-  const renderHandleField = (field: HandleModuleSchema['fields'][number]) => {
+  const renderActionContent = () => {
+    if (actionType === 'return') {
+      return (
+        <Form layout="vertical" form={returnForm} className="action-form">
+          <Form.Item label="退回节点" name="targetNode" rules={[{ required: true, message: '请选择退回节点' }]}>
+            <Select
+              placeholder="选择历史节点"
+              options={ticketData.history.map(record => ({ label: record.summary, value: record.id }))}
+            />
+          </Form.Item>
+          <Form.Item label="退回原因" name="reason" rules={[{ required: true, message: '请填写退回原因' }]}>
+            <Input.TextArea rows={3} placeholder="说明退回原因" />
+          </Form.Item>
+          <Form.Item label="备注" name="remark">
+            <Input.TextArea rows={2} placeholder="可选" />
+          </Form.Item>
+          <Form.Item label="附件">
+            <Upload {...uploadProps}>
+              <Button icon={<InboxOutlined />}>上传附件</Button>
+            </Upload>
+          </Form.Item>
+          <div className="mode-actions">
+            <Button onClick={handleSaveDraft}>保存草稿</Button>
+            <Button type="primary" danger onClick={submitReturn}>
+              提交退回
+            </Button>
+          </div>
+        </Form>
+      )
+    }
+
+    if (actionType === 'handover') {
+      return (
+        <Form layout="vertical" form={handoverForm} className="action-form">
+          <Form.Item label="移交对象" name="targets" rules={[{ required: true, message: '请选择移交对象' }]}>
+            <Select
+              mode="multiple"
+              placeholder="选择责任人/团队"
+              options={[
+                { label: '安全加固一组', value: 'team-a' },
+                { label: '应急支援组', value: 'team-b' },
+                { label: '外协团队', value: 'vendor' },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item label="移交说明" name="note">
+            <Input.TextArea rows={3} placeholder="可选" />
+          </Form.Item>
+          <Form.Item label="备注" name="remark">
+            <Input.TextArea rows={2} placeholder="可选" />
+          </Form.Item>
+          <Form.Item label="附件">
+            <Upload {...uploadProps}>
+              <Button icon={<InboxOutlined />}>上传附件</Button>
+            </Upload>
+          </Form.Item>
+          <div className="mode-actions">
+            <Button onClick={handleSaveDraft}>保存草稿</Button>
+            <Button type="primary" onClick={submitHandover}>
+              确认移交
+            </Button>
+          </div>
+        </Form>
+      )
+    }
+
+    return (
+      <Form layout="vertical" form={handleForm} className="action-form">
+        {renderHandleModules()}
+        <Form.Item label="备注" name="handleRemark">
+          <Input.TextArea rows={2} placeholder="补充说明" />
+        </Form.Item>
+        <Form.Item label="附件">
+          <Upload {...uploadProps}>
+            <Button icon={<InboxOutlined />}>上传附件</Button>
+          </Upload>
+        </Form.Item>
+        <div className="mode-actions">
+          <Button onClick={handleSaveDraft}>保存草稿</Button>
+          <Button type="primary" onClick={handleSubmitResult}>
+            提交结果
+          </Button>
+        </div>
+      </Form>
+    )
+  }
+
+  const formDetailModules = useMemo(
+    () => ticketData.detailModules?.filter(module => module.type === 'formGrid') ?? [],
+    [ticketData.detailModules],
+  )
+  const tableDetailModules = useMemo(
+    () => ticketData.detailModules?.filter(module => module.type === 'dataTable') ?? [],
+    [ticketData.detailModules],
+  )
+
+  const detailKVBlocks = useMemo(() => {
+    const formBlocks = formDetailModules.map(module => ({
+      key: module.id,
+      title: module.title,
+      fields: module.fields ?? [],
+    }))
+
+    const tableBlocks = tableDetailModules.flatMap(module => {
+      if (!module.columns?.length) {
+        return []
+      }
+      if (!module.rows?.length) {
+        return [{ key: `${module.id}-empty`, title: module.title, fields: [] }]
+      }
+      return module.rows.map((row, index) => ({
+        key: row.id ?? `${module.id}-${index}`,
+        title: module.rows!.length > 1 ? `${module.title}（${index + 1}）` : module.title,
+        fields: module.columns!.map(col => ({
+          key: col.key,
+          label: col.title,
+          value: row[col.key],
+        })),
+      }))
+    })
+
+    return [...formBlocks, ...tableBlocks]
+  }, [formDetailModules, tableDetailModules])
+
+  const renderHandleField = (field: HandleFieldConfig) => {
     switch (field.type) {
       case 'textarea':
         return <Input.TextArea rows={3} placeholder={field.placeholder} />
@@ -200,156 +320,119 @@ const TicketDetailPage = () => {
     </div>
   )
 
+  const renderFormDetailModule = (module: DetailModuleSchema) => {
+    const fields = module.fields ?? []
+    return (
+      <div key={module.id} className="detail-subsection">
+        <div className="detail-module-title">{module.title}</div>
+        {fields.length ? (
+          <Descriptions
+            column={2}
+            size="small"
+            labelStyle={{ width: 140, color: 'var(--text-secondary)' }}
+            contentStyle={{ color: 'var(--text-primary)' }}
+          >
+            {fields.map(field => (
+              <Descriptions.Item key={field.key} label={field.label}>
+                {field.value || '—'}
+              </Descriptions.Item>
+            ))}
+          </Descriptions>
+        ) : (
+          <div className="detail-kv-empty">暂无数据</div>
+        )}
+      </div>
+    )
+  }
+
+  const renderDetailTable = (module: DetailModuleSchema) => {
+    if (!module.columns?.length) {
+      return <div className="detail-kv-empty">暂无数据</div>
+    }
+    const rows = module.rows ?? []
+    if (!rows.length) {
+      return <div className="detail-kv-empty">暂无数据</div>
+    }
+
+    const columns = module.columns.map(col => ({
+      dataIndex: col.key,
+      key: col.key,
+      title: col.title,
+      render: (value: string | undefined) => value ?? '—',
+    }))
+
+    return (
+      <Table
+        size="small"
+        bordered
+        columns={columns}
+        dataSource={rows}
+        pagination={false}
+        rowKey={(record, index) => record.id ?? `${module.id}-${index ?? 0}`}
+        scroll={{ x: 'max-content' }}
+      />
+    )
+  }
+
   const detailTabContent = (
-    <div className="ticket-body">
-      <div className="ticket-main">
-        <Card size="small" className="info-card">
-          <div className="info-section">
-            <div className="info-section-header">事项概要</div>
-            <Descriptions column={2} size="small" labelStyle={{ width: 140, color: 'var(--text-secondary)' }}>
-              <Descriptions.Item label="工单号">
-                <Text strong>{ticketData.ticketNo}</Text>
-              </Descriptions.Item>
-              <Descriptions.Item label="创建时间">{ticketData.createdAt}</Descriptions.Item>
-              <Descriptions.Item label="发起人">{ticketData.creator}</Descriptions.Item>
-              <Descriptions.Item label="业务系统">
-                {ticketData.businessSystem.level1}
-                {ticketData.businessSystem.level2 ? ` / ${ticketData.businessSystem.level2}` : ''}
-              </Descriptions.Item>
-            </Descriptions>
-          </div>
-
-          {ticketData.summary && (
-            <div className="info-section">
-              <div className="info-section-header">详细信息</div>
-              <Descriptions
-                column={ticketData.summary.length > 2 ? 3 : 2}
-                size="small"
-                labelStyle={{ width: 140, color: 'var(--text-secondary)' }}
-                contentStyle={{ fontWeight: 500, color: 'var(--text-primary)' }}
-              >
-                {ticketData.summary.map(item => (
-                  <Descriptions.Item key={item.label} label={item.label}>
-                    {item.value}
-                  </Descriptions.Item>
-                ))}
-              </Descriptions>
-            </div>
-          )}
-
-          <div className="info-section">
-            <div className="info-section-header">附件</div>
-            <List
-              dataSource={attachments}
-              renderItem={item => (
-                <List.Item key={item.id}>
-                  <Space size={8}>
-                    <FileTextOutlined />
-                    <span>{item.name}</span>
-                    <Text type="secondary">{item.size}</Text>
-                    <Text type="secondary">{item.uploader}</Text>
-                    <Text type="secondary">{item.time}</Text>
-                  </Space>
-                </List.Item>
-              )}
-            />
-          </div>
-        </Card>
+    <Card size="small" className="info-card">
+      <div className="info-section">
+        <div className="info-section-header">事项概要信息</div>
+        <Descriptions column={2} size="small" labelStyle={{ width: 140, color: 'var(--text-secondary)' }}>
+          <Descriptions.Item label="工单编号">{ticketData.ticketNo}</Descriptions.Item>
+          <Descriptions.Item label="创建时间">{ticketData.createdAt}</Descriptions.Item>
+          <Descriptions.Item label="发起人">{ticketData.creator}</Descriptions.Item>
+          <Descriptions.Item label="业务系统">
+            {ticketData.businessSystem.level1}
+            {ticketData.businessSystem.level2 ? ` / ${ticketData.businessSystem.level2}` : ''}
+          </Descriptions.Item>
+          {ticketData.summary?.map(item => (
+            <Descriptions.Item key={item.label} label={item.label}>
+              {item.value}
+            </Descriptions.Item>
+          ))}
+        </Descriptions>
       </div>
 
-      <div className="ticket-actions">
-        <div className="mode-panel">
-          <Radio.Group
-            options={modeOptions}
-            optionType="button"
-            buttonStyle="solid"
-            value={mode}
-            onChange={(event: RadioChangeEvent) => setMode(event.target.value as Mode)}
-          />
-
-          {mode === 'handle' && (
-            <Form layout="vertical" form={handleForm} className="mode-form">
-              {renderHandleModules()}
-              <Form.Item label="备注" name="remark">
-                <Input.TextArea rows={2} placeholder="补充说明" />
-              </Form.Item>
-              <Form.Item label="附件">
-                <Upload {...uploadProps}>
-                  <Button icon={<InboxOutlined />}>上传附件</Button>
-                </Upload>
-              </Form.Item>
-              <div className="mode-actions">
-                <Button onClick={handleSaveDraft}>保存草稿</Button>
-                <Button type="primary" onClick={handleSubmitResult}>
-                  提交结果
-                </Button>
-              </div>
-            </Form>
+      {(formDetailModules.length > 0 || tableDetailModules.length > 0) && (
+        <div className="info-section">
+          <div className="info-section-header">任务明细信息</div>
+          {formDetailModules.length > 0 && (
+            <Space direction="vertical" size="large" style={{ width: '100%' }}>
+              {formDetailModules.map(renderFormDetailModule)}
+            </Space>
           )}
-
-          {mode === 'return' && (
-            <Form layout="vertical" form={returnForm} className="mode-form">
-              <Form.Item label="退回节点" name="targetNode" rules={[{ required: true, message: '请选择退回节点' }]}>
-                <Select
-                  placeholder="选择历史节点"
-                  options={ticketData.history.map(record => ({ label: record.summary, value: record.id }))}
-                />
-              </Form.Item>
-              <Form.Item label="退回原因" name="reason" rules={[{ required: true, message: '请填写退回原因' }]}>
-                <Input.TextArea rows={3} placeholder="说明退回原因" />
-              </Form.Item>
-              <Form.Item label="备注" name="remark">
-                <Input.TextArea rows={2} placeholder="可选" />
-              </Form.Item>
-              <Form.Item label="附件">
-                <Upload {...uploadProps}>
-                  <Button icon={<InboxOutlined />}>上传附件</Button>
-                </Upload>
-              </Form.Item>
-              <div className="mode-actions">
-                <Button onClick={handleSaveDraft}>保存草稿</Button>
-                <Button type="primary" danger onClick={submitReturn}>
-                  提交退回
-                </Button>
-              </div>
-            </Form>
-          )}
-
-          {mode === 'handover' && (
-            <Form layout="vertical" form={handoverForm} className="mode-form">
-              <Form.Item label="移交对象" name="targets" rules={[{ required: true, message: '请选择移交对象' }]}>
-                <Select
-                  mode="multiple"
-                  placeholder="选择责任人/团队"
-                  options={[
-                    { label: '安全加固一组', value: 'team-a' },
-                    { label: '应急支援组', value: 'team-b' },
-                    { label: '外协团队', value: 'vendor' },
-                  ]}
-                />
-              </Form.Item>
-              <Form.Item label="移交说明" name="note">
-                <Input.TextArea rows={3} placeholder="可选" />
-              </Form.Item>
-              <Form.Item label="备注" name="remark">
-                <Input.TextArea rows={2} placeholder="可选" />
-              </Form.Item>
-              <Form.Item label="附件">
-                <Upload {...uploadProps}>
-                  <Button icon={<InboxOutlined />}>上传附件</Button>
-                </Upload>
-              </Form.Item>
-              <div className="mode-actions">
-                <Button onClick={handleSaveDraft}>保存草稿</Button>
-                <Button type="primary" onClick={submitHandover}>
-                  确认移交
-                </Button>
-              </div>
-            </Form>
+          {tableDetailModules.length > 0 && (
+            <Space direction="vertical" size="large" style={{ width: '100%', marginTop: 16 }}>
+              {tableDetailModules.map(module => (
+                <div key={module.id} className="detail-module">
+                  <div className="detail-module-title">{module.title}</div>
+                  {renderDetailTable(module)}
+                </div>
+              ))}
+            </Space>
           )}
         </div>
+      )}
+
+      <div className="info-section">
+        <div className="info-section-header">附件信息</div>
+        <List
+          dataSource={attachments}
+          renderItem={item => (
+            <List.Item key={item.id}>
+              <Space size={8}>
+                <FileTextOutlined />
+                <span>{item.name}</span>
+                <Text type="secondary">{item.size}</Text>
+                <Text type="secondary">{item.uploader}</Text>
+                <Text type="secondary">{item.time}</Text>
+              </Space>
+            </List.Item>
+          )}
+        />
       </div>
-    </div>
+    </Card>
   )
 
   const historyTabContent = (
@@ -409,13 +492,24 @@ const TicketDetailPage = () => {
         </div>
       </Card>
 
-      <div className="ticket-content">
-        <Tabs
-          className="ticket-tabs"
-          activeKey={activeTab}
-          onChange={key => setActiveTab(key as 'details' | 'history')}
-          items={tabItems}
-        />
+      <div className="ticket-body">
+        <section className="ticket-panel ticket-panel-main">
+          <Tabs
+            className="ticket-tabs"
+            activeKey={activeTab}
+            onChange={key => setActiveTab(key as 'details' | 'history')}
+            items={tabItems}
+          />
+        </section>
+        <div className="ticket-panel-divider" />
+        <section className="ticket-panel ticket-panel-actions">
+          <div className="action-panel">
+            <div className="action-panel-header">
+              <Title level={5} style={{ margin: 0 }}>工单办理</Title>
+            </div>
+            {renderActionContent()}
+          </div>
+        </section>
       </div>
     </div>
   )

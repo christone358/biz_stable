@@ -21,38 +21,46 @@
   justify-content: space-between;
 }
 
-.ticket-content {
+.ticket-body {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) 1px minmax(320px, 3fr);
+  gap: var(--space-lg);
+  align-items: flex-start;
+}
+
+.ticket-panel {
   background: var(--colorBgContainer);
   border-radius: var(--borderRadiusLG);
   box-shadow: var(--shadow1);
+  padding: var(--space-lg);
+  min-height: 100%;
 }
 
-.ticket-tabs .ant-tabs-nav {
+.ticket-panel-divider {
+  width: 1px;
+  min-height: 100%;
+  background: var(--colorSplit);
+}
+
+.ticket-panel-main .ant-tabs-nav {
+  margin: 0 calc(-1 * var(--space-lg));
   padding: 0 var(--space-lg);
 }
 
-.ticket-tabs .ant-tabs-content-holder {
+.ticket-panel-main .ant-tabs-content-holder {
+  margin: 0 calc(-1 * var(--space-lg));
   padding: var(--space-lg);
 }
 
-.ticket-body {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  gap: var(--space-xl);
-}
-
-.ticket-main,
-.ticket-actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
-.ticket-actions {
+.ticket-panel-actions {
   position: sticky;
-  top: var(--space-lg);
+  top: calc(var(--space-lg) + 8px);
   align-self: flex-start;
-  width: 320px;
+  padding: 0;
+}
+
+.ticket-panel-actions .action-panel {
+  padding: var(--space-lg);
 }
 
 .info-card {
@@ -88,6 +96,68 @@
   color: var(--text-secondary);
 }
 
+.detail-modules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-top: var(--space-md);
+}
+
+.detail-subsection + .detail-subsection {
+  margin-top: var(--space-lg);
+}
+
+.detail-module {
+  border: 1px solid var(--colorSplit);
+  border-radius: var(--borderRadiusLG);
+  padding: var(--space-md);
+  background: var(--colorBgElevated);
+}
+
+.detail-module-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+  color: var(--text-primary);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.detail-grid-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-grid-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.detail-grid-value {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.detail-kv-empty {
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: var(--space-md);
+  border: 1px dashed var(--colorSplit);
+  border-radius: var(--borderRadius);
+}
+
+.handle-modules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
 .handle-modules .form-grid {
   display: flex;
   flex-direction: column;
@@ -105,11 +175,11 @@
   border-radius: 6px;
   padding: 12px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
 }
 
-.handle-modules .table-header {
+.handle-modules .table-toolbar {
   display: flex;
   justify-content: flex-end;
 }
@@ -123,29 +193,44 @@
   background: var(--colorBgLayout);
 }
 
+.handle-modules .form-group + .form-group {
+  border-top: 1px solid var(--colorSplit);
+  padding-top: var(--space-md);
+}
 
+.form-group-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+  color: var(--text-primary);
+}
 
-.mode-panel {
+.action-panel {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  background: var(--colorBgContainer);
   border-radius: var(--borderRadiusLG);
-  box-shadow: var(--shadow1);
-  padding: var(--space-lg);
+  border: 1px solid var(--colorSplit);
+  background: var(--colorBgElevated);
 }
 
-.mode-section-title {
-  font-weight: 600;
-  font-size: 15px;
-  color: var(--text-primary);
-  margin-bottom: var(--space-sm);
+.action-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
 }
 
-.mode-tips {
-  padding: 12px;
-  background: var(--colorBgLayout);
-  border-radius: 6px;
+.action-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.mode-actions {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
 }
 
 .history-panel {
@@ -164,16 +249,16 @@
   color: var(--text-secondary);
 }
 
-.uploader-wrapper {
-  margin-bottom: 12px;
-}
-
 @media (max-width: 1400px) {
   .ticket-body {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .ticket-actions {
+  .ticket-panel-divider {
+    display: none;
+  }
+
+  .ticket-panel-actions {
     position: static;
     width: 100%;
   }

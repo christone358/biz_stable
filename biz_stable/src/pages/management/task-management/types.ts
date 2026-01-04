@@ -13,6 +13,9 @@ export type TaskStatus =
   | 'overdue'      // 已逾期
   | 'ignored'      // 已忽略
 
+// 页面展示用的状态分组
+export type TaskStatusView = 'all' | 'inProgress' | 'completed' | 'voided'
+
 // 任务优先级
 export type TaskPriority = 'urgent' | 'high' | 'medium' | 'low'
 
@@ -29,12 +32,16 @@ export interface CollaborationTask {
   id: string
   taskNo: string                    // 任务编号
   type: TaskType                    // 任务类型
+  subCategory: string               // 二级分类
   title: string                     // 任务标题
   description: string               // 任务描述
   status: TaskStatus                // 任务状态
   priority: TaskPriority            // 优先级
   responsibleUnit: ResponsibleUnit  // 责任单位
   responsiblePerson?: string        // 责任人
+  initiator: string                 // 流程发起人
+  previousApprover?: string         // 上一环节审批人
+  currentProcessor?: string         // 当前处理人
   affectedBusiness: string          // 影响业务
   createdAt: string                 // 创建时间
   deadline: string                  // 截止时间
@@ -75,11 +82,10 @@ export interface TaskExecutionRecord {
 // 任务统计数据
 export interface TaskStatistics {
   total: number           // 总任务数
-  pending: number         // 待处理
-  processing: number      // 处理中
+  inProgress: number      // 处置中
   completed: number       // 已完成
-  overdue: number         // 已逾期
-  ignored: number         // 已忽略
+  voided: number          // 已作废
+  overdue: number         // 已逾期（提示用）
 
   // 按类型分类
   byType: {
@@ -91,21 +97,15 @@ export interface TaskStatistics {
   // 按责任单位分类
   byUnit: Record<ResponsibleUnit, number>
 
-  // 按优先级分类
-  byPriority: {
-    urgent: number
-    high: number
-    medium: number
-    low: number
-  }
 }
 
 // 筛选条件
 export interface TaskFilters {
   type?: TaskType | 'all'
-  status?: TaskStatus | 'all'
-  priority?: TaskPriority | 'all'
+  status?: TaskStatusView
   responsibleUnit?: ResponsibleUnit | 'all'
+  initiator?: string | 'all'
+  subCategory?: string | 'all'
   searchText?: string
   dateRange?: [string, string]
 }
