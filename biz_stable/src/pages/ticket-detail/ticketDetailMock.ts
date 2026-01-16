@@ -26,27 +26,50 @@ const baseAttachments: TicketAttachment[] = [
 ]
 
 const historySample: TicketHistoryRecord[] = [
+  // 审批-同意
   {
-    id: 'hist-1',
+    id: 'hist-approval-pass',
+    type: 'approval',
+    operator: '业务系统负责人',
+    time: '2025-01-10 14:20',
+    summary: '审批通过：同意本次申请',
+    detail: '审批意见：资料齐全，符合准入要求。',
+  },
+  // 审批-驳回
+  {
+    id: 'hist-approval-reject',
+    type: 'return',
+    operator: '业务系统负责人',
+    time: '2025-01-10 13:45',
+    summary: '审批驳回：退回至【发起节点】',
+    detail: '驳回原因：缺少二级系统说明与安全评估报告。',
+  },
+  // 指派（转派）
+  {
+    id: 'hist-transfer',
+    type: 'transfer',
+    operator: '安全运营中心',
+    time: '2025-01-10 11:30',
+    summary: '转派给【应急支援组】',
+    detail: '说明：该工单涉及紧急变更，由应急支援组接手处理。',
+  },
+  // 处理提交（办理）
+  {
+    id: 'hist-submit',
     type: 'submit',
     operator: '安全加固一组',
     time: '2025-01-10 10:30',
-    summary: '提交办理结果：成功 3 / 失败 1',
-    detail: '失败原因：目标设备 192.168.1.33 超出维护窗口',
+    summary: '处理提交：成功 3 / 失败 1',
+    detail: '失败项：目标设备 192.168.1.33 超出维护窗口，待下个窗口重试。',
   },
+  // 评论（通用操作）
   {
-    id: 'hist-2',
-    type: 'transfer',
-    operator: '安全运营中心',
-    time: '2025-01-09 18:15',
-    summary: '转派给 应急支援组',
-  },
-  {
-    id: 'hist-3',
-    type: 'return',
-    operator: '业务系统负责人',
-    time: '2025-01-08 16:05',
-    summary: '退回：信息不完整，缺少二级系统说明',
+    id: 'hist-comment',
+    type: 'comment',
+    operator: '张三',
+    time: '2025-01-10 09:50',
+    summary: '评论：已与业务方确认执行窗口',
+    detail: '计划在 2025-01-12 00:00-02:00 执行；附件：执行计划.xlsx',
   },
 ]
 
@@ -239,6 +262,10 @@ export const buildTicketTemplate = (
     history: overrides?.history ?? detail.history ?? historySample,
     currentActionType:
       overrides?.currentActionType ?? detail.currentActionType ?? actionTypeDefaults[kind] ?? 'handle',
+    currentOperationType: overrides?.currentOperationType ?? (detail as any).currentOperationType ?? 'processing',
+    currentNodeName: overrides?.currentNodeName ?? (detail as any).currentNodeName ?? '节点A/业务处理',
+    canOperate: overrides?.canOperate ?? (detail as any).canOperate ?? true,
+    canComment: overrides?.canComment ?? (detail as any).canComment ?? true,
   }
   return base
 }

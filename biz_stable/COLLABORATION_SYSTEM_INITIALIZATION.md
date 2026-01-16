@@ -203,7 +203,7 @@ VITE v5.4.20 ready in 175 ms
 ```
 
 **路由验证**: ✅ 正常
-- 默认路由: `/collaboration/asset-monitoring`
+- 默认路由: `/collaboration/task-center`（个人视角默认“我的待办”）
 - 7个功能页面占位组件均已创建并可访问
 
 ---

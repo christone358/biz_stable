@@ -19,6 +19,7 @@ import AssetMonitoring from './pages/collaboration/asset-monitoring'
 import RuntimeAlerts from './pages/collaboration/runtime-alerts'
 import TaskCenter from './pages/collaboration/task-center'
 import TaskRecords from './pages/collaboration/task-records'
+import TicketCreatePage from './pages/collaboration/ticket-create'
 import AssetInfo from './pages/collaboration/asset-info'
 import AssetIssues from './pages/collaboration/asset-issues'
 import TaskManagement from './pages/management/task-management'
@@ -125,6 +126,7 @@ function App() {
                     {/* 协同任务 */}
                     <Route path="/collaboration/task-center" element={<TaskCenter />} />
                     <Route path="/collaboration/task-records" element={<TaskRecords />} />
+                    <Route path="/collaboration/tickets/new" element={<TicketCreatePage />} />
 
                     {/* 资产管理 */}
                     <Route path="/collaboration/asset-info" element={<AssetInfo />} />
@@ -135,7 +137,7 @@ function App() {
               ) : (
                 <>
                   {/* 系统二：业务协同管理系统路由 */}
-                  <Route path="/" element={<Navigate to="/collaboration/asset-monitoring" replace />} />
+                  <Route path="/" element={<Navigate to="/collaboration/task-center" replace />} />
 
                   <Route element={<CollaborationLayout />}>
                     {/* 业务运行保障 */}
@@ -146,6 +148,7 @@ function App() {
                     {/* 协同任务 */}
                     <Route path="/collaboration/task-center" element={<TaskCenter />} />
                     <Route path="/collaboration/task-records" element={<TaskRecords />} />
+                    <Route path="/collaboration/tickets/new" element={<TicketCreatePage />} />
 
                     {/* 资产管理 */}
                     <Route path="/collaboration/asset-info" element={<AssetInfo />} />

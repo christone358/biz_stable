@@ -19,7 +19,7 @@ export interface TicketAttachment {
 
 export interface TicketHistoryRecord {
   id: string
-  type: 'submit' | 'return' | 'transfer'
+  type: 'submit' | 'return' | 'transfer' | 'comment' | 'approval'
   operator: string
   time: string
   summary: string
@@ -29,6 +29,9 @@ export interface TicketHistoryRecord {
 export type HandleFieldType = 'text' | 'textarea' | 'select' | 'number'
 
 export type TicketActionType = 'handle' | 'return' | 'handover'
+
+// 业务操作类型：审批/指派/处理
+export type BusinessOperationType = 'approval' | 'assignment' | 'processing'
 
 export interface HandleFieldSchema {
   key: string
@@ -90,6 +93,10 @@ export interface TicketDetailData {
   handleModules: HandleModuleSchema[]
   history: TicketHistoryRecord[]
   currentActionType?: TicketActionType
+  currentOperationType?: BusinessOperationType
+  currentNodeName?: string
+  canOperate?: boolean
+  canComment?: boolean
 }
 
 export interface TicketNavigationState {

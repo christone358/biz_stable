@@ -1,0 +1,64 @@
+.ticket-create-page {
+  padding: var(--space-xxl);
+  min-height: 100%;
+  min-width: 1200px;
+  background: var(--colorBgLayout);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.ticket-create-page .summary-bar {
+  border-radius: var(--borderRadiusLG);
+  box-shadow: var(--shadow1);
+}
+
+.ticket-create-page .summary-left {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ticket-create-page .ticket-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-lg);
+}
+
+.ticket-create-page .info-section + .info-section {
+  border-top: 1px solid var(--colorSplit);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+}
+
+.ticket-create-page .form-grid {
+  display: grid;
+  /* 每行默认2列，随屏自适应降级 */
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  gap: 12px 16px;
+}
+
+@media (max-width: 768px) {
+  .ticket-create-page .form-grid { grid-template-columns: repeat(1, minmax(260px, 1fr)); }
+}
+
+.ticket-create-page .mode-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ticket-create-page .data-table .table-row {
+  border: 1px solid var(--colorBorder);
+  border-radius: 6px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+/* 表格内表单项紧凑布局 */
+.ticket-create-page .ant-table .ant-form-item {
+  margin-bottom: 0;
+}

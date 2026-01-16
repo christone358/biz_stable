@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { Card, Descriptions, Tag, Space, Typography, Tabs, Timeline, List, Form, Input, Select, Button, message, Upload, Table } from 'antd'
+import { Card, Descriptions, Tag, Space, Typography, Tabs, Timeline, List, Form, Input, Select, Button, message, Upload, Table, Radio, Segmented } from 'antd'
 import type { UploadProps } from 'antd'
 import { FileTextOutlined, InboxOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
@@ -11,7 +11,7 @@ import type {
   HandleModuleSchema,
   TicketAttachment,
   DetailModuleSchema,
-  TicketActionType,
+  BusinessOperationType,
 } from './types'
 import { buildTicketTemplate } from './ticketDetailMock'
 import './ticket-detail.css'
@@ -68,10 +68,12 @@ const TicketDetailPage = () => {
   const [activeTab, setActiveTab] = useState<'details' | 'history'>('details')
   const [attachments, setAttachments] = useState<TicketAttachment[]>(ticketData.attachments)
 
-  const [handleForm] = Form.useForm()
-  const [returnForm] = Form.useForm()
-  const [handoverForm] = Form.useForm()
-  const actionType: TicketActionType = ticketData.currentActionType ?? 'handle'
+  const [unifiedForm] = Form.useForm()
+  type UiMode = 'approval' | 'processing' | 'assignment' | 'no-permission'
+  const [uiMode, setUiMode] = useState<UiMode>(() => (ticketData.canOperate === false ? 'no-permission' : (ticketData.currentOperationType ?? 'processing')) as UiMode)
+  const canOperate = uiMode !== 'no-permission' && ticketData.canOperate !== false
+  const canComment = ticketData.canComment !== false
+  const operationType: BusinessOperationType = (uiMode === 'no-permission' ? (ticketData.currentOperationType ?? 'processing') : uiMode) as BusinessOperationType
 
   const uploadProps: UploadProps = {
     multiple: true,
@@ -94,118 +96,83 @@ const TicketDetailPage = () => {
     },
   }
 
-  const handleSaveDraft = () => {
-    message.success('草稿已保存')
-  }
+  // 草稿功能已禁用，根据需求移除保存草稿按钮
 
-  const handleSubmitResult = async () => {
-    await handleForm.validateFields()
-    message.success('办理结果已提交')
-  }
-
-  const submitReturn = async () => {
-    await returnForm.validateFields()
-    message.success('已退回到指定节点')
-    returnForm.resetFields()
-  }
-
-  const submitHandover = async () => {
-    await handoverForm.validateFields()
-    message.success('已移交给新的责任人')
-    handoverForm.resetFields()
+  const submitUnified = async () => {
+    try {
+      await unifiedForm.validateFields()
+      message.success('已提交')
+    } catch (e) {
+      // antd 会自动定位首个错误字段
+    }
   }
 
   useEffect(() => {
     setAttachments(ticketData.attachments)
-    handleForm.resetFields()
-    returnForm.resetFields()
-    handoverForm.resetFields()
-  }, [ticketData, handleForm, returnForm, handoverForm])
-
-  const renderActionContent = () => {
-    if (actionType === 'return') {
+    unifiedForm.resetFields()
+  }, [ticketData, unifiedForm])
+  const renderBusinessFields = () => {
+    if (!canOperate) return null
+    if (operationType === 'approval') {
       return (
-        <Form layout="vertical" form={returnForm} className="action-form">
-          <Form.Item label="退回节点" name="targetNode" rules={[{ required: true, message: '请选择退回节点' }]}>
-            <Select
-              placeholder="选择历史节点"
-              options={ticketData.history.map(record => ({ label: record.summary, value: record.id }))}
+        <>
+          <Form.Item label="审批结论" name={['approval', 'decision']} initialValue="agree" rules={[{ required: true }]}>
+            <Radio.Group
+              optionType="button"
+              buttonStyle="solid"
+              options={[{ label: '同意', value: 'agree' }, { label: '驳回', value: 'reject' }]}
             />
           </Form.Item>
-          <Form.Item label="退回原因" name="reason" rules={[{ required: true, message: '请填写退回原因' }]}>
-            <Input.TextArea rows={3} placeholder="说明退回原因" />
+          <Form.Item label="审批意见" name={['approval', 'opinion']} rules={[{ required: true, message: '请填写审批意见' }, { min: 5, message: '审批意见至少5个字' }]}>
+            <Input.TextArea rows={3} placeholder="请填写审批意见" />
           </Form.Item>
-          <Form.Item label="备注" name="remark">
-            <Input.TextArea rows={2} placeholder="可选" />
+          <Form.Item noStyle shouldUpdate={(prev, cur) => prev.approval?.decision !== cur.approval?.decision}>
+            {({ getFieldValue }) => {
+              const decision = getFieldValue(['approval', 'decision'])
+              if (decision !== 'reject') return null
+              return (
+                <>
+                  <Form.Item label="驳回至" name={['approval', 'rejectTarget']} rules={[{ required: true, message: '请选择驳回节点' }]}>
+                    <Select placeholder="选择历史节点" options={ticketData.history.map(h => ({ label: h.summary, value: h.id }))} />
+                  </Form.Item>
+                  <Form.Item label="驳回原因" name={['approval', 'rejectReason']} rules={[{ required: true, message: '请填写驳回原因' }]}>
+                    <Input.TextArea rows={2} placeholder="必填" />
+                  </Form.Item>
+                </>
+              )
+            }}
           </Form.Item>
-          <Form.Item label="附件">
-            <Upload {...uploadProps}>
-              <Button icon={<InboxOutlined />}>上传附件</Button>
-            </Upload>
-          </Form.Item>
-          <div className="mode-actions">
-            <Button onClick={handleSaveDraft}>保存草稿</Button>
-            <Button type="primary" danger onClick={submitReturn}>
-              提交退回
-            </Button>
-          </div>
-        </Form>
+        </>
       )
     }
-
-    if (actionType === 'handover') {
+    if (operationType === 'assignment') {
       return (
-        <Form layout="vertical" form={handoverForm} className="action-form">
-          <Form.Item label="移交对象" name="targets" rules={[{ required: true, message: '请选择移交对象' }]}>
+        <>
+          <Form.Item label="指派对象" name={['assignment', 'assignees']} rules={[{ required: true, message: '请选择指派对象' }]}>
             <Select
               mode="multiple"
-              placeholder="选择责任人/团队"
+              placeholder="选择人员/角色/组织（可多选）"
               options={[
+                { label: '王伟', value: 'user-ww' },
+                { label: '李敏', value: 'user-lm' },
                 { label: '安全加固一组', value: 'team-a' },
-                { label: '应急支援组', value: 'team-b' },
-                { label: '外协团队', value: 'vendor' },
+                { label: '应急处置组', value: 'team-b' },
               ]}
             />
           </Form.Item>
-          <Form.Item label="移交说明" name="note">
+          <Form.Item label="指派说明" name={['assignment', 'note']}>
             <Input.TextArea rows={3} placeholder="可选" />
           </Form.Item>
-          <Form.Item label="备注" name="remark">
-            <Input.TextArea rows={2} placeholder="可选" />
-          </Form.Item>
-          <Form.Item label="附件">
-            <Upload {...uploadProps}>
-              <Button icon={<InboxOutlined />}>上传附件</Button>
-            </Upload>
-          </Form.Item>
-          <div className="mode-actions">
-            <Button onClick={handleSaveDraft}>保存草稿</Button>
-            <Button type="primary" onClick={submitHandover}>
-              确认移交
-            </Button>
-          </div>
-        </Form>
+        </>
       )
     }
-
     return (
-      <Form layout="vertical" form={handleForm} className="action-form">
+      <>
         {renderHandleModules()}
-        <Form.Item label="备注" name="handleRemark">
+        <Form.Item label="处理备注" name={['processing', 'remark']}>
           <Input.TextArea rows={2} placeholder="补充说明" />
         </Form.Item>
-        <Form.Item label="附件">
-          <Upload {...uploadProps}>
-            <Button icon={<InboxOutlined />}>上传附件</Button>
-          </Upload>
-        </Form.Item>
-        <div className="mode-actions">
-          <Button onClick={handleSaveDraft}>保存草稿</Button>
-          <Button type="primary" onClick={handleSubmitResult}>
-            提交结果
-          </Button>
-        </div>
-      </Form>
+      </>
     )
   }
 
@@ -505,9 +472,35 @@ const TicketDetailPage = () => {
         <section className="ticket-panel ticket-panel-actions">
           <div className="action-panel">
             <div className="action-panel-header">
-              <Title level={5} style={{ margin: 0 }}>工单办理</Title>
+              <Title level={5} style={{ margin: 0 }}>工单处理</Title>
+              <Segmented
+                size="small"
+                value={uiMode}
+                onChange={val => setUiMode(val as UiMode)}
+                options={[
+                  { label: '审批', value: 'approval' },
+                  { label: '操作', value: 'processing' },
+                  { label: '转派', value: 'assignment' },
+                  { label: '无权限', value: 'no-permission' },
+                ]}
+              />
             </div>
-            {renderActionContent()}
+            <Form layout="vertical" form={unifiedForm} className="action-form" size="middle">
+              {renderBusinessFields()}
+              {canComment && (
+                <Form.Item label="任务评论" name={['comment', 'content']} rules={[{ required: !canOperate, message: '请填写评论内容' }]}>
+                  <Input.TextArea rows={3} placeholder="补充沟通信息" />
+                </Form.Item>
+              )}
+              <Form.Item label="上传附件">
+                <Upload {...uploadProps}>
+                  <Button icon={<InboxOutlined />}>上传附件</Button>
+                </Upload>
+              </Form.Item>
+              <div className="mode-actions">
+                <Button type="primary" onClick={submitUnified}>提交</Button>
+              </div>
+            </Form>
           </div>
         </section>
       </div>
